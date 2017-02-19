@@ -12,7 +12,6 @@ echo "======= ARM Toolchain"
 if [ ! -d "gcc-arm-none-eabi-6_2-2016q4" ]; then
     TAR_FILE=gcc-arm-none-eabi-6_2-2016q4-20161216-linux.tar.bz2
     echo "------- Download and unpack"
-    sudo apt-get -y install lib32ncurses5
     if ! [ -f $TAR_FILE ]; then
         wget https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/6-2016q4/$TAR_FILE
     fi
