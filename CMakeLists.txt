@@ -22,7 +22,7 @@ include_directories(${RIOT_DIR}/drivers/include)
 include_directories(${RIOT_DIR}/cpu/native/include/)
 
 # source files
-set(SOURCE_FILES dummy.c rs.c)
+set(SOURCE_FILES dummy.c rs.c ieee754_network.c)
 
 # targets
 add_library(riotsensors ${SOURCE_FILES})

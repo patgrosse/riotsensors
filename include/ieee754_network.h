@@ -15,6 +15,8 @@
 #ifndef RIOTSENSORS_IEEE754_NETWORK_H
 #define RIOTSENSORS_IEEE754_NETWORK_H
 
+#include <stdint.h>
+
 /** @brief Convert a single precision floating point to IEEE754 */
 #define pack754_32(f) (pack754((f), 32, 8))
 /** @brief Convert a double precision floating point to IEEE754 */

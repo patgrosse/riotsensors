@@ -1,6 +1,4 @@
-#include <stdio.h>
-#include <stdint.h>
-#include <inttypes.h>
+#include <ieee754_network.h>
 
 uint64_t pack754(long double f, unsigned bits, unsigned expbits) {
     long double fnorm;
