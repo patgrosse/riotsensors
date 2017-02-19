@@ -2,6 +2,7 @@ image: rikorose/gcc-cmake
 stages:
   - build
   - docs
+  - test
 before_script:
   - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
   - eval $(ssh-agent -s)
@@ -15,6 +16,17 @@ cmakeBuild:
     - "cd build"
     - "cmake .."
     - "make"
+cmakeTests:
+  stage: test
+  script:
+    - "git submodule sync --recursive"
+    - "git submodule update --init --recursive"
+    - "cd tests"
+    - "mkdir build"
+    - "cd build"
+    - "cmake .."
+    - "make"
+    - "./runTests"
 doxygenDocs:
   before_script: []
   stage: docs
