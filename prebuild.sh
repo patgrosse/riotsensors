@@ -2,6 +2,12 @@
 set -e
 mkdir -p build
 cd build
+echo "======= libspt"
+if [ ! -d "libspt" ]; then
+    git clone https://gitlab.com/patgrosse/libspt.git libspt
+else
+    echo "------- Already exists"
+fi
 echo "======= ARM Toolchain"
 if [ ! -d "gcc-arm-none-eabi-6_2-2016q4" ]; then
     TAR_FILE=gcc-arm-none-eabi-6_2-2016q4-20161216-linux.tar.bz2
