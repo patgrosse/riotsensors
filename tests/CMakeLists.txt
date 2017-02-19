@@ -10,12 +10,12 @@ set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS} -g -Wundef -Wshadow -Wcast-align -Wstr
 set(CMAKE_C_STANDARD 99)
 
 # dependencies
-include_directories(../include)
 include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 
 # sources
-FILE(GLOB RS_SOURCES ../ieee754_network.c)
+set(FILES_IN_TEST ../ieee754_network.c)
+set(TEST_FILES ieee754_network_test.cpp)
 
 # targets
-add_executable(runTests ieee754_network_test.cpp ${RS_SOURCES})
+add_executable(runTests ${FILES_IN_TEST} ${TEST_FILES})
 target_link_libraries(runTests gtest gtest_main)
