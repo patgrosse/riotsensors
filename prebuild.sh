@@ -4,7 +4,7 @@ mkdir -p build
 cd build
 echo "======= libspt"
 if [ ! -d "libspt" ]; then
-    git clone https://gitlab.com/patgrosse/libspt.git libspt
+    git clone git@gitlab.com:patgrosse/libspt.git libspt
 else
     echo "------- Already exists"
 fi
