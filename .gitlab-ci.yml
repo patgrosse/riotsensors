@@ -3,6 +3,8 @@ stages:
   - build
   - test
   - docs
+variables:
+  GIT_SUBMODULE_STRATEGY: recursive
 before_script:
   - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
   - eval $(ssh-agent -s)
@@ -19,8 +21,6 @@ cmakeBuild:
 cmakeTests:
   stage: test
   script:
-    - "git submodule sync --recursive"
-    - "git submodule update --init --recursive"
     - "cd tests"
     - "mkdir build"
     - "cd build"
