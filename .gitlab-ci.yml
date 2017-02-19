@@ -16,6 +16,7 @@ cmakeBuild:
     - "cmake .."
     - "make"
 doxygenDocs:
+  before_script: []
   stage: docs
   image: iimuz/doxygen
   when: always
