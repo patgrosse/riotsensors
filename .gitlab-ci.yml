@@ -1,8 +1,8 @@
 image: rikorose/gcc-cmake
 stages:
   - build
-  - docs
   - test
+  - docs
 before_script:
   - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
   - eval $(ssh-agent -s)
