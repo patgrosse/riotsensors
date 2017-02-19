@@ -1,6 +1,7 @@
 image: rikorose/gcc-cmake
 stages:
   - build
+  - docs
 before_script:
   - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
   - eval $(ssh-agent -s)
@@ -14,3 +15,13 @@ cmakeBuild:
     - "cd build"
     - "cmake .."
     - "make"
+doxygenDocs:
+  stage: docs
+  image: iimuz/doxygen
+  when: always
+  script:
+    - "mkdir -p build/doxygen"
+    - "doxygen Doxyfile"
+  artifacts:
+    paths:
+      - "build/doxygen"
