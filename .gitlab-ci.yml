@@ -1,0 +1,11 @@
+image: rikorose/gcc-cmake
+stages:
+  - build
+before_script:
+  - "./prebuild.sh"
+cmakeBuild:
+  stage: build
+  script:
+    - "cd build"
+    - "cmake .."
+    - "make"
