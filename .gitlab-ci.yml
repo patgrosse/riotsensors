@@ -2,6 +2,11 @@ image: rikorose/gcc-cmake
 stages:
   - build
 before_script:
+  - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+  - eval $(ssh-agent -s)
+  - ssh-add <(echo "$SSH_PRIVATE_KEY")
+  - mkdir -p ~/.ssh
+  - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
   - "./prebuild.sh"
 cmakeBuild:
   stage: build
