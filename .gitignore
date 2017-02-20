@@ -2,3 +2,4 @@ build/**
 .idea/**
 cmake-build-debug/**
 tests/build/**
+lib/gcc-arm-none-eabi-*/**

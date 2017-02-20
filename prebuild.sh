@@ -1,7 +1,6 @@
 #!/bin/bash
 set -e
-mkdir -p build
-cd build
+cd lib
 echo "======= libspt"
 if [ ! -d "libspt" ]; then
     git clone git@gitlab.com:patgrosse/libspt.git libspt
