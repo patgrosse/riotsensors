@@ -16,7 +16,9 @@ include_directories(${LIB_DIR}/libspt/src/include)
 include_directories(${CMAKE_CURRENT_LIST_DIR}/include)
 
 # source files
-set(SOURCE_FILES dummy.c rs.c ieee754_network.c)
+file(GLOB C_FILES *.c)
+file(GLOB H_FILES include/*.h)
+set(SOURCE_FILES ${C_FILES} ${H_FILES})
 
 # tests
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/tests)
