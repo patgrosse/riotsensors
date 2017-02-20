@@ -13,6 +13,7 @@ before_script:
 cmakeBuild:
   stage: build
   script:
+    - "mkdir -p build"
     - "cd build"
     - "cmake .."
     - "make"
@@ -20,7 +21,7 @@ cmakeTests:
   stage: test
   script:
     - "cd tests"
-    - "mkdir build"
+    - "mkdir -p build"
     - "cd build"
     - "cmake .."
     - "make"
