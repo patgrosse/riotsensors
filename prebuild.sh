@@ -3,9 +3,15 @@ set -e
 cd lib
 echo "======= libspt"
 if [ ! -d "libspt" ]; then
-    git clone git@gitlab.com:patgrosse/libspt.git libspt
+    echo "------- Using git clone"
+    git clone --depth=1 git@gitlab.com:patgrosse/libspt.git libspt
 else
-    echo "------- Already exists"
+    if [ ! -e "libspt/.git" ]; then
+        echo "------- Using git submodule"
+        git submodule update --init -- libspt
+    else
+        echo "------- Already exists"
+    fi
 fi
 echo "======= ARM Toolchain"
 if [ ! -d "gcc-arm-none-eabi-6_2-2016q4" ]; then
@@ -22,8 +28,25 @@ echo "------- Version check"
 gcc-arm-none-eabi-6_2-2016q4/bin/arm-none-eabi-gcc --version
 echo "======= RIOT OS"
 if [ ! -d "RIOT" ]; then
-    echo "------- Clone"
+    echo "------- Using git clone"
     git clone --depth=1 https://github.com/RIOT-OS/RIOT.git RIOT
 else
-    echo "------- Already exists"
+    if [ ! -e "RIOT/.git" ]; then
+        echo "------- Using git submodule"
+        git submodule update --init -- RIOT
+    else
+        echo "------- Already exists"
+    fi
+fi
+echo "======= Googletest"
+if [ ! -d "googletest" ]; then
+    echo "------- Using git clone"
+    git clone --depth=1 https://github.com/google/googletest.git RIOT
+else
+    if [ ! -e "googletest/.git" ]; then
+        echo "------- Using git submodule"
+        git submodule update --init -- googletest
+    else
+        echo "------- Already exists"
+    fi
 fi
