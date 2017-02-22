@@ -34,4 +34,4 @@ include_directories(${RIOT_DIR}/drivers/include)
 include_directories(${RIOT_DIR}/cpu/lpc2387/include)
 
 # targets
-add_library(riotmodule ${SOURCE_FILES})
+add_library(riotsensors_riot ${SOURCE_FILES})

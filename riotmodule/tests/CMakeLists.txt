@@ -20,5 +20,5 @@ set(FILES_IN_TEST ${SRC_DIR}/rs.c ${SRC_DIR}/ieee754_network.c)
 set(TEST_FILES rs_test.cpp ieee754_network_test.cpp)
 
 # targets
-add_executable(runTests ${FILES_IN_TEST} ${TEST_FILES})
-target_link_libraries(runTests gtest gtest_main)
+add_executable(riot_tests ${FILES_IN_TEST} ${TEST_FILES})
+target_link_libraries(riot_tests gtest gtest_main)

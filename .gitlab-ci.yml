@@ -1,5 +1,6 @@
 image: rikorose/gcc-cmake
 stages:
+  - prepare
   - build
   - test
   - docs
@@ -7,34 +8,58 @@ stages:
 #  key: "$CI_BUILD_REF_NAME"
 #  paths:
 #    - lib/gcc-arm-none-eabi-6_2-2016q4-20161216-linux.tar.bz2
-before_script:
-  - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
-  - eval $(ssh-agent -s)
-  - ssh-add <(echo "$SSH_PRIVATE_KEY")
-  - mkdir -p ~/.ssh
-  - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
-  - "./prebuild.sh"
-build:RIOTmodule:
-  stage: build
+cmake:
+  stage: prepare
+  before_script:
+    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+    - eval $(ssh-agent -s)
+    - ssh-add <(echo "$SSH_PRIVATE_KEY")
+    - mkdir -p ~/.ssh
+    - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
+    - "./prebuild.sh"
   script:
     - "mkdir -p build"
     - "cd build"
     - "cmake .."
+  artifacts:
+    paths:
+    - build/
+build:RIOTmodule:
+  stage: build
+  dependencies:
+    - cmake
+  script:
+    - "cd build/riotmodule"
+    - "make"
+  artifacts:
+    paths:
+    - build/
+build:linuxconnector:
+  stage: build
+  dependencies:
+    - cmake
+  script:
+    - "cd build/linuxconnector"
     - "make"
   artifacts:
     paths:
     - build/
 test:RIOTmodule:
   stage: test
-  before_script: []
   dependencies:
     - build:RIOTmodule
   script:
     - "cd build/riotmodule/tests"
-    - "./runTests"
+    - "./riot_tests"
+test:linuxconnector:
+  stage: test
+  dependencies:
+    - build:linuxconnector
+  script:
+    - "cd build/linuxconnector/tests"
+    - "./linux_tests"
 doxygenDocs:
   stage: docs
-  before_script: []
   image: iimuz/doxygen
   when: always
   script:
