@@ -35,8 +35,10 @@ lambda_id_t lambda_counter = 0;
 
 registered_lambda *get_lambda_by_name(const char *name) {
     for (lambda_id_t i = 0; i < lambda_counter; i++) {
-        if (strcmp(lambda_registry[i]->name, name) == 0) {
-            return lambda_registry[i];
+        if (lambda_registry[i] != NULL) {
+            if (strcmp(lambda_registry[i]->name, name) == 0) {
+                return lambda_registry[i];
+            }
         }
     }
     return NULL;
@@ -165,6 +167,7 @@ int8_t unregister_lambda(const lambda_id_t id) {
     }
     free(lambda_registry[id]->name);
     free(lambda_registry[id]);
+    lambda_registry[id] = NULL;
     return RS_UNREGISTER_SUCCESS;
 }
 

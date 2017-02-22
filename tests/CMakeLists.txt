@@ -19,8 +19,8 @@ include_directories(${LIB_DIR}/libspt/src/include)
 include_directories(${SRC_DIR}/include)
 
 # sources
-set(FILES_IN_TEST ${SRC_DIR}/ieee754_network.c)
-set(TEST_FILES ieee754_network_test.cpp)
+set(FILES_IN_TEST ${SRC_DIR}/rs.c ${SRC_DIR}/ieee754_network.c)
+set(TEST_FILES rs_test.cpp ieee754_network_test.cpp)
 
 # targets
 add_executable(runTests ${FILES_IN_TEST} ${TEST_FILES})
