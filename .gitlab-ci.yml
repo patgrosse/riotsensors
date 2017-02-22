@@ -8,15 +8,15 @@ stages:
 #  key: "$CI_BUILD_REF_NAME"
 #  paths:
 #    - lib/gcc-arm-none-eabi-6_2-2016q4-20161216-linux.tar.bz2
+before_script:
+  - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+  - eval $(ssh-agent -s)
+  - ssh-add <(echo "$SSH_PRIVATE_KEY")
+  - mkdir -p ~/.ssh
+  - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
+  - "./prebuild.sh"
 cmake:
   stage: prepare
-  before_script:
-    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
-    - eval $(ssh-agent -s)
-    - ssh-add <(echo "$SSH_PRIVATE_KEY")
-    - mkdir -p ~/.ssh
-    - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
-    - "./prebuild.sh"
   script:
     - "mkdir -p build"
     - "cd build"
@@ -45,6 +45,7 @@ build:linuxconnector:
     paths:
     - build/
 test:RIOTmodule:
+  before_script: []
   stage: test
   dependencies:
     - build:RIOTmodule
@@ -52,6 +53,7 @@ test:RIOTmodule:
     - "cd build/riotmodule/tests"
     - "./riot_tests"
 test:linuxconnector:
+  before_script: []
   stage: test
   dependencies:
     - build:linuxconnector
@@ -59,6 +61,7 @@ test:linuxconnector:
     - "cd build/linuxconnector/tests"
     - "./linux_tests"
 doxygenDocs:
+  before_script: []
   stage: docs
   image: iimuz/doxygen
   when: always
