@@ -14,21 +14,22 @@ before_script:
   - mkdir -p ~/.ssh
   - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
   - "./prebuild.sh"
-cmakeBuild:
+build:RIOTmodule:
   stage: build
   script:
     - "mkdir -p build"
     - "cd build"
     - "cmake .."
     - "make"
-cmakeTests:
+  artifacts:
+    paths:
+    - build/
+test:RIOTmodule:
   stage: test
+  dependencies:
+    - build:RIOTmodule
   script:
-    - "mkdir -p build"
-    - "cd build"
-    - "cmake .."
-    - "make"
-    - "cd riotmodule/tests"
+    - "cd build/riotmodule/tests"
     - "./runTests"
 doxygenDocs:
   before_script: []
