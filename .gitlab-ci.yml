@@ -26,14 +26,15 @@ build:RIOTmodule:
     - build/
 test:RIOTmodule:
   stage: test
+  before_script: []
   dependencies:
     - build:RIOTmodule
   script:
     - "cd build/riotmodule/tests"
     - "./runTests"
 doxygenDocs:
-  before_script: []
   stage: docs
+  before_script: []
   image: iimuz/doxygen
   when: always
   script:
