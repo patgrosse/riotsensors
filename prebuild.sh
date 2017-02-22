@@ -41,7 +41,7 @@ fi
 echo "======= Googletest"
 if [ ! -d "googletest" ]; then
     echo "------- Using git clone"
-    git clone --depth=1 https://github.com/google/googletest.git RIOT
+    git clone --depth=1 https://github.com/google/googletest.git googletest
 else
     if [ ! -e "googletest/.git" ]; then
         echo "------- Using git submodule"
