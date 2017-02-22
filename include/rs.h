@@ -24,6 +24,10 @@
 #define RS_REGISTER_INVALNAME -1
 /** @brief A lambda with the given name already exists */
 #define RS_REGISTER_DUPLICATE -2
+/** @brief Maximum number of lambda registrations reached */
+#define RS_REGISTER_LIMIT_REACHED -3
+/** @brief Could not allocate the required memory */
+#define RS_REGISTER_NOMEM -4
 
 /** @brief The call was successfully */
 #define RS_CALL_SUCCESS 0
@@ -70,16 +74,24 @@ typedef rs_double_t (*lambda_double_t)(lambda_id_t);
 typedef rs_string_t (*lambda_string_t)(lambda_id_t);
 
 /**
- * @brief Function header for a generic lambda, internal use only
+ * @brief Identifies the type/return type of a lambda
  */
-typedef void (*lambda_generic_t)(lambda_id_t);
-
 typedef enum {
     RS_LAMBDA_INT,
     RS_LAMBDA_DOUBLE,
     RS_LAMBDA_STRING,
     __RS_LAMBDA_MAX
 } lambda_type_t;
+
+/**
+ * @brief Initialize the internal lambda registry
+ */
+void init_lambda_registry();
+
+/**
+ * @brief Unregister all lambdas and free the allocated memory
+ */
+void free_lambda_registry();
 
 /**
  * @brief Register an integer lambda
