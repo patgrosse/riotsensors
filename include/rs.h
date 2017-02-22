@@ -15,6 +15,11 @@
 
 #include <inttypes.h>
 
+/** @brief Maximum number of registered lambdas */
+#define MAX_LAMBDAS 255
+/** @brief Maximum length of a lambda name */
+#define MAX_LAMBDA_NAME_LENGTH 12
+
 /** @brief Name does not match the requirements */
 #define RS_REGISTER_INVALNAME -1
 /** @brief A lambda with the given name already exists */
@@ -63,6 +68,18 @@ typedef rs_double_t (*lambda_double_t)(lambda_id_t);
  * @brief Function header for a string lambda
  */
 typedef rs_string_t (*lambda_string_t)(lambda_id_t);
+
+/**
+ * @brief Function header for a generic lambda, internal use only
+ */
+typedef void (*lambda_generic_t)(lambda_id_t);
+
+typedef enum {
+    RS_LAMBDA_INT,
+    RS_LAMBDA_DOUBLE,
+    RS_LAMBDA_STRING,
+    __RS_LAMBDA_MAX
+} lambda_type_t;
 
 /**
  * @brief Register an integer lambda
@@ -158,10 +175,10 @@ int8_t call_lambda_string_by_name(const char *name, rs_string_t *result);
 /**
  * @brief Unregister a lambda
  *
- * @param name Name of the lambda to unregister
+ * @param id ID of the lambda to unregister
  * @return A RS_UNREGISTER_* constant
  */
-int8_t unregister_lambda(const lambda_id_t);
+int8_t unregister_lambda(const lambda_id_t id);
 
 /**
  * Get the lambda ID from a given lambda name
