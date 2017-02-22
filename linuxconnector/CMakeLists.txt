@@ -9,7 +9,7 @@ include_directories(${CMAKE_CURRENT_LIST_DIR}/include)
 # source files
 file(GLOB C_FILES *.c)
 file(GLOB H_FILES include/*.h)
-set(SOURCE_FILES ${C_FILES} ${H_FILES})
+set(SOURCE_FILES ${C_FILES} ${H_FILES} ${CMAKE_CURRENT_LIST_DIR}/../packets/rs_packets.h)
 
 # compiler flags etc
 set(CMAKE_C_FLAGS "-Werror -Wall -Wextra")

@@ -17,9 +17,13 @@ typedef void (*lambda_generic_t)(lambda_id_t);
  * @brief Stores data for a registered lambda
  */
 typedef struct registered_lambda {
+    /** ID of the lambda */
     lambda_id_t id;
+    /** Name of the lambda */
     char *name;
-    lambda_type_t type;
+    /** Type of the lambda */
+    rs_lambda_type_t type;
+    /** Function to be evaluated */
     lambda_generic_t lambda;
 } registered_lambda;
 
@@ -44,7 +48,7 @@ registered_lambda *get_lambda_by_name(const char *name) {
     return NULL;
 }
 
-int8_t register_lambda(const char *name, lambda_generic_t lambda, lambda_type_t type) {
+int8_t register_lambda(const char *name, lambda_generic_t lambda, rs_lambda_type_t type) {
     if (lambda_counter >= MAX_LAMBDAS) {
         return RS_REGISTER_LIMIT_REACHED;
     }

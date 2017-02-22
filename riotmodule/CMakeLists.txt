@@ -13,11 +13,12 @@ set(RIOT_DIR ${LIB_DIR}/RIOT)
 # dependencies
 include_directories(${LIB_DIR}/libspt/src/include)
 include_directories(${CMAKE_CURRENT_LIST_DIR}/include)
+include_directories(${CMAKE_CURRENT_LIST_DIR}/../packets)
 
 # source files
 file(GLOB C_FILES *.c)
 file(GLOB H_FILES include/*.h)
-set(SOURCE_FILES ${C_FILES} ${H_FILES})
+set(SOURCE_FILES ${C_FILES} ${H_FILES} ${CMAKE_CURRENT_LIST_DIR}/../packets/rs_packets.h)
 
 # tests
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/tests)

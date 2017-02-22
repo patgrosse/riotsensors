@@ -14,11 +14,10 @@
 #define RIOTSENSORS_RS_H
 
 #include <inttypes.h>
+#include <rs_packets.h>
 
 /** @brief Maximum number of registered lambdas */
 #define MAX_LAMBDAS 255
-/** @brief Maximum length of a lambda name */
-#define MAX_LAMBDA_NAME_LENGTH 12
 
 /** @brief Name does not match the requirements */
 #define RS_REGISTER_INVALNAME -1
@@ -42,23 +41,6 @@
 #define RS_UNREGISTER_NOTFOUND -1
 
 /**
- * @brief Lambda identifier
- */
-typedef uint8_t lambda_id_t;
-/**
- * @brief Used integer type
- */
-typedef int32_t rs_int_t;
-/**
- * @brief Used double type
- */
-typedef double rs_double_t;
-/**
- * @brief Used string type
- */
-typedef char *rs_string_t;
-
-/**
  * @brief Function header for an integer lambda
  */
 typedef rs_int_t (*lambda_int_t)(lambda_id_t);
@@ -72,16 +54,6 @@ typedef rs_double_t (*lambda_double_t)(lambda_id_t);
  * @brief Function header for a string lambda
  */
 typedef rs_string_t (*lambda_string_t)(lambda_id_t);
-
-/**
- * @brief Identifies the type/return type of a lambda
- */
-typedef enum {
-    RS_LAMBDA_INT,
-    RS_LAMBDA_DOUBLE,
-    RS_LAMBDA_STRING,
-    __RS_LAMBDA_MAX
-} lambda_type_t;
 
 /**
  * @brief Initialize the internal lambda registry
