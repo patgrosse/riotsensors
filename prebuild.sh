@@ -50,3 +50,15 @@ else
         echo "------- Already exists"
     fi
 fi
+echo "======= SGLIB"
+if [ ! -d "sglib" ]; then
+    echo "------- Using git clone"
+    git clone --depth=1 https://github.com/stefanct/sglib.git sglib
+else
+    if [ ! -e "sglib/.git" ]; then
+        echo "------- Using git submodule"
+        git submodule update --init -- sglib
+    else
+        echo "------- Already exists"
+    fi
+fi

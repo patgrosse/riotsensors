@@ -24,11 +24,11 @@ cmakeBuild:
 cmakeTests:
   stage: test
   script:
-    - "cd tests"
     - "mkdir -p build"
     - "cd build"
     - "cmake .."
     - "make"
+    - "cd riotmodule/tests"
     - "./runTests"
 doxygenDocs:
   before_script: []

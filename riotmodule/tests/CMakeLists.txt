@@ -1,11 +1,8 @@
 cmake_minimum_required(VERSION 3.0)
-project(riotsensors_tests)
+project(riotsensors_riotmodule_tests)
 
 # directories
 set(SRC_DIR ${CMAKE_CURRENT_LIST_DIR}/..)
-set(LIB_DIR ${SRC_DIR}/lib)
-
-add_subdirectory(${LIB_DIR}/googletest/googletest ${CMAKE_CURRENT_BINARY_DIR}/googletest)
 
 # compiler flags
 set(CMAKE_C_FLAGS "-Werror -Wall -Wextra")
