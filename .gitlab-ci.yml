@@ -3,10 +3,10 @@ stages:
   - build
   - test
   - docs
-cache:
-  key: "$CI_BUILD_REF_NAME"
-  paths:
-    - lib/gcc-arm-none-eabi-6_2-2016q4-20161216-linux.tar.bz2
+#cache:
+#  key: "$CI_BUILD_REF_NAME"
+#  paths:
+#    - lib/gcc-arm-none-eabi-6_2-2016q4-20161216-linux.tar.bz2
 before_script:
   - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
   - eval $(ssh-agent -s)
