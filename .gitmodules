@@ -10,3 +10,6 @@
 [submodule "lib/sglib"]
 	path = lib/sglib
 	url = https://github.com/stefanct/sglib.git
+[submodule "lib/pistache"]
+	path = lib/pistache
+	url = https://github.com/oktal/pistache.git

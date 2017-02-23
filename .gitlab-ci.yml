@@ -44,6 +44,17 @@ build:linuxconnector:
   artifacts:
     paths:
     - build/
+build:restserver:
+  stage: build
+  dependencies:
+    - cmake
+    - build:linuxconnector
+  script:
+    - "cd build/restserver"
+    - "make"
+  artifacts:
+    paths:
+    - build/
 test:RIOTmodule:
   before_script: []
   stage: test

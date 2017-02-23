@@ -62,3 +62,15 @@ else
         echo "------- Already exists"
     fi
 fi
+echo "======= Pistache"
+if [ ! -d "pistache" ]; then
+    echo "------- Using git clone"
+    git clone --depth=1 https://github.com/oktal/pistache.git pistache
+else
+    if [ ! -e "pistache/.git" ]; then
+        echo "------- Using git submodule"
+        git submodule update --init -- pistache
+    else
+        echo "------- Already exists"
+    fi
+fi
