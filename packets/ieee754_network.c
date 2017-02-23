@@ -6,16 +6,15 @@ uint64_t pack754(long double f, unsigned bits, unsigned expbits) {
     long long sign, exp, significand;
     unsigned significandbits = bits - expbits - 1; // -1 for sign bit
 
-    if (f == 0.0) return 0; // get this special case out of the way
-
     // check sign and begin normalization
     if (f < 0) {
         sign = 1;
         fnorm = -f;
-    }
-    else {
+    } else if (f > 0) {
         sign = 0;
         fnorm = f;
+    } else {
+        return 0;
     }
 
     // get the normalized form of f and track the exponent
