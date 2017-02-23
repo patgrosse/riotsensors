@@ -103,47 +103,52 @@ typedef double rs_double_t;
  */
 typedef char *rs_string_t;
 
+
+#ifndef __packed
+#define __packed __attribute__((packed))
+#endif
+
 /*
  * Packet definitions from RIOT to Linux
  */
 
-typedef struct {
+typedef struct __packed {
     rs_packet_type_t ptype;
 } rs_packet_base_t;
 
-typedef struct {
+typedef struct __packed {
     rs_packet_base_t base;
     char name[MAX_LAMBDA_NAME_LENGTH];
     rs_lambda_type_t ltype;
 } rs_packet_registered_t;
 
-typedef struct {
+typedef struct __packed {
     rs_packet_base_t base;
     char name[MAX_LAMBDA_NAME_LENGTH];
 } rs_packet_unregistered_t;
 
-typedef struct {
+typedef struct __packed {
     rs_packet_base_t base;
     lambda_id_t lambda_id;
     char name[MAX_LAMBDA_NAME_LENGTH];
 } rs_packet_lambda_result_t;
 
-typedef struct {
+typedef struct __packed {
     rs_packet_lambda_result_t result_base;
     int8_t error_code;
 } rs_packet_lambda_result_error_t;
 
-typedef struct {
+typedef struct __packed {
     rs_packet_lambda_result_t result_base;
     rs_int_t result;
 } rs_packet_lambda_result_int_t;
 
-typedef struct {
+typedef struct __packed {
     rs_packet_lambda_result_t result_base;
     rs_double_t result;
 } rs_packet_lambda_result_double_t;
 
-typedef struct {
+typedef struct __packed {
     rs_packet_lambda_result_t result_base;
     uint16_t result_length;
     rs_string_t result;
@@ -153,13 +158,13 @@ typedef struct {
  * Packet definitions from Linux to RIOT
  */
 
-typedef struct {
+typedef struct __packed {
     rs_packet_base_t base;
     lambda_id_t lambda_id;
     rs_lambda_type_t expected_type;
 } rs_packet_call_by_id_t;
 
-typedef struct {
+typedef struct __packed {
     rs_packet_base_t base;
     char name[MAX_LAMBDA_NAME_LENGTH];
     rs_lambda_type_t expected_type;
