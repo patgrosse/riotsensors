@@ -73,6 +73,7 @@ int8_t register_lambda(const char *name, lambda_generic_t lambda, rs_lambda_type
     lambda_registry[myid]->type = type;
     lambda_registry[myid]->lambda = lambda;
     lambda_counter++;
+    // TODO send packet
     return myid;
 }
 
@@ -165,6 +166,64 @@ int8_t call_lambda_string_by_name(const char *name, rs_string_t *result) {
     return call_lambda_string(lambda->id, result);
 }
 
+int8_t send_result_lambda_int(const lambda_id_t id, rs_int_t result) {
+    if (id >= MAX_LAMBDAS || lambda_registry[id] == NULL) {
+        return RS_RESULT_NOTFOUND;
+    }
+    if (lambda_registry[id]->type != RS_LAMBDA_INT) {
+        return RS_RESULT_WRONGTYPE;
+    }
+    // TODO send packet
+    return RS_RESULT_SUCCESS;
+}
+
+int8_t send_result_lambda_int_by_name(const char *name, rs_int_t result) {
+    registered_lambda *lambda = get_lambda_by_name(name);
+    if (lambda == NULL) {
+        return RS_RESULT_NOTFOUND;
+    }
+    return send_result_lambda_int(lambda->id, result);
+}
+
+int8_t send_result_lambda_double(const lambda_id_t id, rs_double_t result) {
+    if (id >= MAX_LAMBDAS || lambda_registry[id] == NULL) {
+        return RS_RESULT_NOTFOUND;
+    }
+    if (lambda_registry[id]->type != RS_LAMBDA_DOUBLE) {
+        return RS_RESULT_WRONGTYPE;
+    }
+    // TODO send packet
+    return RS_RESULT_SUCCESS;
+}
+
+int8_t send_result_lambda_double_by_name(const char *name, rs_double_t result) {
+    registered_lambda *lambda = get_lambda_by_name(name);
+    if (lambda == NULL) {
+        return RS_RESULT_NOTFOUND;
+    }
+    return send_result_lambda_double(lambda->id, result);
+}
+
+int8_t send_result_lambda_string(const lambda_id_t id, rs_string_t result) {
+    if (id >= MAX_LAMBDAS || lambda_registry[id] == NULL) {
+        return RS_RESULT_NOTFOUND;
+    }
+    if (lambda_registry[id]->type != RS_LAMBDA_STRING) {
+        return RS_RESULT_WRONGTYPE;
+    }
+    // TODO send packet
+    return RS_RESULT_SUCCESS;
+}
+
+int8_t send_result_lambda_string_by_name(const char *name, rs_string_t result) {
+    registered_lambda *lambda = get_lambda_by_name(name);
+    if (lambda == NULL) {
+        return RS_RESULT_NOTFOUND;
+    }
+    return send_result_lambda_string(lambda->id, result);
+}
+
+
 int8_t unregister_lambda(const lambda_id_t id) {
     if (id >= MAX_LAMBDAS || lambda_registry[id] == NULL) {
         return RS_UNREGISTER_NOTFOUND;
@@ -172,6 +231,7 @@ int8_t unregister_lambda(const lambda_id_t id) {
     free(lambda_registry[id]->name);
     free(lambda_registry[id]);
     lambda_registry[id] = NULL;
+    // TODO send packet
     return RS_UNREGISTER_SUCCESS;
 }
 
@@ -182,4 +242,3 @@ lambda_id_t get_lambda_id_from_name(const char *name) {
     }
     return lambda->id;
 }
-

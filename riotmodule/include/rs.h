@@ -5,7 +5,7 @@
  */
 
 /**
- * @brief   API of riotsensors
+ * @brief   RIOT-OS API of riotsensors
  * @file    rs.h
  * @author  Patrick Grosse <patrick.grosse@uni-muenster.de>
  */
@@ -34,6 +34,13 @@
 #define RS_CALL_NOTFOUND -1
 /** @brief Lambda called with wrong return type */
 #define RS_CALL_WRONGTYPE -2
+
+/** @brief The sending of a result was successfully */
+#define RS_RESULT_SUCCESS 0
+/** @brief Lambda with the given ID was not found */
+#define RS_RESULT_NOTFOUND -1
+/** @brief Result has a wrong return type */
+#define RS_RESULT_WRONGTYPE -2
 
 /** @brief Unregister was successful */
 #define RS_UNREGISTER_SUCCESS 0
@@ -155,6 +162,54 @@ int8_t call_lambda_string(const lambda_id_t id, rs_string_t *result);
  * @see register_lambda_string()
  */
 int8_t call_lambda_string_by_name(const char *name, rs_string_t *result);
+
+/**
+ * Manually send an evaluation result for an integer lambda
+ * @param id The ID of the lambda
+ * @param result The result of the lambda
+ * @return A RS_RESULT_* constant
+ */
+int8_t send_result_lambda_int(const lambda_id_t id, rs_int_t result);
+
+/**
+ * Manually send an evaluation result for an integer lambda
+ * @param name The name of the lambda
+ * @param result The result of the lambda
+ * @return A RS_RESULT_* constant
+ */
+int8_t send_result_lambda_int_by_name(const char *name, rs_int_t result);
+
+/**
+ * Manually send an evaluation result for a double lambda
+ * @param id The ID of the lambda
+ * @param result The result of the lambda
+ * @return A RS_RESULT_* constant
+ */
+int8_t send_result_lambda_double(const lambda_id_t id, rs_double_t result);
+
+/**
+ * Manually send an evaluation result for a double lambda
+ * @param name The name of the lambda
+ * @param result The result of the lambda
+ * @return A RS_RESULT_* constant
+ */
+int8_t send_result_lambda_double_by_name(const char *name, rs_double_t result);
+
+/**
+ * Manually send an evaluation result for a string lambda
+ * @param id The ID of the lambda
+ * @param result The result of the lambda
+ * @return A RS_RESULT_* constant
+ */
+int8_t send_result_lambda_string(const lambda_id_t id, rs_string_t result);
+
+/**
+ * Manually send an evaluation result for a string lambda
+ * @param name The name of the lambda
+ * @param result The result of the lambda
+ * @return A RS_RESULT_* constant
+ */
+int8_t send_result_lambda_string_by_name(const char *name, rs_string_t result);
 
 /**
  * @brief Unregister a lambda
