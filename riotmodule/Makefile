@@ -2,7 +2,7 @@
 # Makefile that is called by RIOT OS's make structure
 # do not execute make here manually
 # ===================================================
-MODULE = riotsensors
+MODULE = riotsensors_module
 
 include $(RIOTBASE)/Makefile.base
 
