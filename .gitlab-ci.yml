@@ -3,6 +3,7 @@ stages:
   - prepare
   - build
   - test
+  - buildServer
   - docs
 #cache:
 #  key: "$CI_BUILD_REF_NAME"
@@ -45,7 +46,7 @@ build:linuxconnector:
     paths:
     - build/
 build:restserver:
-  stage: build
+  stage: buildServer
   dependencies:
     - cmake
     - build:linuxconnector
