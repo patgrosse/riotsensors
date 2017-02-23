@@ -66,15 +66,27 @@ int8_t register_lambda(const char *name, lambda_generic_t lambda, rs_lambda_type
     }
     lambda_registry[myid]->id = myid;
     lambda_registry[myid]->name = malloc(name_len + 1);
-    memcpy(lambda_registry[myid]->name, name, name_len + 1);
+    strcpy(lambda_registry[myid]->name, name);
     if (lambda_registry[myid]->name == NULL) {
         return RS_REGISTER_NOMEM;
     }
     lambda_registry[myid]->type = type;
     lambda_registry[myid]->lambda = lambda;
     lambda_counter++;
+
+    rs_packet_registered_t *pkt = malloc(sizeof(rs_packet_registered_t));
+    pkt->base.ptype = RS_PACKET_REGISTERED;
+    strcpy(pkt->name, name);
+    pkt->ltype = type;
+    hton_rs_packet_registered_t(pkt);
     // TODO send packet
+    free(pkt);
     return myid;
+}
+
+void populate_resultbase_from_lambda(rs_packet_lambda_result_t *base, const registered_lambda *lambda) {
+    base->lambda_id = lambda->id;
+    strcpy(base->name, lambda->name);
 }
 
 void init_lambda_registry() {
@@ -173,7 +185,13 @@ int8_t send_result_lambda_int(const lambda_id_t id, rs_int_t result) {
     if (lambda_registry[id]->type != RS_LAMBDA_INT) {
         return RS_RESULT_WRONGTYPE;
     }
+    rs_packet_lambda_result_int_t *pkt = malloc(sizeof(rs_packet_lambda_result_int_t));
+    pkt->result_base.base.ptype = RS_PACKET_RESULT_INT;
+    populate_resultbase_from_lambda(&pkt->result_base, lambda_registry[id]);
+    pkt->result = result;
+    hton_rs_packet_lambda_result_int_t(pkt);
     // TODO send packet
+    free(pkt);
     return RS_RESULT_SUCCESS;
 }
 
@@ -192,7 +210,13 @@ int8_t send_result_lambda_double(const lambda_id_t id, rs_double_t result) {
     if (lambda_registry[id]->type != RS_LAMBDA_DOUBLE) {
         return RS_RESULT_WRONGTYPE;
     }
+    rs_packet_lambda_result_double_t *pkt = malloc(sizeof(rs_packet_lambda_result_double_t));
+    pkt->result_base.base.ptype = RS_PACKET_RESULT_DOUBLE;
+    populate_resultbase_from_lambda(&pkt->result_base, lambda_registry[id]);
+    pkt->result = result;
+    hton_rs_packet_lambda_result_double_t(pkt);
     // TODO send packet
+    free(pkt);
     return RS_RESULT_SUCCESS;
 }
 
@@ -211,7 +235,13 @@ int8_t send_result_lambda_string(const lambda_id_t id, rs_string_t result) {
     if (lambda_registry[id]->type != RS_LAMBDA_STRING) {
         return RS_RESULT_WRONGTYPE;
     }
+    rs_packet_lambda_result_string_t *pkt = malloc(sizeof(rs_packet_lambda_result_string_t));
+    pkt->result_base.base.ptype = RS_PACKET_RESULT_STRING;
+    populate_resultbase_from_lambda(&pkt->result_base, lambda_registry[id]);
+    pkt->result = result;
+    hton_rs_packet_lambda_result_string_t(pkt);
     // TODO send packet
+    free(pkt);
     return RS_RESULT_SUCCESS;
 }
 
@@ -228,10 +258,17 @@ int8_t unregister_lambda(const lambda_id_t id) {
     if (id >= MAX_LAMBDAS || lambda_registry[id] == NULL) {
         return RS_UNREGISTER_NOTFOUND;
     }
+
+    rs_packet_unregistered_t *pkt = malloc(sizeof(rs_packet_unregistered_t));
+    pkt->base.ptype = RS_PACKET_REGISTERED;
+    strcpy(pkt->name, lambda_registry[id]->name);
+    hton_rs_packet_unregistered_t(pkt);
+    // TODO send packet
+    free(pkt);
+
     free(lambda_registry[id]->name);
     free(lambda_registry[id]);
     lambda_registry[id] = NULL;
-    // TODO send packet
     return RS_UNREGISTER_SUCCESS;
 }
 

@@ -13,6 +13,8 @@
 #ifndef RIOTSENSORS_PACKETS_H
 #define RIOTSENSORS_PACKETS_H
 
+#include <stdint.h>
+
 /** @brief Maximum length of a lambda name */
 #define MAX_LAMBDA_NAME_LENGTH 12
 
@@ -35,23 +37,23 @@
 /**
  * @brief Call a lambda by it's name
  */
-#define RS_PACKET_CALL_BY_NAME 3
+#define RS_PACKET_CALL_BY_NAME 4
 /**
  * @brief Lambda call produced an error
  */
-#define RS_PACKET_RESULT_ERROR 4
+#define RS_PACKET_RESULT_ERROR 5
 /**
  * @brief Integer lambda has been evaluated successfully
  */
-#define RS_PACKET_RESULT_INT 5
+#define RS_PACKET_RESULT_INT 6
 /**
  * @brief Double lambda has been evaluated successfully
  */
-#define RS_PACKET_RESULT_DOUBLE 6
+#define RS_PACKET_RESULT_DOUBLE 7
 /**
  * @brief String lambda has been evaluated successfully
  */
-#define RS_PACKET_RESULT_STRING 7
+#define RS_PACKET_RESULT_STRING 8
 
 /**
  * @brief Identifier of a packet type (RS_PACKET_* constants)
@@ -162,5 +164,55 @@ typedef struct {
     char name[MAX_LAMBDA_NAME_LENGTH];
     rs_lambda_type_t expected_type;
 } rs_packet_call_by_name_t;
+
+/*
+ * network operations - hton
+ * most operations are just for legacy reasons and do not do anything at the moment
+ */
+
+void hton_rs_packet_base_t(rs_packet_base_t *pkt);
+
+void hton_rs_packet_registered_t(rs_packet_registered_t *pkt);
+
+void hton_rs_packet_unregistered_t(rs_packet_unregistered_t *pkt);
+
+void hton_rs_packet_lambda_result_t(rs_packet_lambda_result_t *pkt);
+
+void hton_rs_packet_lambda_result_error_t(rs_packet_lambda_result_error_t *pkt);
+
+void hton_rs_packet_lambda_result_int_t(rs_packet_lambda_result_int_t *pkt);
+
+void hton_rs_packet_lambda_result_double_t(rs_packet_lambda_result_double_t *pkt);
+
+void hton_rs_packet_lambda_result_string_t(rs_packet_lambda_result_string_t *pkt);
+
+void hton_rs_packet_call_by_id_t(rs_packet_call_by_id_t *pkt);
+
+void hton_rs_packet_call_by_name_t(rs_packet_call_by_name_t *pkt);
+
+/*
+ * network operations - ntoh
+ * most operations are just for legacy reasons and do not do anything at the moment
+ */
+
+void ntoh_rs_packet_base_t(rs_packet_base_t *pkt);
+
+void ntoh_rs_packet_registered_t(rs_packet_registered_t *pkt);
+
+void ntoh_rs_packet_unregistered_t(rs_packet_unregistered_t *pkt);
+
+void ntoh_rs_packet_lambda_result_t(rs_packet_lambda_result_t *pkt);
+
+void ntoh_rs_packet_lambda_result_error_t(rs_packet_lambda_result_error_t *pkt);
+
+void ntoh_rs_packet_lambda_result_int_t(rs_packet_lambda_result_int_t *pkt);
+
+void ntoh_rs_packet_lambda_result_double_t(rs_packet_lambda_result_double_t *pkt);
+
+void ntoh_rs_packet_lambda_result_string_t(rs_packet_lambda_result_string_t *pkt);
+
+void ntoh_rs_packet_call_by_id_t(rs_packet_call_by_id_t *pkt);
+
+void ntoh_rs_packet_call_by_name_t(rs_packet_call_by_name_t *pkt);
 
 #endif //RIOTSENSORS_PACKETS_H
