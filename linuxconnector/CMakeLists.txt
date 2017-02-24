@@ -5,6 +5,7 @@ project(riotsensors_linuxconnector)
 # dependencies
 include_directories(${LIB_DIR}/libspt/src/include)
 include_directories(${CMAKE_CURRENT_LIST_DIR}/include)
+include_directories(${CMAKE_CURRENT_LIST_DIR}/../packets/include)
 
 # source files
 file(GLOB C_FILES *.c)
@@ -20,6 +21,7 @@ set(CMAKE_C_STANDARD 99)
 # targets
 add_library(riotsensors_linux ${SOURCE_FILES})
 target_link_libraries(riotsensors_linux riotsensors_packets)
+target_link_libraries(riotsensors_linux libspt)
 
 # tests
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/tests)
