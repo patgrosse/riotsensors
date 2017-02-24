@@ -33,14 +33,26 @@ class RiotsensorsHandler {
 public:
 
     void handleCallById(const Rest::Request &request, Http::ResponseWriter response) {
-        rs_lambda_type_t type = request.param(":type").as<rs_lambda_type_t>();
-        lambda_id_t id = request.param(":id").as<lambda_id_t>();
+        std::string str_type = request.param(":type").as<std::string>();
+        rs_lambda_type_t type = get_lambda_type_from_string(str_type);
+        if (type == 0) {
+            response.send(Http::Code::Bad_Request, "Unknown lambda type\n");
+        }
+        int int_id = request.param(":id").as<int>();
+        if (int_id < 0) {
+            response.send(Http::Code::Bad_Request, "Bad lambda id\n");
+        }
+        lambda_id_t id = (lambda_id_t) int_id;
         call_lambda_by_id(id, type);
         response.send(Http::Code::Ok, "Call by id\n");
     }
 
     void handleCallByName(const Rest::Request &request, Http::ResponseWriter response) {
-        rs_lambda_type_t type = request.param(":type").as<rs_lambda_type_t>();
+        std::string str_type = request.param(":type").as<std::string>();
+        rs_lambda_type_t type = get_lambda_type_from_string(str_type);
+        if (type == 0) {
+            response.send(Http::Code::Bad_Request, "Unknown lambda type\n");
+        }
         std::string name = request.param(":name").as<std::string>();
         call_lambda_by_name(name.c_str(), type);
         response.send(Http::Code::Ok, "Call by name\n");
@@ -76,7 +88,9 @@ int main() {
     Rest::Routes::Get(router, "/list", Rest::Routes::bind(&RiotsensorsHandler::handleList, &handler));
 
     Net::Address addr(Net::Ipv4::any(), Net::Port(9080));
-    auto opts = Net::Http::Endpoint::options().threads(1);
+    auto opts = Net::Http::Endpoint::options();
+    opts.threads(1);
+    opts.flags(Tcp::Options::InstallSignalHandler);
 
     Http::Endpoint server(addr);
     server.init(opts);
