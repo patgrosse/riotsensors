@@ -31,7 +31,7 @@ build:packets:
   dependencies:
     - cmake
   script:
-    - "cd build/riotmodule"
+    - "cd build/packets"
     - "make"
   artifacts:
     paths:
