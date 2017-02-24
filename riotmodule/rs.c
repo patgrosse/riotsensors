@@ -7,6 +7,11 @@
 #include <rs.h>
 #include <memory.h>
 #include <malloc.h>
+#include <unused.h>
+#include <unistd.h>
+#include <serial_io.h>
+#include <spt.h>
+#include <stdio.h>
 
 /**
  * @brief Function header for a generic lambda, internal use only
@@ -36,6 +41,9 @@ registered_lambda *lambda_registry[MAX_LAMBDAS];
  * ID of the next lambda to be registered
  */
 lambda_id_t lambda_counter = 0;
+
+struct serial_io_context rs_sictx;
+struct spt_context rs_sptctx;
 
 registered_lambda *get_lambda_by_name(const char *name) {
     for (lambda_id_t i = 0; i < lambda_counter; i++) {
@@ -87,23 +95,6 @@ int8_t register_lambda(const char *name, lambda_generic_t lambda, rs_lambda_type
 void populate_resultbase_from_lambda(rs_packet_lambda_result_t *base, const registered_lambda *lambda) {
     base->lambda_id = lambda->id;
     strcpy(base->name, lambda->name);
-}
-
-void init_lambda_registry() {
-    for (lambda_id_t i = 0; i < MAX_LAMBDAS; i++) {
-        lambda_registry[i] = NULL;
-    }
-}
-
-void free_lambda_registry() {
-    for (lambda_id_t i = 0; i < lambda_counter; i++) {
-        if (lambda_registry[i] != NULL) {
-            free(lambda_registry[i]->name);
-            free(lambda_registry[i]);
-            lambda_registry[i] = NULL;
-        }
-    }
-    lambda_counter = 0;
 }
 
 int8_t register_lambda_int(const char *name, lambda_int_t lambda) {
@@ -278,4 +269,99 @@ lambda_id_t get_lambda_id_from_name(const char *name) {
         return (lambda_id_t) -1;
     }
     return lambda->id;
+}
+
+void handle_call_lambda(lambda_id_t id, rs_lambda_type_t expected_type) {
+    if (expected_type == RS_LAMBDA_INT) {
+        rs_int_t result;
+        call_lambda_int(id, &result);
+        // TODO answer
+    } else if (expected_type == RS_LAMBDA_DOUBLE) {
+        rs_double_t result;
+        call_lambda_double(id, &result);
+        // TODO answer
+    } else if (expected_type == RS_LAMBDA_STRING) {
+        rs_string_t result;
+        call_lambda_string(id, &result);
+        // TODO answer
+    } else {
+        fprintf(stderr, "Called lambda with id %d but unknown type %d\n", id, expected_type);
+    }
+}
+
+void handle_received_packet(struct spt_context *sptctx, struct serial_data_packet *packet) {
+    UNUSED(sptctx);
+    rs_packet_type_t ptype;
+    if (packet->len < sizeof(ptype)) {
+        fprintf(stderr, "Packet with size %d is too small for packet type detection (min size %d)\n", packet->len,
+                (int) sizeof(ptype));
+        return;
+    }
+    ptype = (rs_packet_type_t) *packet->data;
+    if (ptype == RS_PACKET_CALL_BY_ID) {
+        if (packet->len != sizeof(rs_packet_call_by_id_t)) {
+            fprintf(stderr,
+                    "Packet with size %d has the wrong size for packet type rs_packet_call_by_id_t (size %d)\n",
+                    packet->len,
+                    (int) sizeof(rs_packet_call_by_id_t));
+            return;
+        }
+        rs_packet_call_by_id_t mypkt;
+        memcpy(&mypkt, packet->data, sizeof(rs_packet_call_by_id_t));
+        ntoh_rs_packet_call_by_id_t(&mypkt);
+        handle_call_lambda(mypkt.lambda_id, mypkt.expected_type);
+    } else if (ptype == RS_PACKET_CALL_BY_NAME) {
+        if (packet->len != sizeof(rs_packet_call_by_name_t)) {
+            fprintf(stderr,
+                    "Packet with size %d has the wrong size for packet type rs_packet_call_by_name_t (size %d)\n",
+                    packet->len,
+                    (int) sizeof(rs_packet_call_by_name_t));
+            return;
+        }
+        rs_packet_call_by_name_t mypkt;
+        memcpy(&mypkt, packet->data, sizeof(rs_packet_call_by_name_t));
+        ntoh_rs_packet_call_by_name_t(&mypkt);
+        lambda_id_t id = get_lambda_id_from_name(mypkt.name);
+        if (id == (lambda_id_t) -1) {
+            fprintf(stderr,
+                    "Could not find lambda with name %s from rs_packet_call_by_name_t\n",
+                    mypkt.name);
+            return;
+        }
+        handle_call_lambda(id, mypkt.expected_type);
+    } else {
+        fprintf(stderr,
+                "Received packet of unknown/unprocessable type %d with size %d\n",
+                ptype,
+                packet->len);
+    }
+}
+
+void init_lambda_registry() {
+    for (lambda_id_t i = 0; i < MAX_LAMBDAS; i++) {
+        lambda_registry[i] = NULL;
+    }
+}
+
+void free_lambda_registry() {
+    for (lambda_id_t i = 0; i < lambda_counter; i++) {
+        if (lambda_registry[i] != NULL) {
+            free(lambda_registry[i]->name);
+            free(lambda_registry[i]);
+            lambda_registry[i] = NULL;
+        }
+    }
+    lambda_counter = 0;
+}
+
+void rs_start() {
+    init_lambda_registry();
+    serial_io_context_init(&rs_sictx, STDIN_FILENO, STDOUT_FILENO);
+    spt_init_context(&rs_sptctx, &rs_sictx, handle_received_packet);
+    spt_start(&rs_sptctx);
+}
+
+void rs_stop() {
+    free_lambda_registry();
+    spt_stop(&rs_sptctx);
 }

@@ -14,6 +14,9 @@ add_subdirectory(${LIB_DIR}/googletest/googletest)
 # pistache http server
 add_subdirectory(${LIB_DIR}/pistache)
 
+# libspt
+add_subdirectory(${LIB_DIR}/libspt)
+
 # riotsensors riotmodule and linuxconnector
 project(riotsensors)
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/packets)

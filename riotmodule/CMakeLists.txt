@@ -37,3 +37,4 @@ include_directories(${RIOT_DIR}/cpu/lpc2387/include)
 # targets
 add_library(riotsensors_riot ${SOURCE_FILES})
 target_link_libraries(riotsensors_riot riotsensors_packets)
+target_link_libraries(riotsensors_riot libspt)

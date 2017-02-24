@@ -73,6 +73,16 @@ void init_lambda_registry();
 void free_lambda_registry();
 
 /**
+ * @brief Initialize the internal lambda registry and start packet processing
+ */
+void rs_start();
+
+/**
+ * @brief Unregister all lambdas, stop the packet processing and free the allocated memory
+ */
+void rs_stop();
+
+/**
  * @brief Register an integer lambda
  *
  * @param name Name of the lambda
