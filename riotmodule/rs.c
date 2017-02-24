@@ -12,6 +12,7 @@
 #include <serial_io.h>
 #include <spt.h>
 #include <stdio.h>
+#include <rs_packets.h>
 
 /**
  * @brief Function header for a generic lambda, internal use only
@@ -87,7 +88,10 @@ int8_t register_lambda(const char *name, lambda_generic_t lambda, rs_lambda_type
     strcpy(pkt->name, name);
     pkt->ltype = type;
     hton_rs_packet_registered_t(pkt);
-    // TODO send packet
+    struct serial_data_packet sdpkt;
+    sdpkt.data = (char *) pkt;
+    sdpkt.len = sizeof(*pkt);
+    spt_send_packet(&rs_sptctx, &sdpkt);
     free(pkt);
     return myid;
 }
@@ -181,7 +185,10 @@ int8_t send_result_lambda_int(const lambda_id_t id, rs_int_t result) {
     populate_resultbase_from_lambda(&pkt->result_base, lambda_registry[id]);
     pkt->result = result;
     hton_rs_packet_lambda_result_int_t(pkt);
-    // TODO send packet
+    struct serial_data_packet sdpkt;
+    sdpkt.data = (char *) pkt;
+    sdpkt.len = sizeof(*pkt);
+    spt_send_packet(&rs_sptctx, &sdpkt);
     free(pkt);
     return RS_RESULT_SUCCESS;
 }
@@ -206,7 +213,10 @@ int8_t send_result_lambda_double(const lambda_id_t id, rs_double_t result) {
     populate_resultbase_from_lambda(&pkt->result_base, lambda_registry[id]);
     pkt->result = result;
     hton_rs_packet_lambda_result_double_t(pkt);
-    // TODO send packet
+    struct serial_data_packet sdpkt;
+    sdpkt.data = (char *) pkt;
+    sdpkt.len = sizeof(*pkt);
+    spt_send_packet(&rs_sptctx, &sdpkt);
     free(pkt);
     return RS_RESULT_SUCCESS;
 }
@@ -231,7 +241,10 @@ int8_t send_result_lambda_string(const lambda_id_t id, rs_string_t result) {
     populate_resultbase_from_lambda(&pkt->result_base, lambda_registry[id]);
     pkt->result = result;
     hton_rs_packet_lambda_result_string_t(pkt);
-    // TODO send packet
+    struct serial_data_packet sdpkt;
+    sdpkt.data = (char *) pkt;
+    sdpkt.len = sizeof(*pkt);
+    spt_send_packet(&rs_sptctx, &sdpkt);
     free(pkt);
     return RS_RESULT_SUCCESS;
 }
@@ -254,7 +267,10 @@ int8_t unregister_lambda(const lambda_id_t id) {
     pkt->base.ptype = RS_PACKET_REGISTERED;
     strcpy(pkt->name, lambda_registry[id]->name);
     hton_rs_packet_unregistered_t(pkt);
-    // TODO send packet
+    struct serial_data_packet sdpkt;
+    sdpkt.data = (char *) pkt;
+    sdpkt.len = sizeof(*pkt);
+    spt_send_packet(&rs_sptctx, &sdpkt);
     free(pkt);
 
     free(lambda_registry[id]->name);
@@ -272,21 +288,42 @@ lambda_id_t get_lambda_id_from_name(const char *name) {
 }
 
 void handle_call_lambda(lambda_id_t id, rs_lambda_type_t expected_type) {
+    int8_t call_res;
     if (expected_type == RS_LAMBDA_INT) {
         rs_int_t result;
-        call_lambda_int(id, &result);
-        // TODO answer
+        call_res = call_lambda_int(id, &result);
+        if (call_res == RS_CALL_SUCCESS) {
+            send_result_lambda_int(id, result);
+            return;
+        }
     } else if (expected_type == RS_LAMBDA_DOUBLE) {
         rs_double_t result;
-        call_lambda_double(id, &result);
-        // TODO answer
+        call_res = call_lambda_double(id, &result);
+        if (call_res == RS_CALL_SUCCESS) {
+            send_result_lambda_double(id, result);
+            return;
+        }
     } else if (expected_type == RS_LAMBDA_STRING) {
         rs_string_t result;
-        call_lambda_string(id, &result);
-        // TODO answer
+        call_res = call_lambda_string(id, &result);
+        if (call_res == RS_CALL_SUCCESS) {
+            send_result_lambda_string(id, result);
+            return;
+        }
     } else {
         fprintf(stderr, "Called lambda with id %d but unknown type %d\n", id, expected_type);
+        return;
     }
+    rs_packet_lambda_result_error_t *pkt = malloc(sizeof(rs_packet_lambda_result_error_t));
+    pkt->result_base.lambda_id = id;
+    char *nfname = "unknown";
+    strcpy(pkt->result_base.name, nfname);
+    pkt->error_code = call_res;
+    struct serial_data_packet sdpkt;
+    sdpkt.data = (char *) pkt;
+    sdpkt.len = sizeof(*pkt);
+    spt_send_packet(&rs_sptctx, &sdpkt);
+    free(pkt);
 }
 
 void handle_received_packet(struct spt_context *sptctx, struct serial_data_packet *packet) {
