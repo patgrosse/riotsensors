@@ -1,6 +1,5 @@
 # used commands and flags
 export CC ?= gcc
-export LDFLAGS += -lpthread
 export LD ?= gcc
 export AR ?= ar
 export RM ?= rm
