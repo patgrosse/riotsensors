@@ -45,6 +45,7 @@ lambda_id_t lambda_counter = 0;
 
 struct serial_io_context rs_sictx;
 struct spt_context rs_sptctx;
+bool rs_spt_started = false;
 
 registered_lambda *get_lambda_by_name(const char *name) {
     for (lambda_id_t i = 0; i < lambda_counter; i++) {
@@ -83,16 +84,18 @@ int8_t register_lambda(const char *name, lambda_generic_t lambda, rs_lambda_type
     lambda_registry[myid]->lambda = lambda;
     lambda_counter++;
 
-    rs_packet_registered_t *pkt = malloc(sizeof(rs_packet_registered_t));
-    pkt->base.ptype = RS_PACKET_REGISTERED;
-    strcpy(pkt->name, name);
-    pkt->ltype = type;
-    hton_rs_packet_registered_t(pkt);
-    struct serial_data_packet sdpkt;
-    sdpkt.data = (char *) pkt;
-    sdpkt.len = sizeof(*pkt);
-    spt_send_packet(&rs_sptctx, &sdpkt);
-    free(pkt);
+    if (rs_spt_started) {
+        rs_packet_registered_t *pkt = malloc(sizeof(rs_packet_registered_t));
+        pkt->base.ptype = RS_PACKET_REGISTERED;
+        strcpy(pkt->name, name);
+        pkt->ltype = type;
+        hton_rs_packet_registered_t(pkt);
+        struct serial_data_packet sdpkt;
+        sdpkt.data = (char *) pkt;
+        sdpkt.len = sizeof(*pkt);
+        spt_send_packet(&rs_sptctx, &sdpkt);
+        free(pkt);
+    }
     return myid;
 }
 
@@ -180,16 +183,18 @@ int8_t send_result_lambda_int(const lambda_id_t id, rs_int_t result) {
     if (lambda_registry[id]->type != RS_LAMBDA_INT) {
         return RS_RESULT_WRONGTYPE;
     }
-    rs_packet_lambda_result_int_t *pkt = malloc(sizeof(rs_packet_lambda_result_int_t));
-    pkt->result_base.base.ptype = RS_PACKET_RESULT_INT;
-    populate_resultbase_from_lambda(&pkt->result_base, lambda_registry[id]);
-    pkt->result = result;
-    hton_rs_packet_lambda_result_int_t(pkt);
-    struct serial_data_packet sdpkt;
-    sdpkt.data = (char *) pkt;
-    sdpkt.len = sizeof(*pkt);
-    spt_send_packet(&rs_sptctx, &sdpkt);
-    free(pkt);
+    if (rs_spt_started) {
+        rs_packet_lambda_result_int_t *pkt = malloc(sizeof(rs_packet_lambda_result_int_t));
+        pkt->result_base.base.ptype = RS_PACKET_RESULT_INT;
+        populate_resultbase_from_lambda(&pkt->result_base, lambda_registry[id]);
+        pkt->result = result;
+        hton_rs_packet_lambda_result_int_t(pkt);
+        struct serial_data_packet sdpkt;
+        sdpkt.data = (char *) pkt;
+        sdpkt.len = sizeof(*pkt);
+        spt_send_packet(&rs_sptctx, &sdpkt);
+        free(pkt);
+    }
     return RS_RESULT_SUCCESS;
 }
 
@@ -208,16 +213,18 @@ int8_t send_result_lambda_double(const lambda_id_t id, rs_double_t result) {
     if (lambda_registry[id]->type != RS_LAMBDA_DOUBLE) {
         return RS_RESULT_WRONGTYPE;
     }
-    rs_packet_lambda_result_double_t *pkt = malloc(sizeof(rs_packet_lambda_result_double_t));
-    pkt->result_base.base.ptype = RS_PACKET_RESULT_DOUBLE;
-    populate_resultbase_from_lambda(&pkt->result_base, lambda_registry[id]);
-    pkt->result = result;
-    hton_rs_packet_lambda_result_double_t(pkt);
-    struct serial_data_packet sdpkt;
-    sdpkt.data = (char *) pkt;
-    sdpkt.len = sizeof(*pkt);
-    spt_send_packet(&rs_sptctx, &sdpkt);
-    free(pkt);
+    if (rs_spt_started) {
+        rs_packet_lambda_result_double_t *pkt = malloc(sizeof(rs_packet_lambda_result_double_t));
+        pkt->result_base.base.ptype = RS_PACKET_RESULT_DOUBLE;
+        populate_resultbase_from_lambda(&pkt->result_base, lambda_registry[id]);
+        pkt->result = result;
+        hton_rs_packet_lambda_result_double_t(pkt);
+        struct serial_data_packet sdpkt;
+        sdpkt.data = (char *) pkt;
+        sdpkt.len = sizeof(*pkt);
+        spt_send_packet(&rs_sptctx, &sdpkt);
+        free(pkt);
+    }
     return RS_RESULT_SUCCESS;
 }
 
@@ -236,16 +243,18 @@ int8_t send_result_lambda_string(const lambda_id_t id, rs_string_t result) {
     if (lambda_registry[id]->type != RS_LAMBDA_STRING) {
         return RS_RESULT_WRONGTYPE;
     }
-    rs_packet_lambda_result_string_t *pkt = malloc(sizeof(rs_packet_lambda_result_string_t));
-    pkt->result_base.base.ptype = RS_PACKET_RESULT_STRING;
-    populate_resultbase_from_lambda(&pkt->result_base, lambda_registry[id]);
-    pkt->result = result;
-    hton_rs_packet_lambda_result_string_t(pkt);
-    struct serial_data_packet sdpkt;
-    sdpkt.data = (char *) pkt;
-    sdpkt.len = sizeof(*pkt);
-    spt_send_packet(&rs_sptctx, &sdpkt);
-    free(pkt);
+    if (rs_spt_started) {
+        rs_packet_lambda_result_string_t *pkt = malloc(sizeof(rs_packet_lambda_result_string_t));
+        pkt->result_base.base.ptype = RS_PACKET_RESULT_STRING;
+        populate_resultbase_from_lambda(&pkt->result_base, lambda_registry[id]);
+        pkt->result = result;
+        hton_rs_packet_lambda_result_string_t(pkt);
+        struct serial_data_packet sdpkt;
+        sdpkt.data = (char *) pkt;
+        sdpkt.len = sizeof(*pkt);
+        spt_send_packet(&rs_sptctx, &sdpkt);
+        free(pkt);
+    }
     return RS_RESULT_SUCCESS;
 }
 
@@ -263,15 +272,17 @@ int8_t unregister_lambda(const lambda_id_t id) {
         return RS_UNREGISTER_NOTFOUND;
     }
 
-    rs_packet_unregistered_t *pkt = malloc(sizeof(rs_packet_unregistered_t));
-    pkt->base.ptype = RS_PACKET_REGISTERED;
-    strcpy(pkt->name, lambda_registry[id]->name);
-    hton_rs_packet_unregistered_t(pkt);
-    struct serial_data_packet sdpkt;
-    sdpkt.data = (char *) pkt;
-    sdpkt.len = sizeof(*pkt);
-    spt_send_packet(&rs_sptctx, &sdpkt);
-    free(pkt);
+    if (rs_spt_started) {
+        rs_packet_unregistered_t *pkt = malloc(sizeof(rs_packet_unregistered_t));
+        pkt->base.ptype = RS_PACKET_REGISTERED;
+        strcpy(pkt->name, lambda_registry[id]->name);
+        hton_rs_packet_unregistered_t(pkt);
+        struct serial_data_packet sdpkt;
+        sdpkt.data = (char *) pkt;
+        sdpkt.len = sizeof(*pkt);
+        spt_send_packet(&rs_sptctx, &sdpkt);
+        free(pkt);
+    }
 
     free(lambda_registry[id]->name);
     free(lambda_registry[id]);
@@ -314,16 +325,18 @@ void handle_call_lambda(lambda_id_t id, rs_lambda_type_t expected_type) {
         fprintf(stderr, "Called lambda with id %d but unknown type %d\n", id, expected_type);
         return;
     }
-    rs_packet_lambda_result_error_t *pkt = malloc(sizeof(rs_packet_lambda_result_error_t));
-    pkt->result_base.lambda_id = id;
-    char *nfname = "unknown";
-    strcpy(pkt->result_base.name, nfname);
-    pkt->error_code = call_res;
-    struct serial_data_packet sdpkt;
-    sdpkt.data = (char *) pkt;
-    sdpkt.len = sizeof(*pkt);
-    spt_send_packet(&rs_sptctx, &sdpkt);
-    free(pkt);
+    if (rs_spt_started) {
+        rs_packet_lambda_result_error_t *pkt = malloc(sizeof(rs_packet_lambda_result_error_t));
+        pkt->result_base.lambda_id = id;
+        char *nfname = "unknown";
+        strcpy(pkt->result_base.name, nfname);
+        pkt->error_code = call_res;
+        struct serial_data_packet sdpkt;
+        sdpkt.data = (char *) pkt;
+        sdpkt.len = sizeof(*pkt);
+        spt_send_packet(&rs_sptctx, &sdpkt);
+        free(pkt);
+    }
 }
 
 void handle_received_packet(struct spt_context *sptctx, struct serial_data_packet *packet) {
@@ -396,9 +409,11 @@ void rs_start() {
     serial_io_context_init(&rs_sictx, STDIN_FILENO, STDOUT_FILENO);
     spt_init_context(&rs_sptctx, &rs_sictx, handle_received_packet);
     spt_start(&rs_sptctx);
+    rs_spt_started = true;
 }
 
 void rs_stop() {
+    rs_spt_started = false;
     free_lambda_registry();
     spt_stop(&rs_sptctx);
 }
