@@ -1,6 +1,7 @@
 image: rikorose/gcc-cmake
 stages:
   - prepare
+  - cmake
   - buildPackets
   - build
   - test
@@ -16,9 +17,17 @@ before_script:
   - ssh-add <(echo "$SSH_PRIVATE_KEY")
   - mkdir -p ~/.ssh
   - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
-  - "./prebuild.sh"
-cmake:
+getlibs:
   stage: prepare
+  script:
+    - "./prebuild.sh"
+  artifacts:
+    paths:
+    - lib/
+cmake:
+  stage: cmake
+  dependencies:
+    - getlibs
   script:
     - "mkdir -p build"
     - "cd build"
@@ -26,11 +35,11 @@ cmake:
   artifacts:
     paths:
     - build/
-    - lib/
 build:packets:
   stage: buildPackets
   dependencies:
     - cmake
+    - getlibs
   script:
     - "cd build/packets"
     - "make"
@@ -40,6 +49,7 @@ build:packets:
 build:RIOTmodule:
   stage: build
   dependencies:
+    - getlibs
     - build:packets
   script:
     - "cd build/riotmodule"
@@ -50,6 +60,7 @@ build:RIOTmodule:
 build:linuxconnector:
   stage: build
   dependencies:
+    - getlibs
     - build:packets
   script:
     - "cd build/linuxconnector"
@@ -60,6 +71,7 @@ build:linuxconnector:
 build:restserver:
   stage: buildServer
   dependencies:
+    - getlibs
     - build:linuxconnector
   script:
     - "cd build/restserver"
@@ -68,7 +80,6 @@ build:restserver:
     paths:
     - build/
 test:packets:
-  before_script: []
   stage: test
   dependencies:
     - build:packets
@@ -76,7 +87,6 @@ test:packets:
     - "cd build/packets/tests"
     - "./packets_tests"
 test:RIOTmodule:
-  before_script: []
   stage: test
   dependencies:
     - build:RIOTmodule
@@ -84,7 +94,6 @@ test:RIOTmodule:
     - "cd build/riotmodule/tests"
     - "./riot_tests"
 test:linuxconnector:
-  before_script: []
   stage: test
   dependencies:
     - build:linuxconnector
@@ -92,7 +101,6 @@ test:linuxconnector:
     - "cd build/linuxconnector/tests"
     - "./linux_tests"
 doxygenDocs:
-  before_script: []
   stage: docs
   image: iimuz/doxygen
   when: always
