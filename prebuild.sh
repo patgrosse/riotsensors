@@ -14,18 +14,25 @@ else
     fi
 fi
 echo "======= ARM Toolchain"
-if [ ! -d "gcc-arm-none-eabi-6_2-2016q4" ]; then
-    TAR_FILE=gcc-arm-none-eabi-6_2-2016q4-20161216-linux.tar.bz2
-    echo "------- Download and unpack"
-    if ! [ -f ${TAR_FILE} ]; then
-        wget https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/6-2016q4/${TAR_FILE}
+if ! type "arm-none-eabi-gcc" &> /dev/null; then
+    echo "------- Command not found in path"
+    if [ ! -d "gcc-arm-none-eabi-6_2-2016q4" ]; then
+        TAR_FILE=gcc-arm-none-eabi-6_2-2016q4-20161216-linux.tar.bz2
+        echo "------- Download and unpack"
+        if ! [ -f ${TAR_FILE} ]; then
+            wget https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/6-2016q4/${TAR_FILE}
+        fi
+        tar xjf ${TAR_FILE}
+    else
+        echo "------- Already exists"
     fi
-    tar xjf ${TAR_FILE}
+    echo "------- Version check"
+    gcc-arm-none-eabi-6_2-2016q4/bin/arm-none-eabi-gcc --version
 else
-    echo "------- Already exists"
+    echo "------- Command found in path"
+    echo "------- Version check"
+    arm-none-eabi-gcc --version
 fi
-echo "------- Version check"
-gcc-arm-none-eabi-6_2-2016q4/bin/arm-none-eabi-gcc --version
 echo "======= RIOT OS"
 if [ ! -d "RIOT" ]; then
     echo "------- Using git clone"

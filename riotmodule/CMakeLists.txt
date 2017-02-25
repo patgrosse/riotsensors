@@ -24,7 +24,14 @@ set(SOURCE_FILES ${C_FILES} ${H_FILES})
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/tests)
 
 # compiler flags etc
-set(CMAKE_C_COMPILER "${LIB_DIR}/gcc-arm-none-eabi-6_2-2016q4/bin/arm-none-eabi-gcc")
+find_program(arm-none-eabi-gcc arm-none-eabi-gcc)
+if (${arm-none-eabi-gcc} STREQUAL "arm-none-eabi-gcc-NOTFOUND")
+    message("Using downloaded arm-none-eabi-gcc")
+    set(CMAKE_C_COMPILER "${LIB_DIR}/gcc-arm-none-eabi-6_2-2016q4/bin/arm-none-eabi-gcc")
+else ()
+    message("Using pre-installed arm-none-eabi-gcc")
+    set(CMAKE_C_COMPILER ${arm-none-eabi-gcc})
+endif ()
 set(CMAKE_C_STANDARD 99)
 
 # RIOT OS includes
