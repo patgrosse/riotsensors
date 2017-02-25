@@ -26,6 +26,7 @@ cmake:
   artifacts:
     paths:
     - build/
+    - lib/
 build:packets:
   stage: buildPackets
   dependencies:
@@ -36,6 +37,7 @@ build:packets:
   artifacts:
     paths:
     - build/
+    - lib/
 build:RIOTmodule:
   stage: build
   dependencies:
@@ -46,6 +48,7 @@ build:RIOTmodule:
   artifacts:
     paths:
     - build/
+    - lib/
 build:linuxconnector:
   stage: build
   dependencies:
@@ -56,6 +59,7 @@ build:linuxconnector:
   artifacts:
     paths:
     - build/
+    - lib/
 build:restserver:
   stage: buildServer
   dependencies:
@@ -66,6 +70,7 @@ build:restserver:
   artifacts:
     paths:
     - build/
+    - lib/
 test:packets:
   before_script: []
   stage: test
