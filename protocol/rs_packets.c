@@ -8,6 +8,8 @@
 #include <netinet/in.h>
 #include <ieee754_network.h>
 #include <rs_packets.h>
+#include <values.h>
+#include <stddef.h>
 
 void htons_w(uint16_t *in) {
     *in = htons(*in);
@@ -99,5 +101,35 @@ void ntoh_rs_packet_call_by_id_t(rs_packet_call_by_id_t *pkt) {
 
 void ntoh_rs_packet_call_by_name_t(rs_packet_call_by_name_t *pkt) {
     ntoh_rs_packet_base_t(&pkt->base);
+}
+
+const char *stringify_rs_packet_type_t(rs_packet_type_t c) {
+    static const char *strings[] = {NULL, "RS_PACKET_REGISTERED", "RS_PACKET_UNREGISTERED", "RS_PACKET_CALL_BY_ID",
+                                    "RS_PACKET_CALL_BY_NAME", "RS_PACKET_RESULT_ERROR", "RS_PACKET_RESULT_INT",
+                                    "RS_PACKET_RESULT_DOUBLE", "RS_PACKET_RESULT_STRING"};
+    if (c < 1 || c > 8) {
+        return NULL;
+    } else {
+        return strings[c];
+    }
+}
+
+const char *stringify_rs_lambda_type_t(rs_lambda_type_t c) {
+    static const char *strings[] = {NULL, "RS_LAMBDA_INT", "RS_LAMBDA_DOUBLE", "RS_LAMBDA_STRING"};
+    if (c < 1 || c > 3) {
+        return NULL;
+    } else {
+        return strings[c];
+    }
+}
+
+const char *stringify_rs_cache_type_t(rs_cache_type_t c) {
+    static const char *strings[] = {NULL, "RS_CACHE_NO_CACHE", "RS_CACHE_CALL_ONCE", "RS_CACHE_ONLY",
+                                    "RS_CACHE_ON_TIMEOUT"};
+    if (c < 1 || c > 4) {
+        return NULL;
+    } else {
+        return strings[c];
+    }
 }
 

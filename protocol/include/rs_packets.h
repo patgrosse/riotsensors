@@ -58,6 +58,13 @@
  */
 typedef uint8_t rs_packet_type_t;
 
+/**
+ * Get a human readable string for a packet type
+ * @param c Packet type
+ * @return A string or NULL
+ */
+const char *stringify_rs_packet_type_t(rs_packet_type_t c);
+
 /*
  * Type identifier
  */
@@ -79,6 +86,13 @@ typedef uint8_t rs_packet_type_t;
  * @brief Identifier of a lambda (return) type (RS_LAMBDA_* constants)
  */
 typedef uint8_t rs_lambda_type_t;
+
+/**
+ * Get a human readable string for a lambda type
+ * @param c Lambda type
+ * @return A string or NULL
+ */
+const char *stringify_rs_lambda_type_t(rs_lambda_type_t c);
 
 /*
  * Cache policies
@@ -105,6 +119,13 @@ typedef uint8_t rs_lambda_type_t;
  * @brief Identifier of a lambda cache policy (RS_CACHE_* constants)
  */
 typedef uint8_t rs_cache_type_t;
+
+/**
+ * Get a human readable string for a cache type
+ * @param c Cache type
+ * @return A string or NULL
+ */
+const char *stringify_rs_cache_type_t(rs_cache_type_t c);
 
 /*
  * Internal types

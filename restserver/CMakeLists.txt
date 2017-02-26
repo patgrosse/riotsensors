@@ -7,6 +7,7 @@ include_directories(${LIB_DIR}/pistache/include)
 include_directories(${CMAKE_CURRENT_LIST_DIR}/include)
 include_directories(${CMAKE_CURRENT_LIST_DIR}/../protocol/include)
 include_directories(${CMAKE_CURRENT_LIST_DIR}/../linuxconnector/include)
+include_directories(${LIB_DIR}/rapidjson/include)
 
 # source files
 file(GLOB C_FILES *.cpp)

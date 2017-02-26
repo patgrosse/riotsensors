@@ -4,14 +4,11 @@
  *  Copyright (C) 2017 Patrick Grosse <patrick.grosse@uni-muenster.de>
  */
 
-#include "riotsensors_server.h"
+#include "rs_server.h"
 #include <endpoint.h>
 #include <router.h>
 #include <signal.h>
-
-extern "C" {
-#include <rs_connector.h>
-}
+#include <rs_rest.h>
 
 using namespace Net;
 
@@ -46,18 +43,20 @@ public:
         lambda_id_t id = (lambda_id_t) int_id;
         generic_lambda_return result;
         int8_t res = call_lambda_by_id(id, type, &result);
+        auto m1 = MIME(Application, Json);
+        response.setMime(m1);
+        rs_registered_lambda *lambda = get_registered_lambda_by_id(id);
         if (res == RS_CALL_SUCCESS) {
-            printf("result was %d\n", result.ret_i);
-            response.send(Http::Code::Ok, "Call by id: success\n");
+            response.send(Http::Code::Ok,
+                          assemble_call_success_rest(lambda, false, false, &result));
         } else if (res == RS_CALL_CACHE) {
-            printf("result was %d\n", result.ret_i);
-            response.send(Http::Code::Ok, "Call by id: cache\n");
+            response.send(Http::Code::Ok,
+                          assemble_call_success_rest(lambda, true, false, &result));
         } else if (res == RS_CALL_CACHE_TIMEOUT) {
-            printf("result was %d\n", result.ret_i);
-            response.send(Http::Code::Ok, "Call by id: cache after timeout\n");
+            response.send(Http::Code::Ok,
+                          assemble_call_success_rest(lambda, true, true, &result));
         } else {
-            printf("error is %d\n", res);
-            response.send(Http::Code::Ok, "ERROR\n");
+            response.send(Http::Code::Internal_Server_Error, assemble_call_error_rest_id(id, lambda, res));
         }
     }
 
@@ -70,18 +69,20 @@ public:
         std::string name = request.param(":name").as<std::string>();
         generic_lambda_return result;
         int8_t res = call_lambda_by_name(name.c_str(), type, &result);
+        auto m1 = MIME(Application, Json);
+        response.setMime(m1);
+        rs_registered_lambda *lambda = get_registered_lambda_by_name(name.c_str());
         if (res == RS_CALL_SUCCESS) {
-            printf("result was %d\n", result.ret_i);
-            response.send(Http::Code::Ok, "Call by id: success\n");
+            response.send(Http::Code::Ok,
+                          assemble_call_success_rest(lambda, false, false, &result));
         } else if (res == RS_CALL_CACHE) {
-            printf("result was %d\n", result.ret_i);
-            response.send(Http::Code::Ok, "Call by id: cache\n");
+            response.send(Http::Code::Ok,
+                          assemble_call_success_rest(lambda, true, false, &result));
         } else if (res == RS_CALL_CACHE_TIMEOUT) {
-            printf("result was %d\n", result.ret_i);
-            response.send(Http::Code::Ok, "Call by id: cache after timeout\n");
+            response.send(Http::Code::Ok,
+                          assemble_call_success_rest(lambda, true, true, &result));
         } else {
-            printf("error is %d\n", res);
-            response.send(Http::Code::Ok, "ERROR\n");
+            response.send(Http::Code::Internal_Server_Error, assemble_call_error_rest_name(name, lambda, res));
         }
     }
 

@@ -15,6 +15,7 @@ add_subdirectory(${LIB_DIR}/googletest/googletest)
 add_subdirectory(${LIB_DIR}/rapidjson)
 
 # pistache http server
+include_directories(${LIB_DIR}/rapidjson/include)
 add_subdirectory(${LIB_DIR}/pistache)
 
 # libspt
