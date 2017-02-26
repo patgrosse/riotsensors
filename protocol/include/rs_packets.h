@@ -14,9 +14,7 @@
 #define RIOTSENSORS_PACKETS_H
 
 #include <stdint.h>
-
-/** @brief Maximum length of a lambda name */
-#define MAX_LAMBDA_NAME_LENGTH 12
+#include <rs_constants.h>
 
 /*
  * Packet identifier
@@ -124,6 +122,7 @@ typedef struct __packed {
 
 typedef struct __packed {
     rs_packet_base_t base;
+    lambda_id_t lambda_id;
     char name[MAX_LAMBDA_NAME_LENGTH];
 } rs_packet_unregistered_t;
 

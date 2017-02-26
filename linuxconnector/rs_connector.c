@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <memory.h>
+#include <pthread.h>
 
 #include <serial_io.h>
 #include <spt.h>
@@ -17,19 +18,152 @@
 #include <spt_logger.h>
 #include <tty_utils.h>
 #include <rs_packets.h>
+#include <lambda_registry.h>
+#include <errno.h>
+#include <time.h>
 
 struct serial_io_context linux_sictx;
 struct spt_context linux_sptctx;
 
+pthread_mutex_t accessing_registry = PTHREAD_MUTEX_INITIALIZER;
+
+typedef struct {
+    pthread_cond_t wait_result;
+    union {
+        rs_int_t ret_i;
+        rs_double_t ret_d;
+        rs_string_t ret_s;
+    } ret;
+} rs_linux_registered_lambda;
+
 void handle_received_packet(struct spt_context *sptctx, struct serial_data_packet *packet) {
+    UNUSED(sptctx);
     if (sptctx->log_in_line) {
         putchar('\n');
     }
-    log_msg("packet", "Received packet with length %d\n", packet->len);
-    char packetdatabuf[packet->len + 1];
-    memcpy(packetdatabuf, packet->data, packet->len);
-    packetdatabuf[packet->len] = '\0';
-    log_msg("packet", "Data of packet is %s\n", packetdatabuf);
+    rs_packet_type_t ptype;
+    if (packet->len < sizeof(ptype)) {
+        fprintf(stderr, "Packet with size %d is too small for packet type detection (min size %d)\n", packet->len,
+                (int) sizeof(ptype));
+    } else {
+        ptype = (rs_packet_type_t) *packet->data;
+        if (ptype == RS_PACKET_REGISTERED) {
+            if (packet->len != sizeof(rs_packet_registered_t)) {
+                fprintf(stderr,
+                        "Packet with size %d has the wrong size for packet type rs_packet_registered_t (size %d)\n",
+                        packet->len,
+                        (int) sizeof(rs_packet_registered_t));
+            } else {
+                rs_packet_registered_t mypkt;
+                memcpy(&mypkt, packet->data, sizeof(rs_packet_registered_t));
+                ntoh_rs_packet_registered_t(&mypkt);
+                rs_linux_registered_lambda *arg = malloc(sizeof(rs_linux_registered_lambda));
+                pthread_cond_init(&arg->wait_result, NULL);
+                int8_t res = lambda_registry_register(mypkt.name, mypkt.ltype, arg);
+                if (res < 0) {
+                    fprintf(stderr, "Error while registering lambda with name %s and type %d: code %d\n", mypkt.name,
+                            mypkt.ltype, res);
+                } else {
+                    log_msg("packet", "Registered lambda with name %s and type %d: id %d\n", mypkt.name,
+                            mypkt.ltype, res);
+                }
+            }
+        } else if (ptype == RS_PACKET_UNREGISTERED) {
+            if (packet->len != sizeof(rs_packet_unregistered_t)) {
+                fprintf(stderr,
+                        "Packet with size %d has the wrong size for packet type rs_packet_unregistered_t (size %d)\n",
+                        packet->len,
+                        (int) sizeof(rs_packet_unregistered_t));
+            } else {
+                rs_packet_unregistered_t mypkt;
+                memcpy(&mypkt, packet->data, sizeof(rs_packet_unregistered_t));
+                ntoh_rs_packet_unregistered_t(&mypkt);
+                rs_registered_lambda *lambda = get_registered_lambda_by_id(mypkt.lambda_id);
+                if (lambda == NULL) {
+                    fprintf(stderr, "Error while unregistering packet with id %d: lambda unknown\n", mypkt.lambda_id);
+                } else {
+                    rs_linux_registered_lambda *arg = lambda->arg;
+                    pthread_cond_destroy(&arg->wait_result);
+                    int8_t res = lambda_registry_unregister(mypkt.lambda_id);
+                    if (res == RS_UNREGISTER_SUCCESS) {
+                        log_msg("packet", "Unregistered lambda with id %d\n", mypkt.lambda_id);
+                    } else {
+                        fprintf(stderr, "Error while unregistering packet with id %d: code %d\n", mypkt.lambda_id, res);
+                    }
+                }
+            }
+        } else if (ptype == RS_PACKET_RESULT_INT) {
+            if (packet->len != sizeof(rs_packet_lambda_result_int_t)) {
+                fprintf(stderr,
+                        "Packet with size %d has the wrong size for packet type rs_packet_lambda_result_int_t (size %d)\n",
+                        packet->len,
+                        (int) sizeof(rs_packet_lambda_result_int_t));
+            } else {
+                rs_packet_lambda_result_int_t mypkt;
+                memcpy(&mypkt, packet->data, sizeof(rs_packet_lambda_result_int_t));
+                ntoh_rs_packet_lambda_result_int_t(&mypkt);
+                rs_registered_lambda *lambda = get_registered_lambda_by_id(mypkt.result_base.lambda_id);
+                if (lambda == NULL) {
+                    fprintf(stderr, "Error while processing int result packet of lambda with id %d: lambda unknown\n",
+                            mypkt.result_base.lambda_id);
+                } else {
+                    rs_linux_registered_lambda *arg = lambda->arg;
+                    arg->ret.ret_i = mypkt.result;
+                    pthread_cond_broadcast(&arg->wait_result);
+                    log_msg("packet", "Received int result of lambda with id %d\n", mypkt.result_base.lambda_id);
+                }
+            }
+        } else if (ptype == RS_PACKET_RESULT_DOUBLE) {
+            if (packet->len != sizeof(rs_packet_lambda_result_double_t)) {
+                fprintf(stderr,
+                        "Packet with size %d has the wrong size for packet type rs_packet_lambda_result_double_t (size %d)\n",
+                        packet->len,
+                        (int) sizeof(rs_packet_lambda_result_double_t));
+            } else {
+                rs_packet_lambda_result_double_t mypkt;
+                memcpy(&mypkt, packet->data, sizeof(rs_packet_lambda_result_double_t));
+                ntoh_rs_packet_lambda_result_double_t(&mypkt);
+                rs_registered_lambda *lambda = get_registered_lambda_by_id(mypkt.result_base.lambda_id);
+                if (lambda == NULL) {
+                    fprintf(stderr,
+                            "Error while processing double result packet of lambda with id %d: lambda unknown\n",
+                            mypkt.result_base.lambda_id);
+                } else {
+                    rs_linux_registered_lambda *arg = lambda->arg;
+                    arg->ret.ret_d = mypkt.result;
+                    pthread_cond_broadcast(&arg->wait_result);
+                    log_msg("packet", "Received double result of lambda with id %d\n", mypkt.result_base.lambda_id);
+                }
+            }
+        } else if (ptype == RS_PACKET_RESULT_STRING) {
+            if (packet->len != sizeof(rs_packet_lambda_result_string_t)) {
+                fprintf(stderr,
+                        "Packet with size %d has the wrong size for packet type rs_packet_lambda_result_string_t (size %d)\n",
+                        packet->len,
+                        (int) sizeof(rs_packet_lambda_result_string_t));
+            } else {
+                rs_packet_lambda_result_string_t mypkt;
+                memcpy(&mypkt, packet->data, sizeof(rs_packet_lambda_result_string_t));
+                ntoh_rs_packet_lambda_result_string_t(&mypkt);
+                rs_registered_lambda *lambda = get_registered_lambda_by_id(mypkt.result_base.lambda_id);
+                if (lambda == NULL) {
+                    fprintf(stderr,
+                            "Error while processing string result packet of lambda with id %d: lambda unknown\n",
+                            mypkt.result_base.lambda_id);
+                } else {
+                    rs_linux_registered_lambda *arg = lambda->arg;
+                    arg->ret.ret_s = mypkt.result;
+                    pthread_cond_broadcast(&arg->wait_result);
+                    log_msg("packet", "Received string result of lambda with id %d\n", mypkt.result_base.lambda_id);
+                }
+            }
+        } else {
+            fprintf(stderr,
+                    "Received packet of unknown/unprocessable type %d with size %d\n",
+                    ptype,
+                    packet->len);
+        }
+    }
     if (sptctx->log_in_line) {
         log_msg("data", "");
     }
@@ -43,6 +177,7 @@ int rs_linux_start(const char *serial_file) {
     if (init_serial_connection(serialfd) != 0) {
         return -1;
     }
+    init_lambda_registry();
     serial_io_context_init(&linux_sictx, serialfd, serialfd);
     spt_init_context(&linux_sptctx, &linux_sictx, handle_received_packet);
     log_msg("main", "Starting SPT...\n");
@@ -52,10 +187,42 @@ int rs_linux_start(const char *serial_file) {
 
 int rs_linux_stop() {
     spt_stop(&linux_sptctx);
+    free_lambda_registry();
     return 0;
 }
 
-void call_lambda_by_id(lambda_id_t id, rs_lambda_type_t expected_type) {
+int8_t wait_lambda_result(rs_registered_lambda *lambda, rs_lambda_type_t expected_type, void *result) {
+    rs_linux_registered_lambda *arg = lambda->arg;
+    struct timespec spec;
+    clock_gettime(CLOCK_REALTIME, &spec);
+    spec.tv_sec += 1;
+    if (pthread_cond_timedwait(&arg->wait_result, &accessing_registry, &spec) == ETIMEDOUT) {
+        pthread_mutex_unlock(&accessing_registry);
+        return RS_CALL_TIMEOUT;
+    }
+    if (expected_type == RS_LAMBDA_INT) {
+        memcpy(result, &arg->ret.ret_i, sizeof(arg->ret.ret_i));
+    } else if (expected_type == RS_LAMBDA_DOUBLE) {
+        memcpy(result, &arg->ret.ret_d, sizeof(arg->ret.ret_d));
+    } else if (expected_type == RS_LAMBDA_STRING) {
+        memcpy(result, &arg->ret.ret_s, sizeof(arg->ret.ret_s));
+    }
+    pthread_mutex_unlock(&accessing_registry);
+    return RS_CALL_SUCCESS;
+}
+
+int8_t call_lambda_by_id(lambda_id_t id, rs_lambda_type_t expected_type, void *result) {
+    UNUSED(result);
+    pthread_mutex_lock(&accessing_registry);
+    rs_registered_lambda *lambda = get_registered_lambda_by_id(id);
+    if (lambda == NULL) {
+        pthread_mutex_unlock(&accessing_registry);
+        return RS_CALL_NOTFOUND;
+    }
+    if (lambda->type != expected_type) {
+        pthread_mutex_unlock(&accessing_registry);
+        return RS_CALL_WRONGTYPE;
+    }
     rs_packet_call_by_id_t *mypkt = malloc(sizeof(rs_packet_call_by_id_t));
     mypkt->base.ptype = RS_PACKET_CALL_BY_ID;
     mypkt->lambda_id = id;
@@ -66,11 +233,23 @@ void call_lambda_by_id(lambda_id_t id, rs_lambda_type_t expected_type) {
     pkt.len = sizeof(*mypkt);
     spt_send_packet(&linux_sptctx, &pkt);
     free(mypkt);
+    return wait_lambda_result(lambda, expected_type, result);
 }
 
-void call_lambda_by_name(const char *name, rs_lambda_type_t expected_type) {
+int8_t call_lambda_by_name(const char *name, rs_lambda_type_t expected_type, void *result) {
+    UNUSED(result);
+    pthread_mutex_lock(&accessing_registry);
+    rs_registered_lambda *lambda = get_registered_lambda_by_name(name);
+    if (lambda == NULL) {
+        pthread_mutex_unlock(&accessing_registry);
+        return RS_CALL_NOTFOUND;
+    }
+    if (lambda->type != expected_type) {
+        pthread_mutex_unlock(&accessing_registry);
+        return RS_CALL_WRONGTYPE;
+    }
     rs_packet_call_by_name_t *mypkt = malloc(sizeof(rs_packet_call_by_name_t));
-    mypkt->base.ptype = RS_PACKET_CALL_BY_ID;
+    mypkt->base.ptype = RS_PACKET_CALL_BY_NAME;
     strcpy(mypkt->name, name);
     mypkt->expected_type = expected_type;
     hton_rs_packet_call_by_name_t(mypkt);
@@ -79,4 +258,5 @@ void call_lambda_by_name(const char *name, rs_lambda_type_t expected_type) {
     pkt.len = sizeof(*mypkt);
     spt_send_packet(&linux_sptctx, &pkt);
     free(mypkt);
+    return wait_lambda_result(lambda, expected_type, result);
 }

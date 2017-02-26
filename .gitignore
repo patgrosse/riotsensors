@@ -2,5 +2,5 @@ build/**
 .idea/**
 cmake-build-debug/**
 lib/gcc-arm-none-eabi-*/**
-packets/build/**
+protocol/build/**
 riotmodule/build/**

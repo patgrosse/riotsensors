@@ -19,7 +19,7 @@ add_subdirectory(${LIB_DIR}/libspt)
 
 # riotsensors riotmodule and linuxconnector
 project(riotsensors)
-add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/packets)
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/protocol)
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/riotmodule)
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/linuxconnector)
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/restserver)

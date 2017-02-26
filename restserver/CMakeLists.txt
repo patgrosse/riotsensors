@@ -5,7 +5,7 @@ project(riotsensors_server)
 # dependencies
 include_directories(${LIB_DIR}/pistache/include)
 include_directories(${CMAKE_CURRENT_LIST_DIR}/include)
-include_directories(${CMAKE_CURRENT_LIST_DIR}/../packets/include)
+include_directories(${CMAKE_CURRENT_LIST_DIR}/../protocol/include)
 include_directories(${CMAKE_CURRENT_LIST_DIR}/../linuxconnector/include)
 
 # source files
@@ -21,4 +21,4 @@ set(CMAKE_C_STANDARD 99)
 add_executable(riotsensors_server ${SOURCE_FILES})
 target_link_libraries(riotsensors_server net_static)
 target_link_libraries(riotsensors_server riotsensors_linux)
-target_link_libraries(riotsensors_server riotsensors_packets)
+target_link_libraries(riotsensors_server riotsensors_protocol)

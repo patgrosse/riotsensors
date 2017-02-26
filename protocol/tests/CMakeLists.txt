@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0)
-project(riotsensors_packets_tests)
+project(riotsensors_protocol_tests)
 
 # directories
 set(SRC_DIR ${CMAKE_CURRENT_LIST_DIR}/..)
@@ -19,5 +19,5 @@ set(FILES_IN_TEST ${SRC_DIR}/ieee754_network.c)
 set(TEST_FILES ieee754_network_test.cpp)
 
 # targets
-add_executable(packets_tests ${FILES_IN_TEST} ${TEST_FILES})
-target_link_libraries(packets_tests gtest gtest_main)
+add_executable(protocol_tests ${FILES_IN_TEST} ${TEST_FILES})
+target_link_libraries(protocol_tests gtest gtest_main)

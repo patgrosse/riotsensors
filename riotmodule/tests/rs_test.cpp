@@ -3,6 +3,7 @@
 
 extern "C" {
 #include <rs.h>
+#include <lambda_registry.h>
 }
 
 rs_int_t simple_int_lambda(lambda_id_t called_id) {

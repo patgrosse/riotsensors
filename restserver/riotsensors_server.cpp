@@ -7,6 +7,7 @@
 #include "riotsensors_server.h"
 #include <endpoint.h>
 #include <router.h>
+#include <signal.h>
 
 extern "C" {
 #include <rs_connector.h>
@@ -43,8 +44,16 @@ public:
             response.send(Http::Code::Bad_Request, "Bad lambda id\n");
         }
         lambda_id_t id = (lambda_id_t) int_id;
-        call_lambda_by_id(id, type);
-        response.send(Http::Code::Ok, "Call by id\n");
+        rs_int_t result;
+        int8_t res = call_lambda_by_id(id, type, &result);
+        if (res == RS_CALL_SUCCESS) {
+            printf("result was %d\n", res);
+            response.send(Http::Code::Ok, "Call by id: success\n");
+        } else if (res == RS_CALL_NOTFOUND) {
+            response.send(Http::Code::Ok, "Call by id: notfound\n");
+        } else if (res == RS_CALL_TIMEOUT) {
+            response.send(Http::Code::Ok, "Call by id: timeout\n");
+        }
     }
 
     void handleCallByName(const Rest::Request &request, Http::ResponseWriter response) {
@@ -54,8 +63,16 @@ public:
             response.send(Http::Code::Bad_Request, "Unknown lambda type\n");
         }
         std::string name = request.param(":name").as<std::string>();
-        call_lambda_by_name(name.c_str(), type);
-        response.send(Http::Code::Ok, "Call by name\n");
+        rs_int_t result;
+        int8_t res = call_lambda_by_name(name.c_str(), type, &result);
+        if (res == RS_CALL_SUCCESS) {
+            printf("result was %d\n", res);
+            response.send(Http::Code::Ok, "Call by name: success\n");
+        } else if (res == RS_CALL_NOTFOUND) {
+            response.send(Http::Code::Ok, "Call by name: notfound\n");
+        } else if (res == RS_CALL_TIMEOUT) {
+            response.send(Http::Code::Ok, "Call by name: timeout\n");
+        }
     }
 
     void handleList(const Rest::Request &request, Http::ResponseWriter response) {
@@ -70,6 +87,11 @@ public:
                 response.send(Http::Code::Ok, "List method just on lambda\n");
             }
         }
+    }
+
+    void handleKill(const Rest::Request &request, Http::ResponseWriter response) {
+        raise(SIGINT);
+        response.send(Http::Code::Ok, "Kill\n");
     }
 };
 
@@ -86,6 +108,7 @@ int main() {
     Rest::Routes::Get(router, "/call/name/:type/:name",
                       Rest::Routes::bind(&RiotsensorsHandler::handleCallByName, &handler));
     Rest::Routes::Get(router, "/list", Rest::Routes::bind(&RiotsensorsHandler::handleList, &handler));
+    Rest::Routes::Get(router, "/kill", Rest::Routes::bind(&RiotsensorsHandler::handleKill, &handler));
 
     Net::Address addr(Net::Ipv4::any(), Net::Port(9080));
     auto opts = Net::Http::Endpoint::options();

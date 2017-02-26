@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.0)
 
-project(riotsensors_packets)
+project(riotsensors_protocol)
 
 # dependencies
 include_directories(${CMAKE_CURRENT_LIST_DIR}/include)
@@ -17,7 +17,7 @@ set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS} -g -Wundef -Wshadow -Wcast-align -Wstr
 set(CMAKE_C_STANDARD 99)
 
 # targets
-add_library(riotsensors_packets ${SOURCE_FILES})
+add_library(riotsensors_protocol ${SOURCE_FILES})
 
 # tests
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/tests)

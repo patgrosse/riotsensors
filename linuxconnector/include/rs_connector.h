@@ -16,30 +16,38 @@
 #include <rs_packets.h>
 
 /**
- * Start listening to the given serial connection
+ * @brief Start listening to the given serial connection
+ *
  * @param serial_file Device name to the serial connection (eg. /dev/ttyUSB0)
  * @return 0 on success
  */
 int rs_linux_start(const char *serial_file);
 
 /**
- * Stop listening to a serial connection (initiated by rs_linux_start())
+ * @brief Stop listening to a serial connection (initiated by rs_linux_start())
+ *
  * @return 0 on success
  */
 int rs_linux_stop();
 
 /**
- * Send a packet to call a lambda by it's ID
+ * @brief Send a packet to call a lambda by it's
+ *
  * @param id ID of the packet
  * @param expected_type expected return type
+ * @param result Where to store the result, it's size has to match the expected type
+ * @return A RS_CALL_* constant
  */
-void call_lambda_by_id(lambda_id_t id, rs_lambda_type_t expected_type);
+int8_t call_lambda_by_id(lambda_id_t id, rs_lambda_type_t expected_type, void *result);
 
 /**
- * Send a packet to call a lambda by it's name
+ * @brief Send a packet to call a lambda by it's name
+ *
  * @param name Name of the packet
  * @param expected_type Expected return type
+ * @param result Where to store the result, it's size has to match the expected type
+ * @return A RS_CALL_* constant
  */
-void call_lambda_by_name(const char *name, rs_lambda_type_t expected_type);
+int8_t call_lambda_by_name(const char *name, rs_lambda_type_t expected_type, void *result);
 
 #endif //RIOTSENSORS_RS_CONNECTOR_H

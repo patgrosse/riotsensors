@@ -13,7 +13,7 @@ set(RIOT_DIR ${LIB_DIR}/RIOT)
 # dependencies
 include_directories(${LIB_DIR}/libspt/src/include)
 include_directories(${CMAKE_CURRENT_LIST_DIR}/include)
-include_directories(${CMAKE_CURRENT_LIST_DIR}/../packets/include)
+include_directories(${CMAKE_CURRENT_LIST_DIR}/../protocol/include)
 
 # source files
 file(GLOB C_FILES *.c)
@@ -43,5 +43,5 @@ include_directories(${RIOT_DIR}/cpu/lpc2387/include)
 
 # targets
 add_library(riotsensors_riot ${SOURCE_FILES})
-target_link_libraries(riotsensors_riot riotsensors_packets)
+target_link_libraries(riotsensors_riot riotsensors_protocol)
 target_link_libraries(riotsensors_riot libspt)

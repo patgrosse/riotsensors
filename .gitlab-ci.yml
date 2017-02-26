@@ -2,7 +2,7 @@ image: patgrosse/bachelor
 stages:
   - prepare
   - cmake
-  - buildPackets
+  - buildProtocol
   - build
   - test
   - buildServer
@@ -35,13 +35,13 @@ cmake:
   artifacts:
     paths:
     - build/
-build:packets:
-  stage: buildPackets
+build:protocol:
+  stage: buildProtocol
   dependencies:
     - cmake
     - getlibs
   script:
-    - "cd build/packets"
+    - "cd build/protocol"
     - "make"
   artifacts:
     paths:
@@ -50,7 +50,7 @@ build:RIOTmodule:
   stage: build
   dependencies:
     - getlibs
-    - build:packets
+    - build:protocol
   script:
     - "cd build/riotmodule"
     - "make"
@@ -61,7 +61,7 @@ build:linuxconnector:
   stage: build
   dependencies:
     - getlibs
-    - build:packets
+    - build:protocol
   script:
     - "cd build/linuxconnector"
     - "make"
@@ -79,13 +79,13 @@ build:restserver:
   artifacts:
     paths:
     - build/
-test:packets:
+test:protocol:
   stage: test
   dependencies:
-    - build:packets
+    - build:protocol
   script:
-    - "cd build/packets/tests"
-    - "./packets_tests"
+    - "cd build/protocol/tests"
+    - "./protocol_tests"
 test:RIOTmodule:
   stage: test
   dependencies:

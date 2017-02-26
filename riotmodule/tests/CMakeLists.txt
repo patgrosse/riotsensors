@@ -22,5 +22,5 @@ set(TEST_FILES rs_test.cpp)
 # targets
 add_executable(riot_tests ${FILES_IN_TEST} ${TEST_FILES})
 target_link_libraries(riot_tests gtest gtest_main)
-target_link_libraries(riot_tests riotsensors_packets)
+target_link_libraries(riot_tests riotsensors_protocol)
 target_link_libraries(riot_tests libspt)

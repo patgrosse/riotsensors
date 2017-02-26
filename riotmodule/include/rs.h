@@ -16,36 +16,12 @@
 #include <inttypes.h>
 #include <rs_packets.h>
 
-/** @brief Maximum number of registered lambdas */
-#define MAX_LAMBDAS 255
-
-/** @brief Name does not match the requirements */
-#define RS_REGISTER_INVALNAME -1
-/** @brief A lambda with the given name already exists */
-#define RS_REGISTER_DUPLICATE -2
-/** @brief Maximum number of lambda registrations reached */
-#define RS_REGISTER_LIMIT_REACHED -3
-/** @brief Could not allocate the required memory */
-#define RS_REGISTER_NOMEM -4
-
-/** @brief The call was successfully */
-#define RS_CALL_SUCCESS 0
-/** @brief Lambda with the given ID was not found */
-#define RS_CALL_NOTFOUND -1
-/** @brief Lambda called with wrong return type */
-#define RS_CALL_WRONGTYPE -2
-
 /** @brief The sending of a result was successfully */
 #define RS_RESULT_SUCCESS 0
 /** @brief Lambda with the given ID was not found */
 #define RS_RESULT_NOTFOUND -1
 /** @brief Result has a wrong return type */
 #define RS_RESULT_WRONGTYPE -2
-
-/** @brief Unregister was successful */
-#define RS_UNREGISTER_SUCCESS 0
-/** @brief Lambda with the given ID was not found */
-#define RS_UNREGISTER_NOTFOUND -1
 
 /**
  * @brief Function header for an integer lambda
@@ -61,16 +37,6 @@ typedef rs_double_t (*lambda_double_t)(lambda_id_t);
  * @brief Function header for a string lambda
  */
 typedef rs_string_t (*lambda_string_t)(lambda_id_t);
-
-/**
- * @brief Initialize the internal lambda registry
- */
-void init_lambda_registry();
-
-/**
- * @brief Unregister all lambdas and free the allocated memory
- */
-void free_lambda_registry();
 
 /**
  * @brief Initialize the internal lambda registry and start packet processing
