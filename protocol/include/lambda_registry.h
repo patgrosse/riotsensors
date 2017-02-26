@@ -19,13 +19,19 @@
 #include <rs_constants.h>
 #include <malloc.h>
 
+/**
+ * @brief A known and registered lambda in the registry
+ */
 typedef struct {
-    /** ID of the lambda */
+    /** @brief ID of the lambda */
     lambda_id_t id;
-    /** Name of the lambda */
+    /** @brief Name of the lambda */
     char name[MAX_LAMBDA_NAME_LENGTH];
-    /** Type of the lambda */
+    /** @brief Type of the lambda */
     rs_lambda_type_t type;
+    /** @brief Cache policy of this lambda */
+    rs_cache_type_t cache;
+    /** @brief User defined argument to be stored with the lambda */
     void *arg;
 } rs_registered_lambda;
 
@@ -60,10 +66,11 @@ rs_registered_lambda *get_registered_lambda_by_name(const char *name);
  *
  * @param name Name of the lambda
  * @param type Lambda type
+ * @param cache Cache policy for this lambda
  * @param arg A user specific argument to be stored in the properties
  * @return A value greater/equals to zero containing the new ID on success, a negative RS_REGISTER_* value on failure
  */
-int8_t lambda_registry_register(const char *name, const rs_lambda_type_t type, void *arg);
+int8_t lambda_registry_register(const char *name, const rs_lambda_type_t type, const rs_cache_type_t cache, void *arg);
 
 /**
  * @brief Unregister a lambda and free the allocated resources

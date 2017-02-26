@@ -35,11 +35,19 @@
 
 /** @brief The call was successfully */
 #define RS_CALL_SUCCESS 0
+/** @brief Result has been retrieved from cache */
+#define RS_CALL_CACHE 1
+/** @brief Result has been retrieved from cache after timeout */
+#define RS_CALL_CACHE_TIMEOUT 2
 /** @brief Lambda with the given ID was not found */
 #define RS_CALL_NOTFOUND -1
 /** @brief Lambda called with wrong return type */
 #define RS_CALL_WRONGTYPE -2
 /** @brief Result could not be retrieved in time */
 #define RS_CALL_TIMEOUT -3
+/** @brief Result could not be found in cache */
+#define RS_CALL_CACHE_EMPTY -4
+/** @brief Result could not be retrieved in time and was not found in cache */
+#define RS_CALL_CACHE_TIMEOUT_EMPTY -5
 
 #endif //RIOTSENSORS_RS_CONSTANTS_H

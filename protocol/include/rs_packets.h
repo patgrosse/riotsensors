@@ -81,6 +81,32 @@ typedef uint8_t rs_packet_type_t;
 typedef uint8_t rs_lambda_type_t;
 
 /*
+ * Cache policies
+ */
+
+/**
+ * @brief Never retrieve a value from cache
+ */
+#define RS_CACHE_NO_CACHE 1
+/**
+ * @brief Call the lambda once and retrieve the value from now on from cache
+ */
+#define RS_CACHE_CALL_ONCE 2
+/**
+ * @brief Never call the lambda manually always retrieve from cache
+ */
+#define RS_CACHE_ONLY 3
+/**
+ * @brief Use the cache if a timeout occurs
+ */
+#define RS_CACHE_ON_TIMEOUT 4
+
+/**
+ * @brief Identifier of a lambda cache policy (RS_CACHE_* constants)
+ */
+typedef uint8_t rs_cache_type_t;
+
+/*
  * Internal types
  */
 
@@ -118,6 +144,7 @@ typedef struct __packed {
     rs_packet_base_t base;
     char name[MAX_LAMBDA_NAME_LENGTH];
     rs_lambda_type_t ltype;
+    rs_cache_type_t cache;
 } rs_packet_registered_t;
 
 typedef struct __packed {

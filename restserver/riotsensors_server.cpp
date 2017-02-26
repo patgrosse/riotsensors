@@ -44,15 +44,20 @@ public:
             response.send(Http::Code::Bad_Request, "Bad lambda id\n");
         }
         lambda_id_t id = (lambda_id_t) int_id;
-        rs_int_t result;
+        generic_lambda_return result;
         int8_t res = call_lambda_by_id(id, type, &result);
         if (res == RS_CALL_SUCCESS) {
-            printf("result was %d\n", res);
+            printf("result was %d\n", result.ret_i);
             response.send(Http::Code::Ok, "Call by id: success\n");
-        } else if (res == RS_CALL_NOTFOUND) {
-            response.send(Http::Code::Ok, "Call by id: notfound\n");
-        } else if (res == RS_CALL_TIMEOUT) {
-            response.send(Http::Code::Ok, "Call by id: timeout\n");
+        } else if (res == RS_CALL_CACHE) {
+            printf("result was %d\n", result.ret_i);
+            response.send(Http::Code::Ok, "Call by id: cache\n");
+        } else if (res == RS_CALL_CACHE_TIMEOUT) {
+            printf("result was %d\n", result.ret_i);
+            response.send(Http::Code::Ok, "Call by id: cache after timeout\n");
+        } else {
+            printf("error is %d\n", res);
+            response.send(Http::Code::Ok, "ERROR\n");
         }
     }
 
@@ -63,15 +68,20 @@ public:
             response.send(Http::Code::Bad_Request, "Unknown lambda type\n");
         }
         std::string name = request.param(":name").as<std::string>();
-        rs_int_t result;
+        generic_lambda_return result;
         int8_t res = call_lambda_by_name(name.c_str(), type, &result);
         if (res == RS_CALL_SUCCESS) {
-            printf("result was %d\n", res);
-            response.send(Http::Code::Ok, "Call by name: success\n");
-        } else if (res == RS_CALL_NOTFOUND) {
-            response.send(Http::Code::Ok, "Call by name: notfound\n");
-        } else if (res == RS_CALL_TIMEOUT) {
-            response.send(Http::Code::Ok, "Call by name: timeout\n");
+            printf("result was %d\n", result.ret_i);
+            response.send(Http::Code::Ok, "Call by id: success\n");
+        } else if (res == RS_CALL_CACHE) {
+            printf("result was %d\n", result.ret_i);
+            response.send(Http::Code::Ok, "Call by id: cache\n");
+        } else if (res == RS_CALL_CACHE_TIMEOUT) {
+            printf("result was %d\n", result.ret_i);
+            response.send(Http::Code::Ok, "Call by id: cache after timeout\n");
+        } else {
+            printf("error is %d\n", res);
+            response.send(Http::Code::Ok, "ERROR\n");
         }
     }
 

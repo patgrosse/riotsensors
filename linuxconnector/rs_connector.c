@@ -29,11 +29,8 @@ pthread_mutex_t accessing_registry = PTHREAD_MUTEX_INITIALIZER;
 
 typedef struct {
     pthread_cond_t wait_result;
-    union {
-        rs_int_t ret_i;
-        rs_double_t ret_d;
-        rs_string_t ret_s;
-    } ret;
+    bool data_cached;
+    generic_lambda_return ret;
 } rs_linux_registered_lambda;
 
 void handle_received_packet(struct spt_context *sptctx, struct serial_data_packet *packet) {
@@ -58,8 +55,9 @@ void handle_received_packet(struct spt_context *sptctx, struct serial_data_packe
                 memcpy(&mypkt, packet->data, sizeof(rs_packet_registered_t));
                 ntoh_rs_packet_registered_t(&mypkt);
                 rs_linux_registered_lambda *arg = malloc(sizeof(rs_linux_registered_lambda));
+                arg->data_cached = false;
                 pthread_cond_init(&arg->wait_result, NULL);
-                int8_t res = lambda_registry_register(mypkt.name, mypkt.ltype, arg);
+                int8_t res = lambda_registry_register(mypkt.name, mypkt.ltype, mypkt.cache, arg);
                 if (res < 0) {
                     fprintf(stderr, "Error while registering lambda with name %s and type %d: code %d\n", mypkt.name,
                             mypkt.ltype, res);
@@ -109,6 +107,7 @@ void handle_received_packet(struct spt_context *sptctx, struct serial_data_packe
                 } else {
                     rs_linux_registered_lambda *arg = lambda->arg;
                     arg->ret.ret_i = mypkt.result;
+                    arg->data_cached = true;
                     pthread_cond_broadcast(&arg->wait_result);
                     log_msg("packet", "Received int result of lambda with id %d\n", mypkt.result_base.lambda_id);
                 }
@@ -131,6 +130,7 @@ void handle_received_packet(struct spt_context *sptctx, struct serial_data_packe
                 } else {
                     rs_linux_registered_lambda *arg = lambda->arg;
                     arg->ret.ret_d = mypkt.result;
+                    arg->data_cached = true;
                     pthread_cond_broadcast(&arg->wait_result);
                     log_msg("packet", "Received double result of lambda with id %d\n", mypkt.result_base.lambda_id);
                 }
@@ -153,6 +153,7 @@ void handle_received_packet(struct spt_context *sptctx, struct serial_data_packe
                 } else {
                     rs_linux_registered_lambda *arg = lambda->arg;
                     arg->ret.ret_s = mypkt.result;
+                    arg->data_cached = true;
                     pthread_cond_broadcast(&arg->wait_result);
                     log_msg("packet", "Received string result of lambda with id %d\n", mypkt.result_base.lambda_id);
                 }
@@ -191,27 +192,50 @@ int rs_linux_stop() {
     return 0;
 }
 
-int8_t wait_lambda_result(rs_registered_lambda *lambda, rs_lambda_type_t expected_type, void *result) {
+int8_t wait_lambda_result(rs_registered_lambda *lambda, generic_lambda_return *result) {
     rs_linux_registered_lambda *arg = lambda->arg;
     struct timespec spec;
     clock_gettime(CLOCK_REALTIME, &spec);
     spec.tv_sec += 1;
     if (pthread_cond_timedwait(&arg->wait_result, &accessing_registry, &spec) == ETIMEDOUT) {
+        if (lambda->cache == RS_CACHE_ON_TIMEOUT) {
+            *result = arg->ret;
+            pthread_mutex_unlock(&accessing_registry);
+            return RS_CALL_TIMEOUT;
+        }
         pthread_mutex_unlock(&accessing_registry);
         return RS_CALL_TIMEOUT;
     }
-    if (expected_type == RS_LAMBDA_INT) {
-        memcpy(result, &arg->ret.ret_i, sizeof(arg->ret.ret_i));
-    } else if (expected_type == RS_LAMBDA_DOUBLE) {
-        memcpy(result, &arg->ret.ret_d, sizeof(arg->ret.ret_d));
-    } else if (expected_type == RS_LAMBDA_STRING) {
-        memcpy(result, &arg->ret.ret_s, sizeof(arg->ret.ret_s));
-    }
+    memcpy(result, &arg->ret, sizeof(generic_lambda_return));
     pthread_mutex_unlock(&accessing_registry);
     return RS_CALL_SUCCESS;
 }
 
-int8_t call_lambda_by_id(lambda_id_t id, rs_lambda_type_t expected_type, void *result) {
+int8_t check_lambda_cache(rs_registered_lambda *lambda, generic_lambda_return *result) {
+    rs_linux_registered_lambda *arg = lambda->arg;
+    switch (lambda->cache) {
+        case RS_CACHE_NO_CACHE:
+            return RS_CALL_SUCCESS;
+        case RS_CACHE_CALL_ONCE:
+            if (arg->data_cached) {
+                *result = arg->ret;
+                return RS_CALL_CACHE;
+            } else {
+                return RS_CALL_SUCCESS;
+            }
+        case RS_CACHE_ONLY:
+            if (arg->data_cached) {
+                *result = arg->ret;
+                return RS_CALL_CACHE;
+            } else {
+                return RS_CALL_CACHE_EMPTY;
+            }
+        default:
+            return RS_CALL_SUCCESS;
+    }
+}
+
+int8_t call_lambda_by_id(lambda_id_t id, rs_lambda_type_t expected_type, generic_lambda_return *result) {
     UNUSED(result);
     pthread_mutex_lock(&accessing_registry);
     rs_registered_lambda *lambda = get_registered_lambda_by_id(id);
@@ -223,6 +247,11 @@ int8_t call_lambda_by_id(lambda_id_t id, rs_lambda_type_t expected_type, void *r
         pthread_mutex_unlock(&accessing_registry);
         return RS_CALL_WRONGTYPE;
     }
+    int8_t cache_result = check_lambda_cache(lambda, result);
+    if (cache_result != 0) {
+        pthread_mutex_unlock(&accessing_registry);
+        return cache_result;
+    }
     rs_packet_call_by_id_t *mypkt = malloc(sizeof(rs_packet_call_by_id_t));
     mypkt->base.ptype = RS_PACKET_CALL_BY_ID;
     mypkt->lambda_id = id;
@@ -233,10 +262,10 @@ int8_t call_lambda_by_id(lambda_id_t id, rs_lambda_type_t expected_type, void *r
     pkt.len = sizeof(*mypkt);
     spt_send_packet(&linux_sptctx, &pkt);
     free(mypkt);
-    return wait_lambda_result(lambda, expected_type, result);
+    return wait_lambda_result(lambda, result);
 }
 
-int8_t call_lambda_by_name(const char *name, rs_lambda_type_t expected_type, void *result) {
+int8_t call_lambda_by_name(const char *name, rs_lambda_type_t expected_type, generic_lambda_return *result) {
     UNUSED(result);
     pthread_mutex_lock(&accessing_registry);
     rs_registered_lambda *lambda = get_registered_lambda_by_name(name);
@@ -248,6 +277,11 @@ int8_t call_lambda_by_name(const char *name, rs_lambda_type_t expected_type, voi
         pthread_mutex_unlock(&accessing_registry);
         return RS_CALL_WRONGTYPE;
     }
+    int8_t cache_result = check_lambda_cache(lambda, result);
+    if (cache_result != 0) {
+        pthread_mutex_unlock(&accessing_registry);
+        return cache_result;
+    }
     rs_packet_call_by_name_t *mypkt = malloc(sizeof(rs_packet_call_by_name_t));
     mypkt->base.ptype = RS_PACKET_CALL_BY_NAME;
     strcpy(mypkt->name, name);
@@ -258,5 +292,5 @@ int8_t call_lambda_by_name(const char *name, rs_lambda_type_t expected_type, voi
     pkt.len = sizeof(*mypkt);
     spt_send_packet(&linux_sptctx, &pkt);
     free(mypkt);
-    return wait_lambda_result(lambda, expected_type, result);
+    return wait_lambda_result(lambda, result);
 }

@@ -51,7 +51,7 @@ rs_registered_lambda *get_registered_lambda_by_name(const char *name) {
     return NULL;
 }
 
-int8_t lambda_registry_register(const char *name, const rs_lambda_type_t type, void *arg) {
+int8_t lambda_registry_register(const char *name, const rs_lambda_type_t type, const rs_cache_type_t cache, void *arg) {
     if (lambda_counter >= MAX_LAMBDAS) {
         return RS_REGISTER_LIMIT_REACHED;
     }
@@ -73,6 +73,7 @@ int8_t lambda_registry_register(const char *name, const rs_lambda_type_t type, v
         return RS_REGISTER_NOMEM;
     }
     lambda_registry[myid]->type = type;
+    lambda_registry[myid]->cache = cache;
     lambda_registry[myid]->arg = arg;
     lambda_counter++;
     return myid;

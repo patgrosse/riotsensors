@@ -24,8 +24,9 @@ struct serial_io_context rs_sictx;
 struct spt_context rs_sptctx;
 bool rs_spt_started = false;
 
-int8_t register_lambda(const char *name, lambda_generic_t lambda, rs_lambda_type_t type) {
-    int8_t res = lambda_registry_register(name, type, lambda);
+int8_t
+register_lambda(const char *name, lambda_generic_t lambda, const rs_lambda_type_t type, const rs_cache_type_t cache) {
+    int8_t res = lambda_registry_register(name, type, cache, lambda);
     if (res < 0) {
         return res;
     }
@@ -35,6 +36,7 @@ int8_t register_lambda(const char *name, lambda_generic_t lambda, rs_lambda_type
         pkt->base.ptype = RS_PACKET_REGISTERED;
         strcpy(pkt->name, name);
         pkt->ltype = type;
+        pkt->cache = cache;
         hton_rs_packet_registered_t(pkt);
         struct serial_data_packet sdpkt;
         sdpkt.data = (char *) pkt;
@@ -50,8 +52,8 @@ void populate_resultbase_from_lambda(rs_packet_lambda_result_t *base, const rs_r
     strcpy(base->name, lambda->name);
 }
 
-int8_t register_lambda_int(const char *name, lambda_int_t lambda) {
-    return register_lambda(name, (lambda_generic_t) lambda, RS_LAMBDA_INT);
+int8_t register_lambda_int(const char *name, lambda_int_t lambda, const rs_cache_type_t cache) {
+    return register_lambda(name, (lambda_generic_t) lambda, RS_LAMBDA_INT, cache);
 }
 
 int8_t call_lambda_int(const lambda_id_t id, rs_int_t *result) {
@@ -75,8 +77,8 @@ int8_t call_lambda_int_by_name(const char *name, rs_int_t *result) {
     return call_lambda_int(lambda->id, result);
 }
 
-int8_t register_lambda_double(const char *name, lambda_double_t lambda) {
-    return register_lambda(name, (lambda_generic_t) lambda, RS_LAMBDA_DOUBLE);
+int8_t register_lambda_double(const char *name, lambda_double_t lambda, const rs_cache_type_t cache) {
+    return register_lambda(name, (lambda_generic_t) lambda, RS_LAMBDA_DOUBLE, cache);
 }
 
 int8_t call_lambda_double(const lambda_id_t id, rs_double_t *result) {
@@ -100,8 +102,8 @@ int8_t call_lambda_double_by_name(const char *name, rs_double_t *result) {
     return call_lambda_double(lambda->id, result);
 }
 
-int8_t register_lambda_string(const char *name, lambda_string_t lambda) {
-    return register_lambda(name, (lambda_generic_t) lambda, RS_LAMBDA_STRING);
+int8_t register_lambda_string(const char *name, lambda_string_t lambda, const rs_cache_type_t cache) {
+    return register_lambda(name, (lambda_generic_t) lambda, RS_LAMBDA_STRING, cache);
 }
 
 int8_t call_lambda_string(const lambda_id_t id, rs_string_t *result) {

@@ -25,7 +25,7 @@ rs_double_t simple_double_lambda(lambda_id_t called_id) {
 TEST(rs, simple_int) {
     init_lambda_registry();
     lambda_id_t id;
-    ASSERT_EQ(id = register_lambda_int("myInt", simple_int_lambda), 0);
+    ASSERT_EQ(id = register_lambda_int("myInt", simple_int_lambda, RS_CACHE_NO_CACHE), 0);
     rs_int_t result;
     ASSERT_EQ(call_lambda_int(id, &result), RS_CALL_SUCCESS);
     ASSERT_EQ(result, 42);
@@ -38,7 +38,7 @@ TEST(rs, simple_int) {
 TEST(rs, simple_double) {
     init_lambda_registry();
     lambda_id_t id;
-    ASSERT_EQ(id = register_lambda_double("myDouble", simple_double_lambda), 0);
+    ASSERT_EQ(id = register_lambda_double("myDouble", simple_double_lambda, RS_CACHE_NO_CACHE), 0);
     rs_double_t result;
     ASSERT_EQ(call_lambda_double(id, &result), RS_CALL_SUCCESS);
     ASSERT_FLOAT_EQ(result, 42.1);
@@ -50,7 +50,7 @@ TEST(rs, simple_double) {
 
 TEST(rs, wrongname_int) {
     init_lambda_registry();
-    ASSERT_EQ(register_lambda_int("myInt", simple_int_lambda), 0);
+    ASSERT_EQ(register_lambda_int("myInt", simple_int_lambda, RS_CACHE_NO_CACHE), 0);
     rs_int_t result = -5;
     ASSERT_EQ(call_lambda_int_by_name("myInt2", &result), RS_CALL_NOTFOUND);
     ASSERT_EQ(result, -5);
@@ -59,7 +59,7 @@ TEST(rs, wrongname_int) {
 
 TEST(rs, wrongname_double) {
     init_lambda_registry();
-    ASSERT_EQ(register_lambda_double("myDouble", simple_double_lambda), 0);
+    ASSERT_EQ(register_lambda_double("myDouble", simple_double_lambda, RS_CACHE_NO_CACHE), 0);
     rs_double_t result = -6;
     ASSERT_EQ(call_lambda_double_by_name("myDouble2", &result), RS_CALL_NOTFOUND);
     ASSERT_FLOAT_EQ(result, -6);
@@ -68,18 +68,18 @@ TEST(rs, wrongname_double) {
 
 TEST(rs, namecheck) {
     init_lambda_registry();
-    ASSERT_EQ(register_lambda_double("myDoubleWAYTOOLONGWAYWAYTOOLONG", simple_double_lambda), RS_REGISTER_INVALNAME);
-    ASSERT_EQ(register_lambda_double("myDouble", simple_double_lambda), 0);
+    ASSERT_EQ(register_lambda_double("myDoubleWAYTOOLONGWAYWAYTOOLONG", simple_double_lambda, RS_CACHE_NO_CACHE), RS_REGISTER_INVALNAME);
+    ASSERT_EQ(register_lambda_double("myDouble", simple_double_lambda, RS_CACHE_NO_CACHE), 0);
     free_lambda_registry();
 }
 
 TEST(rs, unregister) {
     init_lambda_registry();
     lambda_id_t id;
-    ASSERT_EQ(id = register_lambda_double("myDouble", simple_double_lambda), 0);
+    ASSERT_EQ(id = register_lambda_double("myDouble", simple_double_lambda, RS_CACHE_NO_CACHE), 0);
     ASSERT_EQ(unregister_lambda(id), RS_UNREGISTER_SUCCESS);
     ASSERT_EQ(unregister_lambda(id), RS_UNREGISTER_NOTFOUND);
-    ASSERT_EQ(id = register_lambda_double("myDouble", simple_double_lambda), 1);
+    ASSERT_EQ(id = register_lambda_double("myDouble", simple_double_lambda, RS_CACHE_NO_CACHE), 1);
     rs_double_t result;
     ASSERT_EQ(call_lambda_double(id, &result), RS_CALL_SUCCESS);
     ASSERT_FLOAT_EQ(result, 4242.1);

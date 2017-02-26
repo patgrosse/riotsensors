@@ -16,6 +16,18 @@
 #include <rs_packets.h>
 
 /**
+ * @brief Provides enough space to store every return type of a lambda
+ */
+typedef union {
+    /** @brief Int return type */
+    rs_int_t ret_i;
+    /** @brief Double return type */
+    rs_double_t ret_d;
+    /** @brief String return type */
+    rs_string_t ret_s;
+} generic_lambda_return;
+
+/**
  * @brief Start listening to the given serial connection
  *
  * @param serial_file Device name to the serial connection (eg. /dev/ttyUSB0)
@@ -35,19 +47,19 @@ int rs_linux_stop();
  *
  * @param id ID of the packet
  * @param expected_type expected return type
- * @param result Where to store the result, it's size has to match the expected type
+ * @param result Where to store the result
  * @return A RS_CALL_* constant
  */
-int8_t call_lambda_by_id(lambda_id_t id, rs_lambda_type_t expected_type, void *result);
+int8_t call_lambda_by_id(lambda_id_t id, rs_lambda_type_t expected_type, generic_lambda_return *result);
 
 /**
  * @brief Send a packet to call a lambda by it's name
  *
  * @param name Name of the packet
  * @param expected_type Expected return type
- * @param result Where to store the result, it's size has to match the expected type
+ * @param result Where to store the result
  * @return A RS_CALL_* constant
  */
-int8_t call_lambda_by_name(const char *name, rs_lambda_type_t expected_type, void *result);
+int8_t call_lambda_by_name(const char *name, rs_lambda_type_t expected_type, generic_lambda_return *result);
 
 #endif //RIOTSENSORS_RS_CONNECTOR_H

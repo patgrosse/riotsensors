@@ -53,9 +53,10 @@ void rs_stop();
  *
  * @param name Name of the lambda
  * @param lambda Function to evaluate when called
+ * @param cache Cache policy to use with the lambda
  * @return A lambda_id_t on success, RS_REGISTER_* constant on error
  */
-int8_t register_lambda_int(const char *name, lambda_int_t lambda);
+int8_t register_lambda_int(const char *name, lambda_int_t lambda, const rs_cache_type_t cache);
 
 /**
  * @brief Call an integer lambda
@@ -80,9 +81,10 @@ int8_t call_lambda_int_by_name(const char *name, rs_int_t *result);
  *
  * @param name Name of the lambda
  * @param lambda Function to evaluate when called
+ * @param cache Cache policy to use with the lambda
  * @return A lambda_id_t on success, RS_REGISTER_* constant on error
  */
-int8_t register_lambda_double(const char *name, lambda_double_t lambda);
+int8_t register_lambda_double(const char *name, lambda_double_t lambda, const rs_cache_type_t cache);
 
 /**
  * @brief Call a double lambda
@@ -109,9 +111,10 @@ int8_t call_lambda_double_by_name(const char *name, rs_double_t *result);
  *
  * @param name Name of the lambda
  * @param lambda Function to evaluate when called
+ * @param cache Cache policy to use with the lambda
  * @return A lambda_id_t on success, RS_REGISTER_* constant on error
  */
-int8_t register_lambda_string(const char *name, lambda_string_t lambda);
+int8_t register_lambda_string(const char *name, lambda_string_t lambda, const rs_cache_type_t cache);
 
 /**
  * @brief Call a string lambda
