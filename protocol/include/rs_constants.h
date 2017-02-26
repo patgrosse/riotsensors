@@ -4,6 +4,12 @@
  *  Copyright (C) 2017 Patrick Grosse <patrick.grosse@uni-muenster.de>
  */
 
+/**
+ * @brief   Different constants to be used with riotsensors cross systems
+ * @file    rs_constants.h
+ * @author  Patrick Grosse <patrick.grosse@uni-muenster.de>
+ */
+
 #ifndef RIOTSENSORS_RS_CONSTANTS_H
 #define RIOTSENSORS_RS_CONSTANTS_H
 
