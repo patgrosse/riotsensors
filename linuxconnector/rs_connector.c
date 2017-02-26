@@ -199,12 +199,18 @@ int8_t wait_lambda_result(rs_registered_lambda *lambda, generic_lambda_return *r
     spec.tv_sec += 1;
     if (pthread_cond_timedwait(&arg->wait_result, &accessing_registry, &spec) == ETIMEDOUT) {
         if (lambda->cache == RS_CACHE_ON_TIMEOUT) {
-            *result = arg->ret;
+            if (arg->data_cached) {
+                *result = arg->ret;
+                pthread_mutex_unlock(&accessing_registry);
+                return RS_CALL_CACHE_TIMEOUT;
+            } else {
+                pthread_mutex_unlock(&accessing_registry);
+                return RS_CALL_CACHE_TIMEOUT_EMPTY;
+            }
+        } else {
             pthread_mutex_unlock(&accessing_registry);
             return RS_CALL_TIMEOUT;
         }
-        pthread_mutex_unlock(&accessing_registry);
-        return RS_CALL_TIMEOUT;
     }
     memcpy(result, &arg->ret, sizeof(generic_lambda_return));
     pthread_mutex_unlock(&accessing_registry);
