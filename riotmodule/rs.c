@@ -286,6 +286,7 @@ void handle_call_lambda(lambda_id_t id, rs_lambda_type_t expected_type) {
         char *nfname = "unknown";
         strcpy(pkt->result_base.name, nfname);
         pkt->error_code = call_res;
+        hton_rs_packet_lambda_result_error_t(pkt);
         struct serial_data_packet sdpkt;
         sdpkt.data = (char *) pkt;
         sdpkt.len = sizeof(*pkt);

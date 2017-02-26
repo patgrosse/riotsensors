@@ -10,6 +10,10 @@
 #include <signal.h>
 #include <rs_rest.h>
 
+extern "C" {
+#include <spt_logger.h>
+}
+
 using namespace Net;
 
 rs_lambda_type_t get_lambda_type_from_string(std::string str) {
@@ -41,6 +45,7 @@ public:
             response.send(Http::Code::Bad_Request, "Bad lambda id\n");
         }
         lambda_id_t id = (lambda_id_t) int_id;
+        spt_log_msg("web", "Calling for lambda by ID with ID %d and expected type %d...\n", id, type);
         generic_lambda_return result;
         int8_t res = call_lambda_by_id(id, type, &result);
         auto m1 = MIME(Application, Json);
@@ -67,6 +72,7 @@ public:
             response.send(Http::Code::Bad_Request, "Unknown lambda type\n");
         }
         std::string name = request.param(":name").as<std::string>();
+        spt_log_msg("web", "Calling for lambda by name with name %s and expected type %d...\n", name.c_str(), type);
         generic_lambda_return result;
         int8_t res = call_lambda_by_name(name.c_str(), type, &result);
         auto m1 = MIME(Application, Json);

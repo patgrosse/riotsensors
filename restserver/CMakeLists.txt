@@ -8,6 +8,7 @@ include_directories(${CMAKE_CURRENT_LIST_DIR}/include)
 include_directories(${CMAKE_CURRENT_LIST_DIR}/../protocol/include)
 include_directories(${CMAKE_CURRENT_LIST_DIR}/../linuxconnector/include)
 include_directories(${LIB_DIR}/rapidjson/include)
+include_directories(${LIB_DIR}/libspt/src/include)
 
 # source files
 file(GLOB C_FILES *.cpp)
@@ -23,3 +24,4 @@ add_executable(riotsensors_server ${SOURCE_FILES})
 target_link_libraries(riotsensors_server net_static)
 target_link_libraries(riotsensors_server riotsensors_linux)
 target_link_libraries(riotsensors_server riotsensors_protocol)
+target_link_libraries(riotsensors_server libspt)
