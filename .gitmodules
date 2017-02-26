@@ -7,9 +7,9 @@
 [submodule "lib/googletest"]
 	path = lib/googletest
 	url = https://github.com/google/googletest.git
-[submodule "lib/sglib"]
-	path = lib/sglib
-	url = https://github.com/stefanct/sglib.git
 [submodule "lib/pistache"]
 	path = lib/pistache
 	url = https://github.com/oktal/pistache.git
+[submodule "lib/rapidjson"]
+	path = lib/rapidjson
+	url = https://github.com/miloyip/rapidjson.git

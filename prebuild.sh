@@ -57,14 +57,14 @@ else
         echo "------- Already exists"
     fi
 fi
-echo "======= SGLIB"
-if [ ! -d "sglib" ]; then
+echo "======= rapidjson"
+if [ ! -d "rapidjson" ]; then
     echo "------- Using git clone"
-    git clone --depth=1 https://github.com/stefanct/sglib.git sglib
+    git clone --depth=1 https://github.com/miloyip/rapidjson.git rapidjson
 else
-    if [ ! -e "sglib/.git" ]; then
+    if [ ! -e "rapidjson/.git" ]; then
         echo "------- Using git submodule"
-        git submodule update --init -- sglib
+        git submodule update --init -- rapidjson
     else
         echo "------- Already exists"
     fi

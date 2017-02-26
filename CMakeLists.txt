@@ -11,6 +11,9 @@ LIST(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 # googletest library
 add_subdirectory(${LIB_DIR}/googletest/googletest)
 
+# rapidjson library
+add_subdirectory(${LIB_DIR}/rapidjson)
+
 # pistache http server
 add_subdirectory(${LIB_DIR}/pistache)
 
