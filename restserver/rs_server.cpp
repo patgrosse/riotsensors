@@ -125,38 +125,42 @@ void RiotsensorsHandler::handleCache(const Rest::Request &request, Http::Respons
     }
 }
 
-int main() {
-    // riotsensors linux connector
-    std::string serial_port = "/dev/ttyUSB0";
-    if (rs_linux_start(serial_port.c_str()) != 0) {
-        fprintf(stderr, "Could not start riotsensors on serial port %s\n", serial_port);
-    } else {
-        // server
-        RiotsensorsHandler handler;
-
-        Rest::Router router;
-        Rest::Routes::Get(router, "/call/id/:type/:id",
-                          Rest::Routes::bind(&RiotsensorsHandler::handleCallById, &handler));
-        Rest::Routes::Get(router, "/call/name/:type/:name",
-                          Rest::Routes::bind(&RiotsensorsHandler::handleCallByName, &handler));
-        Rest::Routes::Get(router, "/list", Rest::Routes::bind(&RiotsensorsHandler::handleList, &handler));
-        Rest::Routes::Get(router, "/showcache", Rest::Routes::bind(&RiotsensorsHandler::handleCache, &handler));
-        Rest::Routes::Get(router, "/kill", Rest::Routes::bind(&RiotsensorsHandler::handleKill, &handler));
-
-        Net::Address addr(Net::Ipv4::any(), Net::Port(9080));
-        auto opts = Net::Http::Endpoint::options();
-        opts.threads(1);
-        opts.flags(Tcp::Options::InstallSignalHandler);
-
-        Http::Endpoint server(addr);
-        server.init(opts);
-        server.setHandler(router.handler());
-        handler.setServer(&server);
-
-        server.serve();
-
-        server.shutdown();
-
-        rs_linux_stop();
+int main(int argc, char *argv[]) {
+    if (argc != 2) {
+        printf("Usage: %s SERIAL_CONSOLE_DESCRIPTOR\n", argv[0]);
+        return 1;
     }
+
+    // riotsensors linux connector
+    if (rs_linux_start(argv[1]) != 0) {
+        fprintf(stderr, "Could not start riotsensors on serial port %s\n", argv[1]);
+        return 1;
+    }
+    // server
+    RiotsensorsHandler handler;
+
+    Rest::Router router;
+    Rest::Routes::Get(router, "/call/id/:type/:id",
+                      Rest::Routes::bind(&RiotsensorsHandler::handleCallById, &handler));
+    Rest::Routes::Get(router, "/call/name/:type/:name",
+                      Rest::Routes::bind(&RiotsensorsHandler::handleCallByName, &handler));
+    Rest::Routes::Get(router, "/list", Rest::Routes::bind(&RiotsensorsHandler::handleList, &handler));
+    Rest::Routes::Get(router, "/showcache", Rest::Routes::bind(&RiotsensorsHandler::handleCache, &handler));
+    Rest::Routes::Get(router, "/kill", Rest::Routes::bind(&RiotsensorsHandler::handleKill, &handler));
+
+    Net::Address addr(Net::Ipv4::any(), Net::Port(9080));
+    auto opts = Net::Http::Endpoint::options();
+    opts.threads(1);
+    opts.flags(Tcp::Options::InstallSignalHandler);
+
+    Http::Endpoint server(addr);
+    server.init(opts);
+    server.setHandler(router.handler());
+    handler.setServer(&server);
+
+    server.serve();
+
+    server.shutdown();
+
+    rs_linux_stop();
 }

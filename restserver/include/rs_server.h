@@ -21,9 +21,11 @@ using namespace Net;
 /**
  * @brief Main function of the REST server
  *
+ * @param argc Argument count
+ * @param argv Program arguments
  * @return 0 on successful execution
  */
-int main();
+int main(int argc, char *argv[]);
 
 /**
  * @brief Processes all received REST calls
