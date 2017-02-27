@@ -5,7 +5,6 @@
  */
 
 #include "rs_server.h"
-#include <router.h>
 #include <signal.h>
 #include <rs_rest.h>
 
@@ -95,13 +94,13 @@ void RiotsensorsHandler::handleCallByName(const Rest::Request &request, Http::Re
 void RiotsensorsHandler::handleList(const Rest::Request &request, Http::ResponseWriter response) {
     auto typeparam = request.query().get("type");
     if (typeparam.isEmpty()) {
-        response.send(Http::Code::Ok, "List method all\n");
+        response.send(Http::Code::Ok, assemble_list_rest());
     } else {
         rs_lambda_type_t type = get_lambda_type_from_string(typeparam.get());
         if (type == 0) {
             response.send(Http::Code::Bad_Request, "Unknown lambda type\n");
         } else {
-            response.send(Http::Code::Ok, "List method just on lambda\n");
+            response.send(Http::Code::Ok, assemble_list_rest_for_type(type));
         }
     }
 }

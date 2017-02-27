@@ -166,3 +166,90 @@ std::string assemble_call_error_rest_name(std::string name, const rs_registered_
     writer.EndObject();
     return s.GetString();
 }
+
+std::string assemble_list_rest() {
+    rapidjson::StringBuffer s;
+    rapidjson::Writer<rapidjson::StringBuffer> writer(s);
+    lambda_id_t count = 0;
+    writer.StartObject();
+    writer.Key("lambdas");
+    {
+        writer.StartObject();
+        for (lambda_id_t i = 0; i < get_number_of_registered_lambdas(); i++) {
+            rs_registered_lambda *lambda = get_registered_lambda_by_id(i);
+            if (lambda != NULL) {
+                count++;
+                char idstr[10];
+                sprintf(idstr, "%d", lambda->id);
+                writer.Key(idstr);
+                {
+                    writer.StartObject();
+                    writer.Key("id");
+                    writer.Int(lambda->id);
+                    writer.Key("name");
+                    writer.String(lambda->name);
+                    writer.Key("type");
+                    {
+                        writer.StartObject();
+                        writer.Key("code");
+                        writer.Int(lambda->type);
+                        writer.Key("string");
+                        writer.String(stringify_rs_lambda_type_t(lambda->type));
+                        writer.EndObject();
+                    }
+                    writer.EndObject();
+                }
+            }
+        }
+        writer.EndObject();
+    }
+    writer.Key("count");
+    writer.Int(count);
+    writer.EndObject();
+    return s.GetString();
+}
+
+std::string assemble_list_rest_for_type(const rs_lambda_type_t type) {
+    rapidjson::StringBuffer s;
+    rapidjson::Writer<rapidjson::StringBuffer> writer(s);
+    lambda_id_t count = 0;
+    writer.StartObject();
+    writer.Key("lambdas");
+    {
+        writer.StartObject();
+        for (lambda_id_t i = 0; i < get_number_of_registered_lambdas(); i++) {
+            rs_registered_lambda *lambda = get_registered_lambda_by_id(i);
+            if (lambda != NULL) {
+                if (lambda->type != type) {
+                    continue;
+                }
+                count++;
+                char idstr[10];
+                sprintf(idstr, "%d", lambda->id);
+                writer.Key(idstr);
+                {
+                    writer.StartObject();
+                    writer.Key("id");
+                    writer.Int(lambda->id);
+                    writer.Key("name");
+                    writer.String(lambda->name);
+                    writer.Key("type");
+                    {
+                        writer.StartObject();
+                        writer.Key("code");
+                        writer.Int(lambda->type);
+                        writer.Key("string");
+                        writer.String(stringify_rs_lambda_type_t(lambda->type));
+                        writer.EndObject();
+                    }
+                    writer.EndObject();
+                }
+            }
+        }
+        writer.EndObject();
+    }
+    writer.Key("count");
+    writer.Int(count);
+    writer.EndObject();
+    return s.GetString();
+}

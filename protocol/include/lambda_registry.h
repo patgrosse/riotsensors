@@ -36,6 +36,13 @@ typedef struct {
 } rs_registered_lambda;
 
 /**
+ * @brief Get the amount of registered lambdas
+ *
+ * @return Amount of registered lambdas
+ */
+lambda_id_t get_number_of_registered_lambdas();
+
+/**
  * @brief Initialize the internal lambda registry
  */
 void init_lambda_registry();

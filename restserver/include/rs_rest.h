@@ -53,4 +53,19 @@ std::string assemble_call_error_rest_id(lambda_id_t id, const rs_registered_lamb
  */
 std::string assemble_call_error_rest_name(std::string name, const rs_registered_lambda *lambda, int8_t error);
 
+/**
+ * @brief Create a JSON string with a list of all registered lambdas
+ *
+ * @return A JSON string
+ */
+std::string assemble_list_rest();
+
+/**
+ * @brief Create a JSON string with a list of all registered lambdas of a specific type
+ *
+ * @param type Type of the lambda
+ * @return A JSON string
+ */
+std::string assemble_list_rest_for_type(const rs_lambda_type_t type);
+
 #endif //RIOTSENSORS_RS_REST_H

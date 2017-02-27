@@ -16,6 +16,10 @@ static rs_registered_lambda *lambda_registry[MAX_LAMBDAS];
  */
 static lambda_id_t lambda_counter = 0;
 
+lambda_id_t get_number_of_registered_lambdas() {
+    return lambda_counter;
+}
+
 void init_lambda_registry() {
     for (lambda_id_t i = 0; i < MAX_LAMBDAS; i++) {
         lambda_registry[i] = NULL;
