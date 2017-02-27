@@ -27,6 +27,9 @@ struct spt_context linux_sptctx;
 
 pthread_mutex_t accessing_registry = PTHREAD_MUTEX_INITIALIZER;
 
+/**
+ * @brief Additional data to store with a lambda in the registry
+ */
 typedef struct {
     pthread_cond_t wait_result;
     bool data_cached;

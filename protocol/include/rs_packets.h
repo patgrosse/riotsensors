@@ -157,10 +157,16 @@ typedef char *rs_string_t;
  * Packet definitions from RIOT to Linux
  */
 
+/**
+ * @brief riotsensors base packet
+ */
 typedef struct __packed {
     rs_packet_type_t ptype;
 } rs_packet_base_t;
 
+/**
+ * @brief riotsensors packet when a lambda gets registered
+ */
 typedef struct __packed {
     rs_packet_base_t base;
     char name[MAX_LAMBDA_NAME_LENGTH];
@@ -168,33 +174,53 @@ typedef struct __packed {
     rs_cache_type_t cache;
 } rs_packet_registered_t;
 
+/**
+ * @brief riotsensors packet when a lambda gets unregistered
+ */
 typedef struct __packed {
     rs_packet_base_t base;
     lambda_id_t lambda_id;
     char name[MAX_LAMBDA_NAME_LENGTH];
 } rs_packet_unregistered_t;
 
+/**
+ * @brief riotsensors base packet for lambda call results
+ */
 typedef struct __packed {
     rs_packet_base_t base;
     lambda_id_t lambda_id;
     char name[MAX_LAMBDA_NAME_LENGTH];
 } rs_packet_lambda_result_t;
 
+/**
+ * @brief riotsensors packet for errors occurred in calls
+ */
 typedef struct __packed {
     rs_packet_lambda_result_t result_base;
     int8_t error_code;
 } rs_packet_lambda_result_error_t;
 
+/**
+ * @brief riotsensors packet for integer results
+ */
 typedef struct __packed {
     rs_packet_lambda_result_t result_base;
     rs_int_t result;
 } rs_packet_lambda_result_int_t;
 
+/**
+ * @brief riotsensors packet for double results
+ */
 typedef struct __packed {
     rs_packet_lambda_result_t result_base;
     rs_double_t result;
 } rs_packet_lambda_result_double_t;
 
+/**
+ * @brief riotsensors packet for string results
+ *
+ * Warning: sizeof() must not be used because the result is mostly longer that one char
+ */
 typedef struct __packed {
     rs_packet_lambda_result_t result_base;
     uint16_t result_length;
@@ -205,12 +231,18 @@ typedef struct __packed {
  * Packet definitions from Linux to RIOT
  */
 
+/**
+ * @brief riotsensors packet to call a lambda by it's id
+ */
 typedef struct __packed {
     rs_packet_base_t base;
     lambda_id_t lambda_id;
     rs_lambda_type_t expected_type;
 } rs_packet_call_by_id_t;
 
+/**
+ * @brief riotsensors packet to call a lambda by it's name
+ */
 typedef struct __packed {
     rs_packet_base_t base;
     char name[MAX_LAMBDA_NAME_LENGTH];
@@ -222,24 +254,74 @@ typedef struct __packed {
  * most operations are just for legacy reasons and do not do anything at the moment
  */
 
+/**
+ * @brief convert a rs_packet_base_t packet from host to network byte order
+ *
+ * @param pkt Packet
+ */
 void hton_rs_packet_base_t(rs_packet_base_t *pkt);
 
+/**
+ * @brief convert a rs_packet_registered_t packet from host to network byte order
+ *
+ * @param pkt Packet
+ */
 void hton_rs_packet_registered_t(rs_packet_registered_t *pkt);
 
+/**
+ * @brief convert a rs_packet_unregistered_t packet from host to network byte order
+ *
+ * @param pkt Packet
+ */
 void hton_rs_packet_unregistered_t(rs_packet_unregistered_t *pkt);
 
+/**
+ * @brief convert a rs_packet_lambda_result_t packet from host to network byte order
+ *
+ * @param pkt Packet
+ */
 void hton_rs_packet_lambda_result_t(rs_packet_lambda_result_t *pkt);
 
+/**
+ * @brief convert a rs_packet_lambda_result_error_t packet from host to network byte order
+ *
+ * @param pkt Packet
+ */
 void hton_rs_packet_lambda_result_error_t(rs_packet_lambda_result_error_t *pkt);
 
+/**
+ * @brief convert a rs_packet_lambda_result_int_t packet from host to network byte order
+ *
+ * @param pkt Packet
+ */
 void hton_rs_packet_lambda_result_int_t(rs_packet_lambda_result_int_t *pkt);
 
+/**
+ * @brief convert a rs_packet_lambda_result_double_t packet from host to network byte order
+ *
+ * @param pkt Packet
+ */
 void hton_rs_packet_lambda_result_double_t(rs_packet_lambda_result_double_t *pkt);
 
+/**
+ * @brief convert a rs_packet_lambda_result_string_t packet from host to network byte order
+ *
+ * @param pkt Packet
+ */
 void hton_rs_packet_lambda_result_string_t(rs_packet_lambda_result_string_t *pkt);
 
+/**
+ * @brief convert a rs_packet_call_by_id_t packet from host to network byte order
+ *
+ * @param pkt Packet
+ */
 void hton_rs_packet_call_by_id_t(rs_packet_call_by_id_t *pkt);
 
+/**
+ * @brief convert a rs_packet_call_by_name_t packet from host to network byte order
+ *
+ * @param pkt Packet
+ */
 void hton_rs_packet_call_by_name_t(rs_packet_call_by_name_t *pkt);
 
 /*
@@ -247,24 +329,74 @@ void hton_rs_packet_call_by_name_t(rs_packet_call_by_name_t *pkt);
  * most operations are just for legacy reasons and do not do anything at the moment
  */
 
+/**
+ * @brief convert a rs_packet_base_t packet from network to host byte order
+ *
+ * @param pkt Packet
+ */
 void ntoh_rs_packet_base_t(rs_packet_base_t *pkt);
 
+/**
+ * @brief convert a rs_packet_registered_t packet from network to host byte order
+ *
+ * @param pkt Packet
+ */
 void ntoh_rs_packet_registered_t(rs_packet_registered_t *pkt);
 
+/**
+ * @brief convert a rs_packet_unregistered_t packet from network to host byte order
+ *
+ * @param pkt Packet
+ */
 void ntoh_rs_packet_unregistered_t(rs_packet_unregistered_t *pkt);
 
+/**
+ * @brief convert a rs_packet_lambda_result_t packet from network to host byte order
+ *
+ * @param pkt Packet
+ */
 void ntoh_rs_packet_lambda_result_t(rs_packet_lambda_result_t *pkt);
 
+/**
+ * @brief convert a rs_packet_lambda_result_error_t packet from network to host byte order
+ *
+ * @param pkt Packet
+ */
 void ntoh_rs_packet_lambda_result_error_t(rs_packet_lambda_result_error_t *pkt);
 
+/**
+ * @brief convert a rs_packet_lambda_result_int_t packet from network to host byte order
+ *
+ * @param pkt Packet
+ */
 void ntoh_rs_packet_lambda_result_int_t(rs_packet_lambda_result_int_t *pkt);
 
+/**
+ * @brief convert a rs_packet_lambda_result_double_t packet from network to host byte order
+ *
+ * @param pkt Packet
+ */
 void ntoh_rs_packet_lambda_result_double_t(rs_packet_lambda_result_double_t *pkt);
 
+/**
+ * @brief convert a rs_packet_lambda_result_string_t packet from network to host byte order
+ *
+ * @param pkt Packet
+ */
 void ntoh_rs_packet_lambda_result_string_t(rs_packet_lambda_result_string_t *pkt);
 
+/**
+ * @brief convert a rs_packet_call_by_id_t packet from network to host byte order
+ *
+ * @param pkt Packet
+ */
 void ntoh_rs_packet_call_by_id_t(rs_packet_call_by_id_t *pkt);
 
+/**
+ * @brief convert a rs_packet_call_by_name_t packet from network to host byte order
+ *
+ * @param pkt Packet
+ */
 void ntoh_rs_packet_call_by_name_t(rs_packet_call_by_name_t *pkt);
 
 #endif //RIOTSENSORS_PACKETS_H

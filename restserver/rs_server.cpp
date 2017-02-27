@@ -32,7 +32,13 @@ rs_lambda_type_t get_lambda_type_from_string(std::string str) {
 }
 
 class RiotsensorsHandler {
+private:
+    Http::Endpoint *server;
 public:
+
+    void setServer(Http::Endpoint *server) {
+        this->server = server;
+    }
 
     void handleCallById(const Rest::Request &request, Http::ResponseWriter response) {
         std::string str_type = request.param(":type").as<std::string>();
@@ -109,6 +115,7 @@ public:
     void handleKill(const Rest::Request &request, Http::ResponseWriter response) {
         raise(SIGINT);
         response.send(Http::Code::Ok, "Kill\n");
+        server->shutdown();
     }
 };
 
@@ -135,6 +142,8 @@ int main() {
     Http::Endpoint server(addr);
     server.init(opts);
     server.setHandler(router.handler());
+    handler.setServer(&server);
+
     server.serve();
 
     server.shutdown();
