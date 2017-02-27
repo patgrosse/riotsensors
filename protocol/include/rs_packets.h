@@ -198,7 +198,7 @@ typedef struct __packed {
 typedef struct __packed {
     rs_packet_lambda_result_t result_base;
     uint16_t result_length;
-    rs_string_t result;
+    char result;
 } rs_packet_lambda_result_string_t;
 
 /*

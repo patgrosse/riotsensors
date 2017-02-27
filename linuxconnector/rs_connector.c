@@ -137,26 +137,32 @@ void handle_received_packet(struct spt_context *sptctx, struct serial_data_packe
                 }
             }
         } else if (ptype == RS_PACKET_RESULT_STRING) {
-            if (packet->len != sizeof(rs_packet_lambda_result_string_t)) {
+            if (packet->len < sizeof(rs_packet_lambda_result_string_t)) {
                 fprintf(stderr,
-                        "Packet with size %d has the wrong size for packet type rs_packet_lambda_result_string_t (size %d)\n",
+                        "Packet with size %d has the wrong size for packet type rs_packet_lambda_result_string_t (min size %d)\n",
                         packet->len,
                         (int) sizeof(rs_packet_lambda_result_string_t));
             } else {
-                rs_packet_lambda_result_string_t mypkt;
-                memcpy(&mypkt, packet->data, sizeof(rs_packet_lambda_result_string_t));
-                ntoh_rs_packet_lambda_result_string_t(&mypkt);
-                rs_registered_lambda *lambda = get_registered_lambda_by_id(mypkt.result_base.lambda_id);
+                rs_packet_lambda_result_string_t *mypkt = malloc(packet->len);
+                memcpy(mypkt, packet->data, packet->len);
+                ntoh_rs_packet_lambda_result_string_t(mypkt);
+                rs_registered_lambda *lambda = get_registered_lambda_by_id(mypkt->result_base.lambda_id);
                 if (lambda == NULL) {
                     fprintf(stderr,
                             "Error while processing string result packet of lambda with id %d: lambda unknown\n",
-                            mypkt.result_base.lambda_id);
+                            mypkt->result_base.lambda_id);
                 } else {
                     rs_linux_registered_lambda *arg = lambda->arg;
-                    arg->ret.ret_s = mypkt.result;
+                    if (arg->data_cached) {
+                        free(arg->ret.ret_s);
+                    }
+                    char *result = malloc(mypkt->result_length);
+                    memcpy(result, &mypkt->result, mypkt->result_length);
+                    arg->ret.ret_s = result;
                     arg->data_cached = true;
                     pthread_cond_broadcast(&arg->wait_result);
-                    spt_log_msg("packet", "Received string result of lambda with id %d\n", mypkt.result_base.lambda_id);
+                    spt_log_msg("packet", "Received string result of lambda with id %d\n",
+                                mypkt->result_base.lambda_id);
                 }
             }
         } else if (ptype == RS_PACKET_RESULT_ERROR) {

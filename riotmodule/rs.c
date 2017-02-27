@@ -198,17 +198,22 @@ int8_t send_result_lambda_string(const lambda_id_t id, rs_string_t result) {
         return RS_RESULT_WRONGTYPE;
     }
     if (rs_spt_started) {
-        rs_packet_lambda_result_string_t *pkt = malloc(sizeof(rs_packet_lambda_result_string_t));
+        size_t res_len = strlen(result) + 1;
+        size_t pkt_size =
+                sizeof(rs_packet_lambda_result_string_t) - sizeof(char) + res_len;
+        rs_packet_lambda_result_string_t *pkt = malloc(pkt_size);
         pkt->result_base.base.ptype = RS_PACKET_RESULT_STRING;
         populate_resultbase_from_lambda(&pkt->result_base, reg_lambda);
-        pkt->result = result;
+        pkt->result_length = (uint16_t) res_len;
+        memcpy(&pkt->result, result, res_len);
         hton_rs_packet_lambda_result_string_t(pkt);
         struct serial_data_packet sdpkt;
         sdpkt.data = (char *) pkt;
-        sdpkt.len = sizeof(*pkt);
+        sdpkt.len = (uint16_t) pkt_size;
         spt_send_packet(&rs_sptctx, &sdpkt);
         free(pkt);
     }
+    free(result);
     return RS_RESULT_SUCCESS;
 }
 

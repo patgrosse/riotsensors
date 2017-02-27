@@ -8,7 +8,6 @@
 #include <netinet/in.h>
 #include <ieee754_network.h>
 #include <rs_packets.h>
-#include <values.h>
 #include <stddef.h>
 
 void htons_w(uint16_t *in) {
