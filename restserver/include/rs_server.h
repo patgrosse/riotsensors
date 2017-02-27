@@ -64,6 +64,14 @@ public:
     void handleList(const Rest::Request &request, Http::ResponseWriter response);
 
     /**
+     * @brief Handle a REST call to list all registered lambdas and their cached results
+     *
+     * @param request Received request
+     * @param response Response to send
+     */
+    void handleCache(const Rest::Request &request, Http::ResponseWriter response);
+
+    /**
      * @brief Handle a REST call to kill the server
      *
      * @param request Received request

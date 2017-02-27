@@ -14,6 +14,8 @@
 #define RIOTSENSORS_RS_CONNECTOR_H
 
 #include <rs_packets.h>
+#include <pthread.h>
+#include <stdbool.h>
 
 /**
  * @brief Provides enough space to store every return type of a lambda
@@ -26,6 +28,16 @@ typedef union {
     /** @brief String return type */
     rs_string_t ret_s;
 } generic_lambda_return;
+
+/**
+ * @brief Additional data to store with a lambda in the registry
+ */
+typedef struct {
+    pthread_cond_t wait_result;
+    bool data_cached;
+    int8_t last_call_error;
+    generic_lambda_return ret;
+} rs_linux_registered_lambda;
 
 /**
  * @brief Start listening to the given serial connection

@@ -10,7 +10,6 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <memory.h>
-#include <pthread.h>
 
 #include <serial_io.h>
 #include <spt.h>
@@ -26,16 +25,6 @@ struct serial_io_context linux_sictx;
 struct spt_context linux_sptctx;
 
 pthread_mutex_t accessing_registry = PTHREAD_MUTEX_INITIALIZER;
-
-/**
- * @brief Additional data to store with a lambda in the registry
- */
-typedef struct {
-    pthread_cond_t wait_result;
-    bool data_cached;
-    int8_t last_call_error;
-    generic_lambda_return ret;
-} rs_linux_registered_lambda;
 
 void handle_received_packet(struct spt_context *sptctx, struct serial_data_packet *packet) {
     UNUSED(sptctx);
