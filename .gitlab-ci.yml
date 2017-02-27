@@ -27,6 +27,8 @@ getlibs:
     paths:
     - lib/
 cmake:
+  variables:
+    GIT_STRATEGY: none
   stage: cmake
   dependencies:
     - getlibs
@@ -38,6 +40,8 @@ cmake:
     paths:
     - build/
 build:protocol:
+  variables:
+    GIT_STRATEGY: none
   stage: buildProtocol
   dependencies:
     - cmake
@@ -49,6 +53,8 @@ build:protocol:
     paths:
     - build/
 build:RIOTmodule:
+  variables:
+    GIT_STRATEGY: none
   stage: build
   dependencies:
     - getlibs
@@ -60,6 +66,8 @@ build:RIOTmodule:
     paths:
     - build/
 build:linuxconnector:
+  variables:
+    GIT_STRATEGY: none
   stage: build
   dependencies:
     - getlibs
@@ -71,6 +79,8 @@ build:linuxconnector:
     paths:
     - build/
 build:restserver:
+  variables:
+    GIT_STRATEGY: none
   stage: buildServer
   dependencies:
     - getlibs
@@ -82,6 +92,8 @@ build:restserver:
     paths:
     - build/
 test:protocol:
+  variables:
+    GIT_STRATEGY: none
   stage: test
   dependencies:
     - build:protocol
@@ -89,6 +101,8 @@ test:protocol:
     - "cd build/protocol/tests"
     - "./protocol_tests"
 test:RIOTmodule:
+  variables:
+    GIT_STRATEGY: none
   stage: test
   dependencies:
     - build:RIOTmodule
@@ -96,6 +110,8 @@ test:RIOTmodule:
     - "cd build/riotmodule/tests"
     - "./riot_tests"
 test:linuxconnector:
+  variables:
+    GIT_STRATEGY: none
   stage: test
   dependencies:
     - build:linuxconnector
@@ -103,6 +119,8 @@ test:linuxconnector:
     - "cd build/linuxconnector/tests"
     - "./linux_tests"
 doxygenDocs:
+  variables:
+    GIT_STRATEGY: none
   stage: docs
   dependencies: []
   before_script: []
