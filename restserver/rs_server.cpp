@@ -5,7 +5,6 @@
  */
 
 #include "rs_server.h"
-#include <endpoint.h>
 #include <router.h>
 #include <signal.h>
 #include <rs_rest.h>
@@ -31,93 +30,87 @@ rs_lambda_type_t get_lambda_type_from_string(std::string str) {
     }
 }
 
-class RiotsensorsHandler {
-private:
-    Http::Endpoint *server;
-public:
+void RiotsensorsHandler::setServer(Http::Endpoint *server) {
+    this->server = server;
+}
 
-    void setServer(Http::Endpoint *server) {
-        this->server = server;
+void RiotsensorsHandler::handleCallById(const Rest::Request &request, Http::ResponseWriter response) {
+    std::string str_type = request.param(":type").as<std::string>();
+    rs_lambda_type_t type = get_lambda_type_from_string(str_type);
+    if (type == 0) {
+        response.send(Http::Code::Bad_Request, "Unknown lambda type\n");
     }
+    int int_id = request.param(":id").as<int>();
+    if (int_id < 0) {
+        response.send(Http::Code::Bad_Request, "Bad lambda id\n");
+    }
+    lambda_id_t id = (lambda_id_t) int_id;
+    spt_log_msg("web", "Calling for lambda by ID with ID %d and expected type %d...\n", id, type);
+    generic_lambda_return result;
+    int8_t res = call_lambda_by_id(id, type, &result);
+    auto m1 = MIME(Application, Json);
+    response.setMime(m1);
+    rs_registered_lambda *lambda = get_registered_lambda_by_id(id);
+    if (res == RS_CALL_SUCCESS) {
+        response.send(Http::Code::Ok,
+                      assemble_call_success_rest(lambda, false, false, &result));
+    } else if (res == RS_CALL_CACHE) {
+        response.send(Http::Code::Ok,
+                      assemble_call_success_rest(lambda, true, false, &result));
+    } else if (res == RS_CALL_CACHE_TIMEOUT) {
+        response.send(Http::Code::Ok,
+                      assemble_call_success_rest(lambda, true, true, &result));
+    } else {
+        response.send(Http::Code::Internal_Server_Error, assemble_call_error_rest_id(id, lambda, res));
+    }
+}
 
-    void handleCallById(const Rest::Request &request, Http::ResponseWriter response) {
-        std::string str_type = request.param(":type").as<std::string>();
-        rs_lambda_type_t type = get_lambda_type_from_string(str_type);
+void RiotsensorsHandler::handleCallByName(const Rest::Request &request, Http::ResponseWriter response) {
+    std::string str_type = request.param(":type").as<std::string>();
+    rs_lambda_type_t type = get_lambda_type_from_string(str_type);
+    if (type == 0) {
+        response.send(Http::Code::Bad_Request, "Unknown lambda type\n");
+    }
+    std::string name = request.param(":name").as<std::string>();
+    spt_log_msg("web", "Calling for lambda by name with name %s and expected type %d...\n", name.c_str(), type);
+    generic_lambda_return result;
+    int8_t res = call_lambda_by_name(name.c_str(), type, &result);
+    auto m1 = MIME(Application, Json);
+    response.setMime(m1);
+    rs_registered_lambda *lambda = get_registered_lambda_by_name(name.c_str());
+    if (res == RS_CALL_SUCCESS) {
+        response.send(Http::Code::Ok,
+                      assemble_call_success_rest(lambda, false, false, &result));
+    } else if (res == RS_CALL_CACHE) {
+        response.send(Http::Code::Ok,
+                      assemble_call_success_rest(lambda, true, false, &result));
+    } else if (res == RS_CALL_CACHE_TIMEOUT) {
+        response.send(Http::Code::Ok,
+                      assemble_call_success_rest(lambda, true, true, &result));
+    } else {
+        response.send(Http::Code::Internal_Server_Error, assemble_call_error_rest_name(name, lambda, res));
+    }
+}
+
+void RiotsensorsHandler::handleList(const Rest::Request &request, Http::ResponseWriter response) {
+    auto typeparam = request.query().get("type");
+    if (typeparam.isEmpty()) {
+        response.send(Http::Code::Ok, "List method all\n");
+    } else {
+        rs_lambda_type_t type = get_lambda_type_from_string(typeparam.get());
         if (type == 0) {
             response.send(Http::Code::Bad_Request, "Unknown lambda type\n");
-        }
-        int int_id = request.param(":id").as<int>();
-        if (int_id < 0) {
-            response.send(Http::Code::Bad_Request, "Bad lambda id\n");
-        }
-        lambda_id_t id = (lambda_id_t) int_id;
-        spt_log_msg("web", "Calling for lambda by ID with ID %d and expected type %d...\n", id, type);
-        generic_lambda_return result;
-        int8_t res = call_lambda_by_id(id, type, &result);
-        auto m1 = MIME(Application, Json);
-        response.setMime(m1);
-        rs_registered_lambda *lambda = get_registered_lambda_by_id(id);
-        if (res == RS_CALL_SUCCESS) {
-            response.send(Http::Code::Ok,
-                          assemble_call_success_rest(lambda, false, false, &result));
-        } else if (res == RS_CALL_CACHE) {
-            response.send(Http::Code::Ok,
-                          assemble_call_success_rest(lambda, true, false, &result));
-        } else if (res == RS_CALL_CACHE_TIMEOUT) {
-            response.send(Http::Code::Ok,
-                          assemble_call_success_rest(lambda, true, true, &result));
         } else {
-            response.send(Http::Code::Internal_Server_Error, assemble_call_error_rest_id(id, lambda, res));
+            response.send(Http::Code::Ok, "List method just on lambda\n");
         }
     }
+}
 
-    void handleCallByName(const Rest::Request &request, Http::ResponseWriter response) {
-        std::string str_type = request.param(":type").as<std::string>();
-        rs_lambda_type_t type = get_lambda_type_from_string(str_type);
-        if (type == 0) {
-            response.send(Http::Code::Bad_Request, "Unknown lambda type\n");
-        }
-        std::string name = request.param(":name").as<std::string>();
-        spt_log_msg("web", "Calling for lambda by name with name %s and expected type %d...\n", name.c_str(), type);
-        generic_lambda_return result;
-        int8_t res = call_lambda_by_name(name.c_str(), type, &result);
-        auto m1 = MIME(Application, Json);
-        response.setMime(m1);
-        rs_registered_lambda *lambda = get_registered_lambda_by_name(name.c_str());
-        if (res == RS_CALL_SUCCESS) {
-            response.send(Http::Code::Ok,
-                          assemble_call_success_rest(lambda, false, false, &result));
-        } else if (res == RS_CALL_CACHE) {
-            response.send(Http::Code::Ok,
-                          assemble_call_success_rest(lambda, true, false, &result));
-        } else if (res == RS_CALL_CACHE_TIMEOUT) {
-            response.send(Http::Code::Ok,
-                          assemble_call_success_rest(lambda, true, true, &result));
-        } else {
-            response.send(Http::Code::Internal_Server_Error, assemble_call_error_rest_name(name, lambda, res));
-        }
-    }
-
-    void handleList(const Rest::Request &request, Http::ResponseWriter response) {
-        auto typeparam = request.query().get("type");
-        if (typeparam.isEmpty()) {
-            response.send(Http::Code::Ok, "List method all\n");
-        } else {
-            rs_lambda_type_t type = get_lambda_type_from_string(typeparam.get());
-            if (type == 0) {
-                response.send(Http::Code::Bad_Request, "Unknown lambda type\n");
-            } else {
-                response.send(Http::Code::Ok, "List method just on lambda\n");
-            }
-        }
-    }
-
-    void handleKill(const Rest::Request &request, Http::ResponseWriter response) {
-        raise(SIGINT);
-        response.send(Http::Code::Ok, "Kill\n");
-        server->shutdown();
-    }
-};
+void RiotsensorsHandler::handleKill(const Rest::Request &request, Http::ResponseWriter response) {
+    raise(SIGINT);
+    response.send(Http::Code::Ok, "Kill\n");
+    server->shutdown();
+}
 
 int main() {
     // riotsensors linux connector

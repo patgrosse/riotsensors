@@ -8,13 +8,11 @@
 #include <rapidjson/stringbuffer.h>
 #include <rapidjson/writer.h>
 
-using namespace rapidjson;
-
 std::string
 assemble_call_success_rest(rs_registered_lambda *lambda, bool cache_retrieved, bool timeout,
                            generic_lambda_return *result) {
-    StringBuffer s;
-    Writer<StringBuffer> writer(s);
+    rapidjson::StringBuffer s;
+    rapidjson::Writer<rapidjson::StringBuffer> writer(s);
     writer.StartObject();
     writer.Key("success");
     writer.Bool(true);
@@ -68,8 +66,8 @@ assemble_call_success_rest(rs_registered_lambda *lambda, bool cache_retrieved, b
 }
 
 std::string assemble_call_error_rest_id(lambda_id_t id, const rs_registered_lambda *lambda, int8_t error) {
-    StringBuffer s;
-    Writer<StringBuffer> writer(s);
+    rapidjson::StringBuffer s;
+    rapidjson::Writer<rapidjson::StringBuffer> writer(s);
     writer.StartObject();
     writer.Key("success");
     writer.Bool(false);
@@ -121,8 +119,8 @@ std::string assemble_call_error_rest_id(lambda_id_t id, const rs_registered_lamb
 }
 
 std::string assemble_call_error_rest_name(std::string name, const rs_registered_lambda *lambda, int8_t error) {
-    StringBuffer s;
-    Writer<StringBuffer> writer(s);
+    rapidjson::StringBuffer s;
+    rapidjson::Writer<rapidjson::StringBuffer> writer(s);
     writer.StartObject();
     writer.Key("success");
     writer.Bool(false);
