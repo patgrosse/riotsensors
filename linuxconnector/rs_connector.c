@@ -228,18 +228,28 @@ int8_t wait_lambda_result(rs_registered_lambda *lambda, generic_lambda_return *r
         }
         if (lambda->cache == RS_CACHE_ON_TIMEOUT) {
             if (arg->data_cached) {
+                spt_log_msg("cache",
+                            "Using cached result for lambda with ID %d and cache policy RS_CACHE_ON_TIMEOUT because of timeout\n",
+                            lambda->id);
                 *result = arg->ret;
                 pthread_mutex_unlock(&accessing_registry);
                 return RS_CALL_CACHE_TIMEOUT;
             } else {
+                spt_log_msg("cache",
+                            "Could not find result for lambda with ID %d and cache policy RS_CACHE_ON_TIMEOUT in cache, tried because of timeout\n",
+                            lambda->id);
                 pthread_mutex_unlock(&accessing_registry);
                 return RS_CALL_CACHE_TIMEOUT_EMPTY;
             }
         } else {
+            spt_log_msg("result",
+                        "Did not get result for lambda with ID %d in time\n", lambda->id);
             pthread_mutex_unlock(&accessing_registry);
             return RS_CALL_TIMEOUT;
         }
     }
+    spt_log_msg("result",
+                "Got result of lambda with ID %d in time\n", lambda->id);
     memcpy(result, &arg->ret, sizeof(generic_lambda_return));
     pthread_mutex_unlock(&accessing_registry);
     return RS_CALL_SUCCESS;
@@ -252,6 +262,9 @@ int8_t check_lambda_cache(rs_registered_lambda *lambda, generic_lambda_return *r
             return RS_CALL_SUCCESS;
         case RS_CACHE_CALL_ONCE:
             if (arg->data_cached) {
+                spt_log_msg("cache",
+                            "Found result for lambda with ID %d and cache policy RS_CACHE_CALL_ONCE in cache\n",
+                            lambda->id);
                 *result = arg->ret;
                 return RS_CALL_CACHE;
             } else {
@@ -259,9 +272,15 @@ int8_t check_lambda_cache(rs_registered_lambda *lambda, generic_lambda_return *r
             }
         case RS_CACHE_ONLY:
             if (arg->data_cached) {
+                spt_log_msg("cache",
+                            "Found result for lambda with ID %d and cache policy RS_CACHE_ONLY in cache\n",
+                            lambda->id);
                 *result = arg->ret;
                 return RS_CALL_CACHE;
             } else {
+                spt_log_msg("cache",
+                            "Could not find result for lambda with ID %d and cache policy RS_CACHE_ONLY in cache\n",
+                            lambda->id);
                 return RS_CALL_CACHE_EMPTY;
             }
         default:
