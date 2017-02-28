@@ -7,6 +7,7 @@ stages:
   - test
   - buildServer
   - docs
+  - deploy
 #cache:
 #  key: "$CI_BUILD_REF_NAME"
 #  paths:
@@ -114,3 +115,17 @@ doxygenDocs:
   artifacts:
     paths:
       - "build/doxygen"
+pages:
+  stage: deploy
+  dependencies:
+    - doxygenDocs
+  before_script: []
+  script:
+    - rm -rf public
+    - mkdir -p public/doxygen
+    - cp -r build/doxygen/html/ public/doxygen
+  artifacts:
+    paths:
+    - public
+  only:
+  - master
