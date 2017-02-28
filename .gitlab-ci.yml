@@ -128,7 +128,7 @@ swaggerDocs:
     - "update-ca-certificates"
     - "apk --no-cache add openssl"
     - "wget https://oss.sonatype.org/content/repositories/releases/io/swagger/swagger-codegen-cli/2.2.1/swagger-codegen-cli-2.2.1.jar"
-    - "java -jar swagger-codegen-cli-2.2.1.jar -i restserver/swagger.yml -l html2 -o build/swagger"
+    - "java -jar swagger-codegen-cli-2.2.1.jar generate -i restserver/swagger.yml -l html2 -o build/swagger"
   artifacts:
     paths:
       - "build/swagger"
