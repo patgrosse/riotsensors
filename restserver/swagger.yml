@@ -30,6 +30,7 @@ definitions:
 paths:
   /call/id/{type}/{id}:
     get:
+      operationId: callLambdaById
       summary: Call a lambda by it's ID
       produces:
       - application/json
@@ -58,6 +59,7 @@ paths:
           
   /call/name/{type}/{name}:
     get:
+      operationId: callLambdaByName
       summary:  Call a lambda by it's name
       produces:
       - application/json
@@ -85,6 +87,7 @@ paths:
             $ref: '#/definitions/CallFailure'
   /list:
     get:
+      operationId: listLambdas
       summary: List all registered lambdas and their properties
       produces:
       - application/json
@@ -112,6 +115,7 @@ paths:
             type: string
   /showcache:
     get:
+      operationId: showLambdaCache
       summary: List all registered lambdas, their properties and the cached values, if available
       produces:
       - application/json
@@ -150,7 +154,8 @@ paths:
             type: string
   /kill:
     get:
-      summary: Kill the server and close the allocated resources properly
+      operationId: shutdownServer
+      summary: Shutdown the server and close the allocated resources properly
       produces:
       - text/plain
       responses:
