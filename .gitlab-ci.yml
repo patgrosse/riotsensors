@@ -115,15 +115,31 @@ doxygenDocs:
   artifacts:
     paths:
       - "build/doxygen"
+swaggerDocs:
+  stage: docs
+  dependencies: []
+  before_script: []
+  image: openjdk:alpine
+  when: always
+  script:
+    - "mkdir -p build/swagger"
+    - "wget https://oss.sonatype.org/content/repositories/releases/io/swagger/swagger-codegen-cli/2.2.1/swagger-codegen-cli-2.2.1.jar"
+    - "java -jar swagger-codegen-cli-2.2.1.jar -i restserver/swagger.yml -l html2 -o build/swagger"
+  artifacts:
+    paths:
+      - "build/swagger"
 pages:
   stage: deploy
   dependencies:
     - doxygenDocs
+    - swaggerDocs
   before_script: []
   script:
     - rm -rf public
     - mkdir -p public/doxygen
+    - mkdir -p public/swagger
     - cp -r build/doxygen/html/* public/doxygen
+    - cp -r build/swagger/* public/swagger
   artifacts:
     paths:
     - public
