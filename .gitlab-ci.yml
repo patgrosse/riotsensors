@@ -1,4 +1,4 @@
-image: patgrosse/bachelor
+image: patgrosse/riotsensors-build
 stages:
   - prepare
   - cmake
