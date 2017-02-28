@@ -14,10 +14,10 @@ stages:
 #    - lib/gcc-arm-none-eabi-6_2-2016q4-20161216-linux.tar.bz2
 before_script:
   - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
-  - eval $(ssh-agent -s)
-  - ssh-add <(echo "$SSH_PRIVATE_KEY")
-  - mkdir -p ~/.ssh
-  - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
+  - 'eval $(ssh-agent -s)'
+  - 'ssh-add <(echo "$SSH_PRIVATE_KEY")'
+  - 'mkdir -p ~/.ssh'
+  - 'echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
 getlibs:
   variables:
     GIT_STRATEGY: clone
@@ -139,11 +139,13 @@ pages:
     - swaggerDocs
   before_script: []
   script:
-    - rm -rf public
-    - mkdir -p public/doxygen
-    - mkdir -p public/swagger
-    - cp -r build/doxygen/html/* public/doxygen
-    - cp -r build/swagger/* public/swagger
+    - "rm -rf public"
+    - "mkdir -p public"
+    - "cp -r docs/* public"
+    - "mkdir -p public/doxygen"
+    - "cp -r build/doxygen/html/* public/doxygen"
+    - "mkdir -p public/swagger"
+    - "cp -r build/swagger/* public/swagger"
   artifacts:
     paths:
     - public
