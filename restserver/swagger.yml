@@ -1,0 +1,221 @@
+swagger: '2.0'
+info:
+  description: REST API of the Linux server from riotsensors
+  version: "1.0"
+  title: riotsensors REST API
+  contact:
+    email: patrick.grosse@uni-muenster.de
+
+  license:
+    name: Proprietary
+
+schemes:
+- http
+definitions:
+  LambdaId: &lambdaId
+    description: ID of a registered lambda
+    type: integer
+    minimum: 0
+    maximum: 255
+  LambdaType: &lambdaType
+    description: Type of a registered lambda
+    type: integer
+    minimum: 1
+    maximum: 3
+  LambdaName: &lambdaName
+    description: Name of a registered lambda
+    type: string
+    minLength: 1
+    maxLength: 12
+paths:
+  /call/id/{type}/{id}:
+    get:
+      summary: Call a lambda by it's ID
+      produces:
+      - application/json
+      parameters:
+      - in: path
+        name: type
+        required: true
+        <<: *lambdaType
+      - in: path
+        name: id
+        required: true
+        <<: *lambdaId
+      responses:
+        200:
+          description: "Success (success: `true`)"
+          schema:
+            $ref: '#/definitions/CallSuccess'
+        400:
+          description: Invalid type given
+          schema:
+            type: string
+        500:
+          description: "Error occurred while calling lambda (success: `false`)"
+          schema:
+            $ref: '#/definitions/CallFailure'
+          
+  /call/name/{type}/{name}:
+    get:
+      summary:  Call a lambda by it's name
+      produces:
+      - application/json
+      parameters:
+      - in: path
+        name: type
+        required: true
+        <<: *lambdaType
+      - in: path
+        name: name
+        required: true
+        <<: *lambdaName
+      responses:
+        200:
+          description: "Success (success: `true`)"
+          schema:
+            $ref: '#/definitions/CallSuccess'
+        400:
+          description: Invalid type given
+          schema:
+            type: string
+        500:
+          description: "Error occurred while calling lambda (success: `false`)"
+          schema:
+            $ref: '#/definitions/CallFailure'
+  /list:
+    get:
+      summary: List all registered lambdas and their properties
+      produces:
+      - application/json
+      parameters:
+      - in: query
+        name: type
+        description: List only the lambdas of a specific type, type of the lambdas (see LambdaType)
+        required: false
+        <<: *lambdaType
+      responses:
+        200:
+          description: Success
+          schema:
+            type: object
+            properties:
+              lambdas:
+                type: array
+                items:
+                  $ref: '#/definitions/LambdaData'
+              count:
+                type: integer
+        400:
+          description: Invalid type given
+          schema:
+            type: string
+  /showcache:
+    get:
+      summary: List all registered lambdas, their properties and the cached values, if available
+      produces:
+      - application/json
+      parameters:
+      - in: query
+        name: type
+        description: List only the lambdas of a specific type, type of the lambdas (see LambdaType)
+        required: false
+        <<: *lambdaType
+      responses:
+        200:
+          description: Success
+          schema:
+            type: object
+            properties:
+              lambdas:
+                type: object
+                properties:
+                  lambda_id:
+                    type: object
+                    properties:
+                      lambda:
+                        $ref: '#/definitions/LambdaData'
+                      cache-content:
+                        type: object
+                        properties:
+                          cache-available:
+                            type: boolean
+                          cached-result:
+                            type: string
+              count:
+                type: integer
+        400:
+          description: Invalid type given
+          schema:
+            type: string
+  /kill:
+    get:
+      summary: Kill the server and close the allocated resources properly
+      produces:
+      - text/plain
+      responses:
+        200:
+          description: Success
+          schema:
+            type: string
+definitions:
+  CallSuccess:
+    type: object
+    properties:
+      success:
+        type: boolean
+      lambda:
+        $ref: '#/definitions/LambdaData'
+      cache:
+        type: object
+        properties:
+          retrieved:
+            type: boolean
+          timeout:
+            type: boolean
+      result:
+        type: object
+  CallFailure:
+    type: object
+    properties:
+      success:
+        type: boolean
+      lambda:
+        $ref: '#/definitions/LambdaData'
+      cache:
+        type: object
+        properties:
+          retrieved:
+            type: boolean
+          timeout:
+            type: boolean
+      result:
+        type: object
+  LambdaData:
+    description: A registered lambda and all it's properties
+    type: object
+    properties:
+      id:
+        $ref: '#/definitions/LambdaId'
+      name:
+        $ref: '#/definitions/LambdaName'
+      type:
+        type: object
+        properties:
+          code:
+            $ref: '#/definitions/LambdaType'
+          string:
+            type: string
+      cache:
+        type: object
+        properties:
+          policy:
+            type: integer
+          string:
+            type: string
+  LambdaId:
+    <<: *lambdaId
+  LambdaType:
+    <<: *lambdaType
+  LambdaName:
+    <<: *lambdaName
