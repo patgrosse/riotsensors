@@ -123,7 +123,7 @@ pages:
   script:
     - rm -rf public
     - mkdir -p public/doxygen
-    - cp -r build/doxygen/html/ public/doxygen
+    - cp -r build/doxygen/html/* public/doxygen
   artifacts:
     paths:
     - public
