@@ -208,7 +208,7 @@ int rs_linux_start(const char *serial_file) {
     return 0;
 }
 
-int rs_linux_stop() {
+int rs_linux_stop(void) {
     spt_stop(&linux_sptctx);
     free_lambda_registry();
     return 0;

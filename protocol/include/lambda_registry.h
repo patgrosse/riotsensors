@@ -40,17 +40,17 @@ typedef struct {
  *
  * @return Amount of registered lambdas
  */
-lambda_id_t get_number_of_registered_lambdas();
+lambda_id_t get_number_of_registered_lambdas(void);
 
 /**
  * @brief Initialize the internal lambda registry
  */
-void init_lambda_registry();
+void init_lambda_registry(void);
 
 /**
  * @brief Unregister all lambdas and free the allocated memory
  */
-void free_lambda_registry();
+void free_lambda_registry(void);
 
 /**
  * @brief Get a registered lambda and it's properties by it's ID

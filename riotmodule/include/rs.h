@@ -41,12 +41,12 @@ typedef rs_string_t (*lambda_string_t)(lambda_id_t);
 /**
  * @brief Initialize the internal lambda registry and start packet processing
  */
-void rs_start();
+void rs_start(void);
 
 /**
  * @brief Unregister all lambdas, stop the packet processing and free the allocated memory
  */
-void rs_stop();
+void rs_stop(void);
 
 /**
  * @brief Register an integer lambda

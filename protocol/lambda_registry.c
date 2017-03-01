@@ -16,17 +16,17 @@ static rs_registered_lambda *lambda_registry[MAX_LAMBDAS];
  */
 static lambda_id_t lambda_counter = 0;
 
-lambda_id_t get_number_of_registered_lambdas() {
+lambda_id_t get_number_of_registered_lambdas(void) {
     return lambda_counter;
 }
 
-void init_lambda_registry() {
+void init_lambda_registry(void) {
     for (lambda_id_t i = 0; i < MAX_LAMBDAS; i++) {
         lambda_registry[i] = NULL;
     }
 }
 
-void free_lambda_registry() {
+void free_lambda_registry(void) {
     for (lambda_id_t i = 0; i < lambda_counter; i++) {
         if (lambda_registry[i] != NULL) {
             free(lambda_registry[i]);

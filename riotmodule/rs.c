@@ -350,7 +350,7 @@ void handle_received_packet(struct spt_context *sptctx, struct serial_data_packe
     }
 }
 
-void rs_start() {
+void rs_start(void) {
     init_lambda_registry();
     serial_io_context_init(&rs_sictx, STDIN_FILENO, STDOUT_FILENO);
     spt_init_context(&rs_sptctx, &rs_sictx, handle_received_packet);
@@ -358,7 +358,7 @@ void rs_start() {
     rs_spt_started = true;
 }
 
-void rs_stop() {
+void rs_stop(void) {
     rs_spt_started = false;
     free_lambda_registry();
     spt_stop(&rs_sptctx);

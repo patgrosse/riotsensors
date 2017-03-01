@@ -52,7 +52,7 @@ int rs_linux_start(const char *serial_file);
  *
  * @return 0 on success
  */
-int rs_linux_stop();
+int rs_linux_stop(void);
 
 /**
  * @brief Send a packet to call a lambda by it's
