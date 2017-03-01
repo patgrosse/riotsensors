@@ -5,10 +5,8 @@ info:
   title: riotsensors REST API
   contact:
     email: patrick.grosse@uni-muenster.de
-
   license:
     name: Proprietary
-
 schemes:
 - http
 definitions:
@@ -51,12 +49,12 @@ paths:
         400:
           description: Invalid type given
           schema:
+            description: A string explaining a wrong type was given
             type: string
         500:
           description: "Error occurred while calling lambda (success: `false`)"
           schema:
             $ref: '#/definitions/CallFailure'
-          
   /call/name/{type}/{name}:
     get:
       operationId: callLambdaByName
@@ -80,6 +78,7 @@ paths:
         400:
           description: Invalid type given
           schema:
+            description: A string explaining a wrong type was given
             type: string
         500:
           description: "Error occurred while calling lambda (success: `false`)"
@@ -104,14 +103,17 @@ paths:
             type: object
             properties:
               lambdas:
+                description: All lambdas matched the query parameters
                 type: array
                 items:
                   $ref: '#/definitions/LambdaData'
               count:
+                description: Amount of lambdas matched the query parameters
                 type: integer
         400:
           description: Invalid type given
           schema:
+            description: A string explaining a wrong type was given
             type: string
   /showcache:
     get:
@@ -132,25 +134,33 @@ paths:
             type: object
             properties:
               lambdas:
+                description: All lambdas matched the query parameters
                 type: object
                 properties:
                   lambda_id:
+                    description: Each lambda found is mapped by it's ID
                     type: object
                     properties:
                       lambda:
                         $ref: '#/definitions/LambdaData'
                       cache-content:
+                        description: Information about the cache state of the lambda
                         type: object
+                        required:
+                          - cache-available
                         properties:
                           cache-available:
+                            description: If a value is cached
                             type: boolean
                           cached-result:
-                            type: string
+                            $ref: '#/definitions/LambdaReturn'
               count:
+                description: Amount of lambdas matched the query parameters
                 type: integer
         400:
           description: Invalid type given
           schema:
+            description: A string explaining a wrong type was given
             type: string
   /kill:
     get:
@@ -162,40 +172,46 @@ paths:
         200:
           description: Success
           schema:
+            description: A string explaining the server is going to be shutdown
             type: string
 definitions:
   CallSuccess:
     type: object
     properties:
       success:
+        description: Set to true on success
         type: boolean
       lambda:
         $ref: '#/definitions/LambdaData'
       cache:
         type: object
+        description: State of the cache for this call
         properties:
           retrieved:
+            description: If the value was retrieved from cache instead of directly from the device
             type: boolean
           timeout:
+            description: If the value was retrieved from cache because an error occurred
             type: boolean
       result:
-        type: object
+        $ref: '#/definitions/LambdaReturn'
   CallFailure:
     type: object
     properties:
       success:
+        description: Set to false on errors
         type: boolean
       lambda:
         $ref: '#/definitions/LambdaData'
-      cache:
+      error:
         type: object
         properties:
-          retrieved:
-            type: boolean
-          timeout:
-            type: boolean
-      result:
-        type: object
+          code:
+            description: Error code
+            type: integer
+          string:
+            description: Human readable error description
+            type: string
   LambdaData:
     description: A registered lambda and all it's properties
     type: object
@@ -205,18 +221,23 @@ definitions:
       name:
         $ref: '#/definitions/LambdaName'
       type:
+        description: Information about the type of the lambda
         type: object
         properties:
           code:
             $ref: '#/definitions/LambdaType'
           string:
+            description: Human readable string of lambda type
             type: string
       cache:
+        description: Information about the cache of the lambda
         type: object
         properties:
           policy:
+            description: Cache policy of the lambda
             type: integer
           string:
+            description: Human readable string of cache policy
             type: string
   LambdaId:
     <<: *lambdaId
@@ -224,3 +245,16 @@ definitions:
     <<: *lambdaType
   LambdaName:
     <<: *lambdaName
+  LambdaReturn:
+    description: Return value of a lambda, can be either an integer, a double or a string (determined by the lambda type) LambdaIntReturn, LambdaDoubleReturn, LambdaStringReturn
+    type: object
+    allOf:
+      - $ref: '#/definitions/LambdaIntReturn'
+      - $ref: '#/definitions/LambdaDoubleReturn'
+      - $ref: '#/definitions/LambdaStringReturn'
+  LambdaIntReturn:
+    type: integer
+  LambdaDoubleReturn:
+    type: number
+  LambdaStringReturn:
+    type: string
