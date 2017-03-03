@@ -26,6 +26,10 @@ bool rs_spt_started = false;
 
 int8_t
 register_lambda(const char *name, lambda_generic_t lambda, const rs_lambda_type_t type, const rs_cache_type_t cache) {
+    if (lambda == NULL && cache != RS_CACHE_ONLY) {
+        fprintf(stderr, "lambda == NULL is only valid with cache == RS_CACHE_ONLY\n");
+        return RS_REGISTER_INVALPARAM;
+    }
     int8_t res = lambda_registry_register(name, type, cache, lambda);
     if (res < 0) {
         return res;

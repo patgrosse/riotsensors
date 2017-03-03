@@ -5,13 +5,12 @@
  */
 
 #include <rs_constants.h>
-#include <inttypes.h>
 #include <stddef.h>
 
 const char *stringify_rs_register_result(int8_t c) {
     static const char *strings[] = {NULL, "RS_REGISTER_INVALNAME", "RS_REGISTER_DUPLICATE", "RS_REGISTER_LIMIT_REACHED",
-                                    "RS_REGISTER_NOMEM"};
-    if (c < -4 || c > -1) {
+                                    "RS_REGISTER_NOMEM", "RS_REGISTER_INVALPARAM"};
+    if (c < -5 || c > -1) {
         return NULL;
     } else {
         return strings[-c];

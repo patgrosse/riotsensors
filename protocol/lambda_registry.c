@@ -4,6 +4,7 @@
  *  Copyright (C) 2017 Patrick Grosse <patrick.grosse@uni-muenster.de>
  */
 
+#include <ctype.h>
 #include "lambda_registry.h"
 
 /**
@@ -61,7 +62,14 @@ int8_t lambda_registry_register(const char *name, const rs_lambda_type_t type, c
     }
     size_t name_len = strlen(name);
     if (name_len == 0 || name_len > MAX_LAMBDA_NAME_LENGTH) {
+        fprintf(stderr, "String is empty or too long for lambda name: %s\n", name);
         return RS_REGISTER_INVALNAME;
+    }
+    for (size_t i = 0; i < name_len; i++) {
+        if (!isalnum(name[i])) {
+            fprintf(stderr, "String contains a not alphanumeric character '%c': %s\n", name[i], name);
+            return RS_REGISTER_INVALNAME;
+        }
     }
     if (get_registered_lambda_by_name(name) != NULL) {
         return RS_REGISTER_DUPLICATE;

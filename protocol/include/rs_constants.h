@@ -29,6 +29,8 @@
 #define RS_REGISTER_LIMIT_REACHED -3
 /** @brief Could not allocate the required memory */
 #define RS_REGISTER_NOMEM -4
+/** @brief A parameter/a combination of parameters is invalid */
+#define RS_REGISTER_INVALPARAM -5
 
 /**
  * Get a human readable string for a register result
