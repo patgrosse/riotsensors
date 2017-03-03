@@ -15,8 +15,8 @@ include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 include_directories(${SRC_DIR}/include)
 
 # sources
-set(FILES_IN_TEST ${SRC_DIR}/ieee754_network.c)
-set(TEST_FILES ieee754_network_test.cpp)
+set(FILES_IN_TEST ${SRC_DIR}/ieee754_network.c ${SRC_DIR}/lambda_registry.c ${SRC_DIR}/rs_packets.c)
+set(TEST_FILES ieee754_network_test.cpp lambda_registry_test.cpp rs_packets_test.cpp)
 
 # targets
 add_executable(protocol_tests ${FILES_IN_TEST} ${TEST_FILES})

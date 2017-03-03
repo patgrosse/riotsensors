@@ -95,6 +95,9 @@ int8_t lambda_registry_unregister(const lambda_id_t id) {
     if (id >= MAX_LAMBDAS || id >= lambda_counter) {
         return RS_UNREGISTER_NOTFOUND;
     }
+    if (lambda_registry[id] == NULL) {
+        return RS_UNREGISTER_NOTFOUND;
+    }
     free(lambda_registry[id]);
     lambda_registry[id] = NULL;
     return RS_UNREGISTER_SUCCESS;
