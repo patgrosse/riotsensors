@@ -10,7 +10,7 @@ include_directories(${SRC_DIR}/include)
 
 # sources
 set(FILES_IN_TEST ${SRC_DIR}/rs_connector.c)
-set(TEST_FILES "")
+set(TEST_FILES rs_connector_test.cpp)
 
 # targets
 add_executable(linux_tests ${FILES_IN_TEST} ${TEST_FILES})

@@ -14,6 +14,7 @@
 #define RIOTSENSORS_RS_H
 
 #include <inttypes.h>
+
 #include <rs_packets.h>
 
 /** @brief The sending of a result was successfully */

@@ -13,9 +13,11 @@
 #ifndef RIOTSENSORS_RS_CONNECTOR_H
 #define RIOTSENSORS_RS_CONNECTOR_H
 
-#include <rs_packets.h>
 #include <pthread.h>
 #include <stdbool.h>
+
+#include <spt.h>
+#include <rs_packets.h>
 
 /**
  * @brief Provides enough space to store every return type of a lambda
@@ -73,5 +75,14 @@ int8_t call_lambda_by_id(lambda_id_t id, rs_lambda_type_t expected_type, generic
  * @return A RS_CALL_* constant
  */
 int8_t call_lambda_by_name(const char *name, rs_lambda_type_t expected_type, generic_lambda_return *result);
+
+/**
+ * @brief Handle an incoming binary data packet
+ * Should not be used in user programs, internal use only
+ *
+ * @param sptctx Context of libspt
+ * @param packet Received packet
+ */
+void handle_received_packet(struct spt_context *sptctx, struct serial_data_packet *packet);
 
 #endif //RIOTSENSORS_RS_CONNECTOR_H

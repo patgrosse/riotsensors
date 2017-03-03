@@ -5,6 +5,7 @@
  */
 
 #include <rs_constants.h>
+
 #include <stddef.h>
 
 const char *stringify_rs_register_result(int8_t c) {

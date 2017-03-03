@@ -4,8 +4,9 @@
  *  Copyright (C) 2017 Patrick Grosse <patrick.grosse@uni-muenster.de>
  */
 
+#include <lambda_registry.h>
+
 #include <ctype.h>
-#include "lambda_registry.h"
 
 /**
  * All registered lambdas

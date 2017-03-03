@@ -4,11 +4,12 @@
  *  Copyright (C) 2017 Patrick Grosse <patrick.grosse@uni-muenster.de>
  */
 
+#include <rs_packets.h>
 
 #include <netinet/in.h>
-#include <ieee754_network.h>
-#include <rs_packets.h>
 #include <stddef.h>
+
+#include <ieee754_network.h>
 
 void htons_w(uint16_t *in) {
     *in = htons(*in);

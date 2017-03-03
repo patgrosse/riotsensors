@@ -5,15 +5,14 @@
  */
 
 #include <rs.h>
+
 #include <memory.h>
 #include <malloc.h>
-#include <unused.h>
 #include <unistd.h>
-#include <serial_io.h>
+
 #include <spt.h>
-#include <stdio.h>
-#include <rs_packets.h>
 #include <lambda_registry.h>
+#include <unused.h>
 
 /**
  * @brief Function header for a generic lambda, internal use only
@@ -43,7 +42,7 @@ register_lambda(const char *name, lambda_generic_t lambda, const rs_lambda_type_
         pkt->cache = cache;
         hton_rs_packet_registered_t(pkt);
         struct serial_data_packet sdpkt;
-        sdpkt.data = (char *) pkt;
+        sdpkt.data = (uint8_t *) pkt;
         sdpkt.len = sizeof(*pkt);
         spt_send_packet(&rs_sptctx, &sdpkt);
         free(pkt);
@@ -146,7 +145,7 @@ int8_t send_result_lambda_int(const lambda_id_t id, rs_int_t result) {
         pkt->result = result;
         hton_rs_packet_lambda_result_int_t(pkt);
         struct serial_data_packet sdpkt;
-        sdpkt.data = (char *) pkt;
+        sdpkt.data = (uint8_t *) pkt;
         sdpkt.len = sizeof(*pkt);
         spt_send_packet(&rs_sptctx, &sdpkt);
         free(pkt);
@@ -177,7 +176,7 @@ int8_t send_result_lambda_double(const lambda_id_t id, rs_double_t result) {
         pkt->result = result;
         hton_rs_packet_lambda_result_double_t(pkt);
         struct serial_data_packet sdpkt;
-        sdpkt.data = (char *) pkt;
+        sdpkt.data = (uint8_t *) pkt;
         sdpkt.len = sizeof(*pkt);
         spt_send_packet(&rs_sptctx, &sdpkt);
         free(pkt);
@@ -212,7 +211,7 @@ int8_t send_result_lambda_string(const lambda_id_t id, rs_string_t result) {
         memcpy(&pkt->result, result, res_len);
         hton_rs_packet_lambda_result_string_t(pkt);
         struct serial_data_packet sdpkt;
-        sdpkt.data = (char *) pkt;
+        sdpkt.data = (uint8_t *) pkt;
         sdpkt.len = (uint16_t) pkt_size;
         spt_send_packet(&rs_sptctx, &sdpkt);
         free(pkt);
@@ -243,7 +242,7 @@ int8_t unregister_lambda(const lambda_id_t id) {
         strcpy(pkt->name, reg_lambda->name);
         hton_rs_packet_unregistered_t(pkt);
         struct serial_data_packet sdpkt;
-        sdpkt.data = (char *) pkt;
+        sdpkt.data = (uint8_t *) pkt;
         sdpkt.len = sizeof(*pkt);
         spt_send_packet(&rs_sptctx, &sdpkt);
         free(pkt);
@@ -297,7 +296,7 @@ void handle_call_lambda(lambda_id_t id, rs_lambda_type_t expected_type) {
         pkt->error_code = call_res;
         hton_rs_packet_lambda_result_error_t(pkt);
         struct serial_data_packet sdpkt;
-        sdpkt.data = (char *) pkt;
+        sdpkt.data = (uint8_t *) pkt;
         sdpkt.len = sizeof(*pkt);
         spt_send_packet(&rs_sptctx, &sdpkt);
         free(pkt);

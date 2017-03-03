@@ -6,20 +6,14 @@
 
 #include <rs_connector.h>
 
-#include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <memory.h>
-
-#include <serial_io.h>
-#include <spt.h>
 #include <unused.h>
+#include <errno.h>
+
 #include <spt_logger.h>
 #include <tty_utils.h>
-#include <rs_packets.h>
 #include <lambda_registry.h>
-#include <errno.h>
-#include <time.h>
 
 struct serial_io_context linux_sictx;
 struct spt_context linux_sptctx;
@@ -27,7 +21,6 @@ struct spt_context linux_sptctx;
 pthread_mutex_t accessing_registry = PTHREAD_MUTEX_INITIALIZER;
 
 void handle_received_packet(struct spt_context *sptctx, struct serial_data_packet *packet) {
-    UNUSED(sptctx);
     if (sptctx->log_in_line) {
         putchar('\n');
     }
@@ -312,7 +305,7 @@ int8_t call_lambda_by_id(lambda_id_t id, rs_lambda_type_t expected_type, generic
     mypkt->expected_type = expected_type;
     hton_rs_packet_call_by_id_t(mypkt);
     struct serial_data_packet pkt;
-    pkt.data = (char *) mypkt;
+    pkt.data = (uint8_t *) mypkt;
     pkt.len = sizeof(*mypkt);
     spt_send_packet(&linux_sptctx, &pkt);
     free(mypkt);
@@ -343,7 +336,7 @@ int8_t call_lambda_by_name(const char *name, rs_lambda_type_t expected_type, gen
     mypkt->expected_type = expected_type;
     hton_rs_packet_call_by_name_t(mypkt);
     struct serial_data_packet pkt;
-    pkt.data = (char *) mypkt;
+    pkt.data = (uint8_t *) mypkt;
     pkt.len = sizeof(*mypkt);
     spt_send_packet(&linux_sptctx, &pkt);
     free(mypkt);

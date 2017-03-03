@@ -13,11 +13,12 @@
 #ifndef RIOTSENSORS_LAMBDA_REGISTRY_H
 #define RIOTSENSORS_LAMBDA_REGISTRY_H
 
-#include <rs_packets.h>
 #include <stddef.h>
 #include <string.h>
-#include <rs_constants.h>
 #include <malloc.h>
+
+#include <rs_packets.h>
+#include <rs_constants.h>
 
 /**
  * @brief A known and registered lambda in the registry

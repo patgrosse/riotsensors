@@ -14,6 +14,7 @@
 #define RIOTSENSORS_PACKETS_H
 
 #include <stdint.h>
+
 #include <rs_constants.h>
 
 /*
