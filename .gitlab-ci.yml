@@ -140,6 +140,7 @@ pages:
     - doxygenDocs
     - swaggerDocs
   before_script: []
+  when: always
   script:
     - "rm -rf public"
     - "mkdir -p public"
