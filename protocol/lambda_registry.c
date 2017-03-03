@@ -7,6 +7,7 @@
 #include <lambda_registry.h>
 
 #include <ctype.h>
+#include <stdio.h>
 
 /**
  * All registered lambdas

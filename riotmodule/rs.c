@@ -9,6 +9,7 @@
 #include <memory.h>
 #include <malloc.h>
 #include <unistd.h>
+#include <stdio.h>
 
 #include <spt.h>
 #include <lambda_registry.h>
