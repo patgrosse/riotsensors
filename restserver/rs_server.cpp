@@ -60,7 +60,7 @@ void RiotsensorsHandler::handleCallById(const Rest::Request &request, Http::Resp
         response.send(Http::Code::Ok,
                       assemble_call_success_rest(lambda, true, true, &result));
     } else {
-        response.send(Http::Code::Internal_Server_Error, assemble_call_error_rest_id(id, lambda, res));
+        response.send(Http::Code::Not_Found, assemble_call_error_rest_id(id, lambda, res));
     }
 }
 
@@ -87,7 +87,7 @@ void RiotsensorsHandler::handleCallByName(const Rest::Request &request, Http::Re
         response.send(Http::Code::Ok,
                       assemble_call_success_rest(lambda, true, true, &result));
     } else {
-        response.send(Http::Code::Internal_Server_Error, assemble_call_error_rest_name(name, lambda, res));
+        response.send(Http::Code::Not_Found, assemble_call_error_rest_name(name, lambda, res));
     }
 }
 
@@ -95,6 +95,8 @@ void RiotsensorsHandler::handleList(const Rest::Request &request, Http::Response
     auto typeparam = request.query().get("type");
     if (typeparam.isEmpty()) {
         spt_log_msg("web", "Listing all registered lambdas...\n");
+        auto m1 = MIME(Application, Json);
+        response.setMime(m1);
         response.send(Http::Code::Ok, assemble_list_rest());
     } else {
         rs_lambda_type_t type = get_lambda_type_from_string(typeparam.get());
@@ -102,6 +104,8 @@ void RiotsensorsHandler::handleList(const Rest::Request &request, Http::Response
             response.send(Http::Code::Bad_Request, "Unknown lambda type\n");
         } else {
             spt_log_msg("web", "Listing all registered lambdas for type %d...\n", type);
+            auto m1 = MIME(Application, Json);
+            response.setMime(m1);
             response.send(Http::Code::Ok, assemble_list_rest_for_type(type));
         }
     }
@@ -118,6 +122,8 @@ void RiotsensorsHandler::handleCache(const Rest::Request &request, Http::Respons
     auto typeparam = request.query().get("type");
     if (typeparam.isEmpty()) {
         spt_log_msg("web", "Listing all registered lambdas and the cached values...\n");
+        auto m1 = MIME(Application, Json);
+        response.setMime(m1);
         response.send(Http::Code::Ok, assemble_cache_rest());
     } else {
         rs_lambda_type_t type = get_lambda_type_from_string(typeparam.get());
@@ -125,6 +131,8 @@ void RiotsensorsHandler::handleCache(const Rest::Request &request, Http::Respons
             response.send(Http::Code::Bad_Request, "Unknown lambda type\n");
         } else {
             spt_log_msg("web", "Listing all registered lambdas and the cached values for type %d...\n", type);
+            auto m1 = MIME(Application, Json);
+            response.setMime(m1);
             response.send(Http::Code::Ok, assemble_cache_rest_for_type(type));
         }
     }
