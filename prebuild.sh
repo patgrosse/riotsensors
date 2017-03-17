@@ -1,10 +1,14 @@
 #!/bin/bash
 set -e
 cd lib
+GITLAB_PREFIX="https://gitlab.com/"
+if [ ! -z ${GITLAB_USE_SSH+x} ]; then
+    GITLAB_PREFIX="git@gitlab.com:"
+fi
 echo "======= libspt"
 if [ ! -d "libspt" ]; then
     echo "------- Using git clone"
-    git clone --depth=1 git@gitlab.com:patgrosse/libspt.git libspt
+    git clone --depth=1 ${GITLAB_PREFIX}patgrosse/libspt.git libspt
 else
     echo "------- Already exists"
 fi

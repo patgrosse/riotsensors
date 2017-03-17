@@ -23,7 +23,7 @@ getlibs:
     GIT_STRATEGY: clone
   stage: prepare
   script:
-    - "./prebuild.sh"
+    - "GITLAB_USE_SSH=1 ./prebuild.sh"
   artifacts:
     paths:
     - lib/
