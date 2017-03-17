@@ -4,7 +4,12 @@ RS_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 RS_BUILD_DIR ?= $(RS_DIR)/build
 RS_PROTOCOL_DIR ?= $(RS_DIR)/../protocol
 LIBSPT_DIR ?= $(RS_BUILD_DIR)/libspt
+
+ifdef GITLAB_USE_SSH
 LIBSPT_GIT_URL ?= git@gitlab.com:patgrosse/libspt.git
+else
+LIBSPT_GIT_URL ?= https://gitlab.com/patgrosse/libspt.git
+endif
 
 # get libspt specific variables
 include $(LIBSPT_DIR)/Makefile.inc
