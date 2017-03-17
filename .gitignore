@@ -4,3 +4,5 @@ cmake-build-debug/**
 lib/gcc-arm-none-eabi-*/**
 protocol/build/**
 riotmodule/build/**
+lib/RIOT/**
+lib/libspt/**

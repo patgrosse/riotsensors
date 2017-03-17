@@ -6,12 +6,7 @@ if [ ! -d "libspt" ]; then
     echo "------- Using git clone"
     git clone --depth=1 git@gitlab.com:patgrosse/libspt.git libspt
 else
-    if [ ! -e "libspt/.git" ]; then
-        echo "------- Using git submodule"
-        git submodule update --init -- libspt
-    else
-        echo "------- Already exists"
-    fi
+    echo "------- Already exists"
 fi
 echo "======= ARM Toolchain"
 if ! type "arm-none-eabi-gcc" &> /dev/null; then
@@ -38,12 +33,7 @@ if [ ! -d "RIOT" ]; then
     echo "------- Using git clone"
     git clone --depth=1 https://github.com/RIOT-OS/RIOT.git RIOT
 else
-    if [ ! -e "RIOT/.git" ]; then
-        echo "------- Using git submodule"
-        git submodule update --init -- RIOT
-    else
-        echo "------- Already exists"
-    fi
+    echo "------- Already exists"
 fi
 echo "======= Googletest"
 if [ ! -d "googletest" ]; then
