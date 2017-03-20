@@ -18,14 +18,13 @@ static rs_lambda_type_t coap_parse_type(coap_pdu_t *request) {
     coap_option_filter_clear(f);
     coap_option_setb(f, COAP_OPTION_URI_QUERY);
     coap_option_iterator_init(request, &opt_iter, f);
-    rs_lambda_type_t type = 0;
-    while ((q = coap_option_next(&opt_iter))) {
-        if (!memcmp("type", coap_opt_value(q), (size_t) std::min(5, (const int &) coap_opt_size(q)))) {
-            coap_option_t opt;
-            coap_opt_parse(q, coap_opt_length(q), &opt);
-            std::string typestr((char *) opt.value + opt.delta + 1);
-            type = get_lambda_type_from_string(typestr);
-            return type;
+    while ((q = coap_option_next(&opt_iter)) != nullptr) {
+        unsigned char *value = coap_opt_value(q);
+        size_t length = coap_opt_length(q);
+        if (!memcmp("type", value, (size_t) std::min(4, (const int &) length))) {
+            size_t arg_len = length - 5;
+            std::string typestr((char *) (value + 5), arg_len);
+            return get_lambda_type_from_string(typestr);
         }
     }
     return 0;
@@ -65,14 +64,16 @@ void RiotsensorsCoAPProvider::handleCallById(coap_context_t *ctx, struct coap_re
     rs_lambda_type_t type = 0;
     lambda_id_t id = 0;
     while ((q = coap_option_next(&opt_iter)) != nullptr) {
-        if (!memcmp("type", coap_opt_value(q), (size_t) std::min(4, (const int &) coap_opt_size(q)))) {
-            size_t arg_len = coap_opt_size(q) - 5;
-            std::string typestr((char *) (coap_opt_value(q) + 5), arg_len);
+        unsigned char *value = coap_opt_value(q);
+        size_t length = coap_opt_length(q);
+        if (!memcmp("type", value, (size_t) std::min(4, (const int &) length))) {
+            size_t arg_len = length - 5;
+            std::string typestr((char *) (value + 5), arg_len);
             type = get_lambda_type_from_string(typestr);
             type_found = true;
-        } else if (!memcmp("id", coap_opt_value(q), (size_t) std::min(2, (const int &) coap_opt_size(q)))) {
-            size_t arg_len = coap_opt_size(q) - 3;
-            std::string idstr((char *) (coap_opt_value(q) + 3), arg_len);
+        } else if (!memcmp("id", coap_opt_value(q), (size_t) std::min(2, (const int &) length))) {
+            size_t arg_len = length - 3;
+            std::string idstr((char *) (value + 3), arg_len);
             try {
                 id = (lambda_id_t) std::stoi(idstr);
             } catch (std::invalid_argument e) {
@@ -132,15 +133,17 @@ void RiotsensorsCoAPProvider::handleCallByName(coap_context_t *ctx, struct coap_
     rs_lambda_type_t type = 0;
     char name[MAX_LAMBDA_NAME_LENGTH + 1];
     while ((q = coap_option_next(&opt_iter)) != nullptr) {
-        if (!memcmp("type", coap_opt_value(q), (size_t) std::min(4, (const int &) coap_opt_size(q)))) {
-            size_t arg_len = coap_opt_size(q) - 5;
-            std::string typestr((char *) (coap_opt_value(q) + 5), arg_len);
+        unsigned char *value = coap_opt_value(q);
+        size_t length = coap_opt_length(q);
+        if (!memcmp("type", value, (size_t) std::min(4, (const int &) length))) {
+            size_t arg_len = length - 5;
+            std::string typestr((char *) (value + 5), arg_len);
             type = get_lambda_type_from_string(typestr);
             type_found = true;
-        } else if (!memcmp("name", coap_opt_value(q), (size_t) std::min(4, (const int &) coap_opt_size(q)))) {
-            size_t arg_len = coap_opt_size(q) - 5;
-            memcpy(name, coap_opt_value(q) + 5, (size_t) std::min(MAX_LAMBDA_NAME_LENGTH,
-                                                                  (const int &) arg_len));
+        } else if (!memcmp("name", value, (size_t) std::min(4, (const int &) length))) {
+            size_t arg_len = length - 5;
+            memcpy(name, value + 5, (size_t) std::min(MAX_LAMBDA_NAME_LENGTH,
+                                                      (const int &) arg_len));
             name[arg_len] = '\0';
             name_found = true;
         }
