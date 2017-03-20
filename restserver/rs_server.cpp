@@ -103,7 +103,7 @@ int main(int argc, char *argv[]) {
 
     spt_log_msg("main", "Starting HTTP server...\n");
     pthread_create(&http_thread, NULL, startHTTPServer, NULL);
-    spt_log_msg("main", "Starting COAP server...\n");
+    spt_log_msg("main", "Starting CoAP server...\n");
     pthread_create(&coap_thread, NULL, startCoAPServer, NULL);
 
     pthread_join(http_thread, NULL);

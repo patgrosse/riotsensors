@@ -2,6 +2,9 @@ cmake_minimum_required(VERSION 3.0)
 
 project(riotsensors_server)
 
+# cmake inclusions
+include(${CMAKE_CURRENT_LIST_DIR}/../cmake/FindLibEvent.cmake)
+
 # dependencies
 include_directories(${LIB_DIR}/pistache/include)
 include_directories(${CMAKE_CURRENT_LIST_DIR}/include)
@@ -30,3 +33,4 @@ target_link_libraries(riotsensors_server riotsensors_protocol)
 target_link_libraries(riotsensors_server libspt)
 target_link_libraries(riotsensors_server coap-1)
 target_link_libraries (riotsensors_server ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(riotsensors_server ${LIBEVENT_LIB})

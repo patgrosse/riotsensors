@@ -5,6 +5,7 @@
  */
 
 #include <rs_server_coap.h>
+#include <event.h>
 
 extern "C" {
 #include <unused.h>
@@ -225,6 +226,12 @@ void RiotsensorsCoAPProvider::handleKill(coap_context_t *ctx, struct coap_resour
                   (unsigned char *) kill_text.c_str());
 }
 
+void handle_read_event(int fd, short what, void *ctx) {
+    UNUSED(fd);
+    UNUSED(what);
+    coap_read((coap_context_t *) ctx);
+}
+
 void *startCoAPServer(void *thread_ctx) {
     UNUSED(thread_ctx);
 
@@ -235,7 +242,6 @@ void *startCoAPServer(void *thread_ctx) {
     coap_resource_t *handlelist_resource;
     coap_resource_t *handlecache_resource;
     coap_resource_t *kill_resource;
-    fd_set readfds;
 
     /* Prepare the CoAP server socket */
     coap_address_init(&serv_addr);
@@ -268,17 +274,12 @@ void *startCoAPServer(void *thread_ctx) {
     coap_add_resource(ctx, handlecache_resource);
     coap_add_resource(ctx, kill_resource);
 
-    /* Listen for incoming connections */
-    while (1) {
-        FD_ZERO(&readfds);
-        FD_SET(ctx->sockfd, &readfds);
-        int result = select(FD_SETSIZE, &readfds, 0, 0, NULL);
-        if (result < 0) {
-            /* socket error */
-            exit(EXIT_FAILURE);
-        } else if (result > 0 && FD_ISSET(ctx->sockfd, &readfds)) {
-            /* socket read */
-            coap_read(ctx);
-        }
-    }
+    struct event_base *ev_base = event_base_new();
+    struct event *ev_cmd = event_new(ev_base, ctx->sockfd, EV_READ | EV_PERSIST,
+                                     handle_read_event, ctx);
+    event_add(ev_cmd, NULL);
+    event_base_dispatch(ev_base);
+    event_base_free(ev_base);
+    event_free(ev_cmd);
+    return NULL;
 }
