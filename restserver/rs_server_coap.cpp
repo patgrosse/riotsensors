@@ -11,6 +11,42 @@ extern "C" {
 #include <unused.h>
 }
 
+/**
+ * Check if the coap_option_t provided in q has the key name, then execute lambda and issue a continue
+ */
+#define try_match_coap_opt_and_execute(name, q, lambda) \
+    if (match_coap_opt_and_execute(name, q, lambda)) { \
+        continue; \
+    }
+
+/**
+ * @brief Check if the coap_option_t provided in q has the key name, then execute lambda
+ *
+ * @param name Name to match against
+ * @param q CoAP option
+ * @param l The lambda to call
+ */
+template<typename Callback>
+static bool match_coap_opt_and_execute(std::string name, coap_opt_t *q, Callback l) {
+    std::string opt_value((char *) coap_opt_value(q), coap_opt_length(q));
+
+    std::string::size_type loc = opt_value.find('=');
+    std::string key_value;
+    if (loc != std::string::npos) {
+        key_value = opt_value.substr(0, loc);
+    } else {
+        key_value = std::string(opt_value);
+    }
+
+    if (!strcmp(name.c_str(), key_value.c_str())) {
+        std::string arg_str = opt_value.substr(name.length() + 1);
+        l(arg_str);
+        return true;
+    } else {
+        return false;
+    }
+}
+
 static rs_lambda_type_t coap_parse_type(coap_pdu_t *request) {
     coap_opt_iterator_t opt_iter;
     coap_opt_filter_t f = {};
@@ -18,16 +54,14 @@ static rs_lambda_type_t coap_parse_type(coap_pdu_t *request) {
     coap_option_filter_clear(f);
     coap_option_setb(f, COAP_OPTION_URI_QUERY);
     coap_option_iterator_init(request, &opt_iter, f);
+    rs_lambda_type_t type = 0;
     while ((q = coap_option_next(&opt_iter)) != nullptr) {
-        unsigned char *value = coap_opt_value(q);
-        size_t length = coap_opt_length(q);
-        if (!memcmp("type", value, (size_t) std::min(4, (const int &) length))) {
-            size_t arg_len = length - 5;
-            std::string typestr((char *) (value + 5), arg_len);
-            return get_lambda_type_from_string(typestr);
-        }
+        auto typelambda = [&type](std::string value) -> void {
+            type = get_lambda_type_from_string(value);
+        };
+        try_match_coap_opt_and_execute("type", q, typelambda);
     }
-    return 0;
+    return type;
 }
 
 static void coap_transfer_data_from_response_info(coap_pdu_t *response, rest_response_info answer) {
@@ -64,23 +98,20 @@ void RiotsensorsCoAPProvider::handleCallById(coap_context_t *ctx, struct coap_re
     rs_lambda_type_t type = 0;
     lambda_id_t id = 0;
     while ((q = coap_option_next(&opt_iter)) != nullptr) {
-        unsigned char *value = coap_opt_value(q);
-        size_t length = coap_opt_length(q);
-        if (!memcmp("type", value, (size_t) std::min(4, (const int &) length))) {
-            size_t arg_len = length - 5;
-            std::string typestr((char *) (value + 5), arg_len);
-            type = get_lambda_type_from_string(typestr);
+        auto typelambda = [&type, &type_found](std::string value) -> void {
+            type = get_lambda_type_from_string(value);
             type_found = true;
-        } else if (!memcmp("id", coap_opt_value(q), (size_t) std::min(2, (const int &) length))) {
-            size_t arg_len = length - 3;
-            std::string idstr((char *) (value + 3), arg_len);
+        };
+        try_match_coap_opt_and_execute("type", q, typelambda)
+        auto idlambda = [&id, &id_found](std::string value) -> void {
             try {
-                id = (lambda_id_t) std::stoi(idstr);
+                id = (lambda_id_t) std::stoi(value);
             } catch (std::invalid_argument e) {
                 id = (lambda_id_t) -1;
             }
             id_found = true;
-        }
+        };
+        try_match_coap_opt_and_execute("id", q, idlambda)
     }
     if (!id_found) {
         static std::string missing_id_text = "Missing id query parameter";
@@ -131,22 +162,18 @@ void RiotsensorsCoAPProvider::handleCallByName(coap_context_t *ctx, struct coap_
     bool type_found = false;
     bool name_found = false;
     rs_lambda_type_t type = 0;
-    char name[MAX_LAMBDA_NAME_LENGTH + 1];
+    std::string name;
     while ((q = coap_option_next(&opt_iter)) != nullptr) {
-        unsigned char *value = coap_opt_value(q);
-        size_t length = coap_opt_length(q);
-        if (!memcmp("type", value, (size_t) std::min(4, (const int &) length))) {
-            size_t arg_len = length - 5;
-            std::string typestr((char *) (value + 5), arg_len);
-            type = get_lambda_type_from_string(typestr);
+        auto typelambda = [&type, &type_found](std::string value) -> void {
+            type = get_lambda_type_from_string(value);
             type_found = true;
-        } else if (!memcmp("name", value, (size_t) std::min(4, (const int &) length))) {
-            size_t arg_len = length - 5;
-            memcpy(name, value + 5, (size_t) std::min(MAX_LAMBDA_NAME_LENGTH,
-                                                      (const int &) arg_len));
-            name[arg_len] = '\0';
+        };
+        try_match_coap_opt_and_execute("type", q, typelambda)
+        auto namelambda = [&name, &name_found](std::string value) -> void {
+            name = value;
             name_found = true;
-        }
+        };
+        try_match_coap_opt_and_execute("name", q, namelambda)
     }
     if (!name_found) {
         static std::string missing_name_text = "Missing name query parameter";
@@ -162,7 +189,7 @@ void RiotsensorsCoAPProvider::handleCallByName(coap_context_t *ctx, struct coap_
                       (unsigned char *) missing_type_text.c_str());
         return;
     }
-    if (strlen(name) == 0) {
+    if (name.length() == 0) {
         static std::string missing_id_text = "Illegal name parameter";
         response->hdr->code = COAP_RESPONSE_CODE(400);
         coap_add_data(response, (unsigned int) missing_id_text.length(),
