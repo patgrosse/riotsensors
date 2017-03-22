@@ -1,8 +1,6 @@
 #include <gtest/gtest.h>
 
-extern "C" {
 #include <rs_packets.h>
-}
 
 TEST(rs_packets, rs_packet_base_t) {
     rs_packet_base_t pkt;

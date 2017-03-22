@@ -14,10 +14,7 @@
 #define RIOTSENSORS_RS_SERVER_H
 
 #include <endpoint.h>
-
-extern "C" {
 #include <rs_packets.h>
-};
 
 using namespace Net;
 

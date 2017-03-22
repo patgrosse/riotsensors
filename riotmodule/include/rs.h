@@ -17,6 +17,10 @@
 
 #include <rs_packets.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** @brief The sending of a result was successfully */
 #define RS_RESULT_SUCCESS 0
 /** @brief Lambda with the given ID was not found */
@@ -205,5 +209,9 @@ int8_t unregister_lambda(const lambda_id_t id);
  * @return The lambda ID on success or (lambda_id_t) -1 if not found
  */
 lambda_id_t get_lambda_id_from_name(const char *name);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif //RIOTSENSORS_RS_H

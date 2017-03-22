@@ -5,11 +5,9 @@
  */
 
 #include <rs_server_coap.h>
-#include <event.h>
 
-extern "C" {
+#include <event.h>
 #include <unused.h>
-}
 
 /**
  * Check if the coap_option_t provided in q has the key name, then execute lambda and issue a continue

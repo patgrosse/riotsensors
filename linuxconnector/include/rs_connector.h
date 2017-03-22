@@ -19,6 +19,10 @@
 #include <spt.h>
 #include <rs_packets.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * @brief Provides enough space to store every return type of a lambda
  */
@@ -84,5 +88,9 @@ int8_t call_lambda_by_name(const char *name, rs_lambda_type_t expected_type, gen
  * @param packet Received packet
  */
 void handle_received_packet(struct spt_context *sptctx, struct serial_data_packet *packet);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif //RIOTSENSORS_RS_CONNECTOR_H

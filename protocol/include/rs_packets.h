@@ -17,6 +17,10 @@
 
 #include <rs_constants.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /*
  * Packet identifier
  */
@@ -399,5 +403,9 @@ void ntoh_rs_packet_call_by_id_t(rs_packet_call_by_id_t *pkt);
  * @param pkt Packet
  */
 void ntoh_rs_packet_call_by_name_t(rs_packet_call_by_name_t *pkt);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif //RIOTSENSORS_PACKETS_H

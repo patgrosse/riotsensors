@@ -5,13 +5,11 @@
  */
 
 #include <rs_server.h>
+
 #include <rs_rest.h>
 #include <rs_server_coap.h>
 #include <rs_server_http.h>
-
-extern "C" {
 #include <spt_logger.h>
-}
 
 static pthread_t http_thread;
 static pthread_t coap_thread;

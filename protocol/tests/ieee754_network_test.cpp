@@ -1,9 +1,7 @@
 #include <gtest/gtest.h>
 #include <inttypes.h>
 
-extern "C" {
 #include <ieee754_network.h>
-}
 
 TEST(ieee754_network, single_precision) {
     float f = 3.1415926f, f2;

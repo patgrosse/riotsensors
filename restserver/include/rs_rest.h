@@ -14,11 +14,8 @@
 #define RIOTSENSORS_RS_REST_H
 
 #include <iostream>
-
-extern "C" {
 #include <lambda_registry.h>
 #include <rs_connector.h>
-};
 
 /**
  * @brief Create a JSON string for successful calls

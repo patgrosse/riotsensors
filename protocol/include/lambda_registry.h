@@ -20,6 +20,10 @@
 #include <rs_packets.h>
 #include <rs_constants.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * @brief A known and registered lambda in the registry
  */
@@ -87,5 +91,9 @@ int8_t lambda_registry_register(const char *name, const rs_lambda_type_t type, c
  * @return A RS_UNREGISTER_* constant
  */
 int8_t lambda_registry_unregister(const lambda_id_t id);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif //RIOTSENSORS_LAMBDA_REGISTRY_H

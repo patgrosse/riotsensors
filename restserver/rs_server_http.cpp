@@ -8,11 +8,8 @@
 
 #include <signal.h>
 #include <rs_rest.h>
-
-extern "C" {
 #include <spt_logger.h>
 #include <unused.h>
-}
 
 using namespace Net;
 

@@ -15,6 +15,10 @@
 
 #include <inttypes.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** @brief Maximum number of registered lambdas */
 #define MAX_LAMBDAS 255
 
@@ -74,5 +78,9 @@ const char *stringify_rs_unregister_result(int8_t c);
  * @return A string or NULL
  */
 const char *stringify_rs_call_result(int8_t c);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif //RIOTSENSORS_RS_CONSTANTS_H

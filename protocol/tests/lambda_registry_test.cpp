@@ -1,8 +1,6 @@
 #include <gtest/gtest.h>
 
-extern "C" {
 #include <lambda_registry.h>
-}
 
 static int testval1 = 1;
 static int testval2 = 2;

@@ -1,9 +1,7 @@
 #include <gtest/gtest.h>
 
-extern "C" {
 #include <rs_connector.h>
 #include <lambda_registry.h>
-}
 
 TEST(rs_connector, handle_register) {
     struct spt_context sptctx;

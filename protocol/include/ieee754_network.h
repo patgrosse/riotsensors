@@ -17,6 +17,10 @@
 
 #include <stdint.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** @brief Convert a single precision floating point to IEEE754 */
 #define pack754_32(f) (pack754((f), 32, 8))
 /** @brief Convert a double precision floating point to IEEE754 */
@@ -43,5 +47,9 @@ uint64_t pack754(long double f, unsigned bits, unsigned expbits);
  * @return The host system representation of the given IEEE754 number
  */
 long double unpack754(uint64_t i, unsigned bits, unsigned expbits);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif //RIOTSENSORS_IEEE754_NETWORK_H
