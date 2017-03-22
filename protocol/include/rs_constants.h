@@ -37,7 +37,8 @@ extern "C" {
 #define RS_REGISTER_INVALPARAM -5
 
 /**
- * Get a human readable string for a register result
+ * @brief Get a human readable string for a register result
+ *
  * @param c RS_REGISTER_* constant
  * @return A string or NULL
  */
@@ -49,7 +50,8 @@ const char *stringify_rs_register_result(int8_t c);
 #define RS_UNREGISTER_NOTFOUND -1
 
 /**
- * Get a human readable string for a unregister result
+ * @brief Get a human readable string for a unregister result
+ *
  * @param c RS_UNREGISTER_* constant
  * @return A string or NULL
  */
@@ -73,7 +75,8 @@ const char *stringify_rs_unregister_result(int8_t c);
 #define RS_CALL_CACHE_TIMEOUT_EMPTY -5
 
 /**
- * Get a human readable string for a call result
+ * @brief Get a human readable string for a call result
+ *
  * @param c RS_CALL_* constant
  * @return A string or NULL
  */

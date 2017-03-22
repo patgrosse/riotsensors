@@ -64,7 +64,8 @@ extern "C" {
 typedef uint8_t rs_packet_type_t;
 
 /**
- * Get a human readable string for a packet type
+ * @brief Get a human readable string for a packet type
+ *
  * @param c Packet type
  * @return A string or NULL
  */
@@ -93,7 +94,8 @@ const char *stringify_rs_packet_type_t(rs_packet_type_t c);
 typedef uint8_t rs_lambda_type_t;
 
 /**
- * Get a human readable string for a lambda type
+ * @brief Get a human readable string for a lambda type
+ *
  * @param c Lambda type
  * @return A string or NULL
  */
@@ -126,7 +128,8 @@ const char *stringify_rs_lambda_type_t(rs_lambda_type_t c);
 typedef uint8_t rs_cache_type_t;
 
 /**
- * Get a human readable string for a cache type
+ * @brief Get a human readable string for a cache type
+ *
  * @param c Cache type
  * @return A string or NULL
  */

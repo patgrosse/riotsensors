@@ -31,7 +31,8 @@ extern "C" {
 #define unpack754_64(i) (unpack754((i), 64, 11))
 
 /**
- * Convert a given floating point number to IEEE754 standard
+ * @brief Convert a given floating point number to IEEE754 standard
+ *
  * @param f The floating point to convert
  * @param bits Size in bits of the floating point
  * @param expbits Size of the exponent in bits
@@ -40,7 +41,8 @@ extern "C" {
 uint64_t pack754(long double f, unsigned bits, unsigned expbits);
 
 /**
- * Convert a IEEE754 standard to a floating point number of the host system
+ * @brief Convert a IEEE754 standard to a floating point number of the host system
+ *
  * @param i The IEEE754 number to convert
  * @param bits Size in bits of the floating point
  * @param expbits Size of the exponent in bits
