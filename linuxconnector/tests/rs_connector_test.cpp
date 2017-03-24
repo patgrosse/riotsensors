@@ -82,7 +82,7 @@ TEST(rs_connector, handle_result) {
     printf("\n");
     handle_received_packet(&sptctx, &pkt2);
     printf("\n");
-    rs_linux_registered_lambda *arg = (rs_linux_registered_lambda *) get_registered_lambda_by_name("kram")->arg;
+    rs_linux_registered_lambda *arg = (rs_linux_registered_lambda *) get_registered_lambda_by_name("kram")->arg.obj;
     ASSERT_EQ(arg->data_cached, true);
     ASSERT_EQ(arg->last_call_error, 0);
     ASSERT_EQ(arg->ret.ret_i, 42);

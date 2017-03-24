@@ -43,7 +43,9 @@ void handle_received_packet(struct spt_context *sptctx, struct serial_data_packe
                 rs_linux_registered_lambda *arg = malloc(sizeof(rs_linux_registered_lambda));
                 arg->data_cached = false;
                 pthread_cond_init(&arg->wait_result, NULL);
-                int8_t res = lambda_registry_register(mypkt.name, mypkt.ltype, mypkt.cache, arg);
+                lambda_arg larg;
+                larg.obj = arg;
+                int8_t res = lambda_registry_register(mypkt.name, mypkt.ltype, mypkt.cache, larg);
                 if (res < 0) {
                     fprintf(stderr, "Error while registering lambda with name %s and type %d: code %d\n", mypkt.name,
                             mypkt.ltype, res);
@@ -66,7 +68,7 @@ void handle_received_packet(struct spt_context *sptctx, struct serial_data_packe
                 if (lambda == NULL) {
                     fprintf(stderr, "Error while unregistering packet with id %d: lambda unknown\n", mypkt.lambda_id);
                 } else {
-                    rs_linux_registered_lambda *arg = lambda->arg;
+                    rs_linux_registered_lambda *arg = lambda->arg.obj;
                     pthread_cond_destroy(&arg->wait_result);
                     int8_t res = lambda_registry_unregister(mypkt.lambda_id);
                     if (res == RS_UNREGISTER_SUCCESS) {
@@ -91,7 +93,7 @@ void handle_received_packet(struct spt_context *sptctx, struct serial_data_packe
                     fprintf(stderr, "Error while processing int result packet of lambda with id %d: lambda unknown\n",
                             mypkt.result_base.lambda_id);
                 } else {
-                    rs_linux_registered_lambda *arg = lambda->arg;
+                    rs_linux_registered_lambda *arg = lambda->arg.obj;
                     arg->ret.ret_i = mypkt.result;
                     arg->data_cached = true;
                     pthread_cond_broadcast(&arg->wait_result);
@@ -114,7 +116,7 @@ void handle_received_packet(struct spt_context *sptctx, struct serial_data_packe
                             "Error while processing double result packet of lambda with id %d: lambda unknown\n",
                             mypkt.result_base.lambda_id);
                 } else {
-                    rs_linux_registered_lambda *arg = lambda->arg;
+                    rs_linux_registered_lambda *arg = lambda->arg.obj;
                     arg->ret.ret_d = mypkt.result;
                     arg->data_cached = true;
                     pthread_cond_broadcast(&arg->wait_result);
@@ -137,7 +139,7 @@ void handle_received_packet(struct spt_context *sptctx, struct serial_data_packe
                             "Error while processing string result packet of lambda with id %d: lambda unknown\n",
                             mypkt->result_base.lambda_id);
                 } else {
-                    rs_linux_registered_lambda *arg = lambda->arg;
+                    rs_linux_registered_lambda *arg = lambda->arg.obj;
                     if (arg->data_cached) {
                         free(arg->ret.ret_s);
                     }
@@ -166,7 +168,7 @@ void handle_received_packet(struct spt_context *sptctx, struct serial_data_packe
                             "Error while processing error result packet of lambda with id %d: lambda unknown\n",
                             mypkt.result_base.lambda_id);
                 } else {
-                    rs_linux_registered_lambda *arg = lambda->arg;
+                    rs_linux_registered_lambda *arg = lambda->arg.obj;
                     arg->last_call_error = mypkt.error_code;
                     pthread_cond_broadcast(&arg->wait_result);
                     spt_log_msg("packet", "Received error result of lambda with id %d: code %d\n",
@@ -208,7 +210,7 @@ int rs_linux_stop(void) {
 }
 
 int8_t wait_lambda_result(rs_registered_lambda *lambda, generic_lambda_return *result) {
-    rs_linux_registered_lambda *arg = lambda->arg;
+    rs_linux_registered_lambda *arg = lambda->arg.obj;
     struct timespec spec;
     clock_gettime(CLOCK_REALTIME, &spec);
     spec.tv_sec += 1;
@@ -249,7 +251,7 @@ int8_t wait_lambda_result(rs_registered_lambda *lambda, generic_lambda_return *r
 }
 
 int8_t check_lambda_cache(rs_registered_lambda *lambda, generic_lambda_return *result) {
-    rs_linux_registered_lambda *arg = lambda->arg;
+    rs_linux_registered_lambda *arg = lambda->arg.obj;
     switch (lambda->cache) {
         case RS_CACHE_NO_CACHE:
             return RS_CALL_SUCCESS;

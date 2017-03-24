@@ -74,7 +74,7 @@ void print_lambda_type_n_cache_unknown(rapidjson::Writer<rapidjson::StringBuffer
 }
 
 void print_cache_content(rapidjson::Writer<rapidjson::StringBuffer> *writer, const rs_registered_lambda *lambda) {
-    rs_linux_registered_lambda *arg = (rs_linux_registered_lambda *) lambda->arg;
+    rs_linux_registered_lambda *arg = (rs_linux_registered_lambda *) lambda->arg.obj;
     writer->StartObject();
     writer->Key("cache_available");
     writer->Bool(arg->data_cached);

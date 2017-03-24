@@ -1,14 +1,14 @@
 RS_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 
-# variables for
+# directories for library builds
 RS_BUILD_DIR ?= $(RS_DIR)/build
 RS_PROTOCOL_DIR ?= $(RS_DIR)/../protocol
 LIBSPT_DIR ?= $(RS_BUILD_DIR)/libspt
 
 ifdef GITLAB_USE_SSH
-LIBSPT_GIT_URL ?= git@gitlab.com:patgrosse/libspt.git
+  LIBSPT_GIT_URL ?= git@gitlab.com:patgrosse/libspt.git
 else
-LIBSPT_GIT_URL ?= https://gitlab.com/patgrosse/libspt.git
+  LIBSPT_GIT_URL ?= https://gitlab.com/patgrosse/libspt.git
 endif
 
 # get libspt specific variables
@@ -25,9 +25,11 @@ INCLUDES += -I$(RS_DIR)/include -I$(LIBSPT_SRC_DIR)/include -I$(RS_PROTOCOL_DIR)
 ADDITIONAL_INCLUDES = $(addprefix -I, $(USEMODULE_INCLUDES)) $(INCLUDES)
 
 # variables passed to libspt
-LIBSPT_CFLAGS := -DNO_LIBEVENT=1 -DNO_TERMIOS=1 $(CFLAGS)
+LIBSPT_CFLAGS = -DNO_LIBEVENT=1 -DNO_TERMIOS=1 $(CFLAGS)
 LIBSPT_INCLUDES = $(ADDITIONAL_INCLUDES)
-RS_PROTOCOL_CFLAGS := $(CFLAGS)
+
+# variables passed to riotsensors protocol
+RS_PROTOCOL_CFLAGS = $(CFLAGS)
 RS_PROTOCOL_INCLUDES = $(ADDITIONAL_INCLUDES)
 
 # get libspt from git

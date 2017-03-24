@@ -58,7 +58,8 @@ rs_registered_lambda *get_registered_lambda_by_name(const char *name) {
     return NULL;
 }
 
-int8_t lambda_registry_register(const char *name, const rs_lambda_type_t type, const rs_cache_type_t cache, void *arg) {
+int8_t
+lambda_registry_register(const char *name, const rs_lambda_type_t type, const rs_cache_type_t cache, lambda_arg arg) {
     if (lambda_counter >= MAX_LAMBDAS) {
         return RS_REGISTER_LIMIT_REACHED;
     }

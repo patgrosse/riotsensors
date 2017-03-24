@@ -30,7 +30,9 @@ register_lambda(const char *name, lambda_generic_t lambda, const rs_lambda_type_
         fprintf(stderr, "lambda == NULL is only valid with cache == RS_CACHE_ONLY\n");
         return RS_REGISTER_INVALPARAM;
     }
-    int8_t res = lambda_registry_register(name, type, cache, lambda);
+    lambda_arg arg;
+    arg.func = (function) lambda;
+    int8_t res = lambda_registry_register(name, type, cache, arg);
     if (res < 0) {
         return res;
     }
@@ -68,7 +70,7 @@ int8_t call_lambda_int(const lambda_id_t id, rs_int_t *result) {
     if (reg_lambda->type != RS_LAMBDA_INT) {
         return RS_CALL_WRONGTYPE;
     }
-    lambda_int_t lambda = (lambda_int_t) reg_lambda->arg;
+    lambda_int_t lambda = (lambda_int_t) reg_lambda->arg.func;
     *result = lambda(id);
     return RS_CALL_SUCCESS;
 }
@@ -93,7 +95,7 @@ int8_t call_lambda_double(const lambda_id_t id, rs_double_t *result) {
     if (reg_lambda->type != RS_LAMBDA_DOUBLE) {
         return RS_CALL_WRONGTYPE;
     }
-    lambda_double_t lambda = (lambda_double_t) reg_lambda->arg;
+    lambda_double_t lambda = (lambda_double_t) reg_lambda->arg.func;
     *result = lambda(id);
     return RS_CALL_SUCCESS;
 }
@@ -118,7 +120,7 @@ int8_t call_lambda_string(const lambda_id_t id, rs_string_t *result) {
     if (reg_lambda->type != RS_LAMBDA_STRING) {
         return RS_CALL_WRONGTYPE;
     }
-    lambda_string_t lambda = (lambda_string_t) reg_lambda->arg;
+    lambda_string_t lambda = (lambda_string_t) reg_lambda->arg.func;
     *result = lambda(id);
     return RS_CALL_SUCCESS;
 }

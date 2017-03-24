@@ -25,6 +25,21 @@ extern "C" {
 #endif
 
 /**
+ * @brief Generic function that can be stored within the lambda registry
+ */
+typedef void *(*function)(void);
+
+/**
+ * @brief Lambda argument that can be stored with a specific lambda
+ *
+ * Replacement for void* for ISO compilers
+ */
+typedef union {
+    void *obj;
+    function func;
+} lambda_arg;
+
+/**
  * @brief A known and registered lambda in the registry
  */
 typedef struct {
@@ -37,7 +52,7 @@ typedef struct {
     /** @brief Cache policy of this lambda */
     rs_cache_type_t cache;
     /** @brief User defined argument to be stored with the lambda */
-    void *arg;
+    lambda_arg arg;
 } rs_registered_lambda;
 
 /**
@@ -82,7 +97,8 @@ rs_registered_lambda *get_registered_lambda_by_name(const char *name);
  * @param arg A user specific argument to be stored in the properties
  * @return A value greater/equals to zero containing the new ID on success, a negative RS_REGISTER_* value on failure
  */
-int8_t lambda_registry_register(const char *name, const rs_lambda_type_t type, const rs_cache_type_t cache, void *arg);
+int8_t
+lambda_registry_register(const char *name, const rs_lambda_type_t type, const rs_cache_type_t cache, lambda_arg arg);
 
 /**
  * @brief Unregister a lambda and free the allocated resources
