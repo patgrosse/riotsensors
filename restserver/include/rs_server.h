@@ -70,14 +70,6 @@ class RiotsensorsRESTProvider {
 };
 
 /**
- * @brief Get the lambda type from a string containing the lambda type as integer
- *
- * @param str String with the lambda type
- * @return RS_LAMBDA_* constant on success, (rs_lambda_type_t) -1 otherwise
- */
-rs_lambda_type_t get_lambda_type_from_string(std::string str);
-
-/**
  * @brief Main function of the REST server
  *
  * @param argc Argument count

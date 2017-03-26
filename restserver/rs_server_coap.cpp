@@ -8,6 +8,7 @@
 
 #include <event.h>
 #include <unused.h>
+#include <lambda_registry.h>
 
 /**
  * Check if the coap_option_t provided in q has the key name, then execute lambda and issue a continue
@@ -55,7 +56,7 @@ static rs_lambda_type_t coap_parse_type(coap_pdu_t *request) {
     rs_lambda_type_t type = 0;
     while ((q = coap_option_next(&opt_iter)) != nullptr) {
         auto typelambda = [&type](std::string value) -> void {
-            type = get_lambda_type_from_string(value);
+            type = get_lambda_type_from_string(value.c_str());
         };
         try_match_coap_opt_and_execute("type", q, typelambda);
     }
@@ -97,7 +98,7 @@ void RiotsensorsCoAPProvider::handleCallById(coap_context_t *ctx, struct coap_re
     lambda_id_t id = 0;
     while ((q = coap_option_next(&opt_iter)) != nullptr) {
         auto typelambda = [&type, &type_found](std::string value) -> void {
-            type = get_lambda_type_from_string(value);
+            type = get_lambda_type_from_string(value.c_str());
             type_found = true;
         };
         try_match_coap_opt_and_execute("type", q, typelambda)
@@ -163,7 +164,7 @@ void RiotsensorsCoAPProvider::handleCallByName(coap_context_t *ctx, struct coap_
     std::string name;
     while ((q = coap_option_next(&opt_iter)) != nullptr) {
         auto typelambda = [&type, &type_found](std::string value) -> void {
-            type = get_lambda_type_from_string(value);
+            type = get_lambda_type_from_string(value.c_str());
             type_found = true;
         };
         try_match_coap_opt_and_execute("type", q, typelambda)

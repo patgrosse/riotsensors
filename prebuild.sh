@@ -75,3 +75,15 @@ else
         echo "------- Already exists"
     fi
 fi
+echo "======= microcoap"
+if [ ! -d "microcoap" ]; then
+    echo "------- Using git clone"
+    git clone --depth=1 https://github.com/1248/microcoap.git microcoap
+else
+    if [ ! -e "microcoap/.git" ]; then
+        echo "------- Using git submodule"
+        git submodule update --init -- microcoap
+    else
+        echo "------- Already exists"
+    fi
+fi

@@ -7,7 +7,7 @@
 #include <lambda_registry.h>
 
 #include <ctype.h>
-#include <stdio.h>
+#include <stdlib.h>
 
 /**
  * All registered lambdas
@@ -104,4 +104,21 @@ int8_t lambda_registry_unregister(const lambda_id_t id) {
     free(lambda_registry[id]);
     lambda_registry[id] = NULL;
     return RS_UNREGISTER_SUCCESS;
+}
+
+rs_lambda_type_t get_lambda_type_from_string(const char *str) {
+    char *endparsed;
+    long num = strtol(str, &endparsed, 10);
+    if (endparsed != str + strlen(str)) {
+        return (rs_lambda_type_t) -1;
+    }
+    if (num == RS_LAMBDA_INT) {
+        return RS_LAMBDA_INT;
+    } else if (num == RS_LAMBDA_DOUBLE) {
+        return RS_LAMBDA_DOUBLE;
+    } else if (num == RS_LAMBDA_STRING) {
+        return RS_LAMBDA_STRING;
+    } else {
+        return (rs_lambda_type_t) -1;
+    }
 }

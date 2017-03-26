@@ -72,21 +72,6 @@ rest_response_info RiotsensorsRESTHandler::handleCache(rs_lambda_type_t type) {
     }
 }
 
-rs_lambda_type_t get_lambda_type_from_string(std::string str) {
-    std::stringstream ss(str);
-    int strAsInt;
-    ss >> strAsInt;
-    if (strAsInt == RS_LAMBDA_INT) {
-        return RS_LAMBDA_INT;
-    } else if (strAsInt == RS_LAMBDA_DOUBLE) {
-        return RS_LAMBDA_DOUBLE;
-    } else if (strAsInt == RS_LAMBDA_STRING) {
-        return RS_LAMBDA_STRING;
-    } else {
-        return (rs_lambda_type_t) -1;
-    }
-}
-
 
 int main(int argc, char *argv[]) {
     if (argc != 2) {

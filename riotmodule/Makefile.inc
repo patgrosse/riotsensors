@@ -32,6 +32,45 @@ LIBSPT_INCLUDES = $(ADDITIONAL_INCLUDES)
 RS_PROTOCOL_CFLAGS = $(CFLAGS)
 RS_PROTOCOL_INCLUDES = $(ADDITIONAL_INCLUDES)
 
+
+# ==== BEGIN CoAP includes and flags
+ifndef RS_NO_COAP
+  # Include packages that pull up and auto-init the link layer.
+  # NOTE: 6LoWPAN will be included if IEEE802.15.4 devices are present
+  USEMODULE += gnrc_netdev_default
+  USEMODULE += auto_init_gnrc_netif
+  # Specify the mandatory networking modules for IPv6 and UDP
+  USEMODULE += gnrc_ipv6_default
+  USEMODULE += gnrc_udp
+  # Additional networking modules that can be dropped if not needed
+  USEMODULE += gnrc_icmpv6_echo
+
+  USEMODULE += gnrc_sock_udp
+
+  USEPKG += microcoap
+  CFLAGS += -DMICROCOAP_DEBUG
+
+  # include for printing IP addresses
+  USEMODULE += shell_commands
+
+  # Set a custom channel if needed
+  ifneq (,$(filter cc110x,$(USEMODULE)))          # radio is cc110x sub-GHz
+    DEFAULT_CHANNEL ?= 0
+    CFLAGS += -DCC110X_DEFAULT_CHANNEL=$(DEFAULT_CHANNEL)
+  else
+    ifneq (,$(filter at86rf212b,$(USEMODULE)))    # radio is IEEE 802.15.4 sub-GHz
+      DEFAULT_CHANNEL ?= 5
+      CFLAGS += -DIEEE802154_DEFAULT_SUBGHZ_CHANNEL=$(DEFAULT_CHANNEL)
+    else                                          # radio is IEEE 802.15.4 2.4 GHz
+      DEFAULT_CHANNEL ?= 26
+      CFLAGS += -DIEEE802154_DEFAULT_CHANNEL=$(DEFAULT_CHANNEL)
+    endif
+  endif
+else
+  CFLAGS += -DRS_NO_COAP
+endif
+# ==== END CoAP includes and flags
+
 # get libspt from git
 $(LIBSPT_DIR)/Makefile.inc:
 	mkdir -p "$(RS_BUILD_DIR)" && cd $(RS_BUILD_DIR)

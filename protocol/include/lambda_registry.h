@@ -108,6 +108,14 @@ lambda_registry_register(const char *name, const rs_lambda_type_t type, const rs
  */
 int8_t lambda_registry_unregister(const lambda_id_t id);
 
+/**
+ * @brief Get the lambda type from a string containing the lambda type as integer
+ *
+ * @param str String with the lambda type
+ * @return RS_LAMBDA_* constant on success, (rs_lambda_type_t) -1 otherwise
+ */
+rs_lambda_type_t get_lambda_type_from_string(const char* str);
+
 #ifdef __cplusplus
 }
 #endif

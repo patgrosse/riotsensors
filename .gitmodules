@@ -7,3 +7,6 @@
 [submodule "lib/rapidjson"]
 	path = lib/rapidjson
 	url = https://github.com/miloyip/rapidjson.git
+[submodule "lib/microcoap"]
+	path = lib/microcoap
+	url = https://github.com/1248/microcoap.git

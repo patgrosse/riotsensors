@@ -14,6 +14,7 @@ set(RIOT_DIR ${LIB_DIR}/RIOT)
 include_directories(${LIB_DIR}/libspt/src/include)
 include_directories(${CMAKE_CURRENT_LIST_DIR}/include)
 include_directories(${CMAKE_CURRENT_LIST_DIR}/../protocol/include)
+include_directories(${CMAKE_CURRENT_LIST_DIR}/../lib/microcoap)
 
 # source files
 file(GLOB C_FILES *.c)
@@ -40,6 +41,7 @@ include_directories(${RIOT_DIR}/core/include)
 include_directories(${RIOT_DIR}/sys/include)
 include_directories(${RIOT_DIR}/drivers/include)
 include_directories(${RIOT_DIR}/cpu/lpc2387/include)
+include_directories(${RIOT_DIR}/sys/net/gnrc/sock/include)
 
 # targets
 add_library(riotsensors_riot ${SOURCE_FILES})

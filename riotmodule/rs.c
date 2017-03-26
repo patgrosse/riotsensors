@@ -15,6 +15,12 @@
 #include <lambda_registry.h>
 #include <unused.h>
 
+#ifndef RS_NO_COAP
+
+#include <rs_coap_server.h>
+
+#endif
+
 /**
  * @brief Function header for a generic lambda, internal use only
  */
@@ -361,6 +367,9 @@ void rs_start(void) {
     serial_io_context_init(&rs_sictx, STDIN_FILENO, STDOUT_FILENO);
     spt_init_context(&rs_sptctx, &rs_sictx, handle_received_packet);
     spt_start(&rs_sptctx);
+#ifndef RS_NO_COAP
+    rs_start_coap_server();
+#endif
     rs_spt_started = true;
 }
 

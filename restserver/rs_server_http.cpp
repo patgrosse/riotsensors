@@ -19,7 +19,7 @@ void RiotsensorsHTTPProvider::setServer(Http::Endpoint *server) {
 
 void RiotsensorsHTTPProvider::handleCallById(const Rest::Request &request, Http::ResponseWriter response) {
     std::string str_type = request.param(":type").as<std::string>();
-    rs_lambda_type_t type = get_lambda_type_from_string(str_type);
+    rs_lambda_type_t type = get_lambda_type_from_string(str_type.c_str());
     if (type == (rs_lambda_type_t) -1) {
         response.send(Http::Code::Bad_Request, "Unknown lambda type\n");
     }
@@ -36,7 +36,7 @@ void RiotsensorsHTTPProvider::handleCallById(const Rest::Request &request, Http:
 
 void RiotsensorsHTTPProvider::handleCallByName(const Rest::Request &request, Http::ResponseWriter response) {
     std::string str_type = request.param(":type").as<std::string>();
-    rs_lambda_type_t type = get_lambda_type_from_string(str_type);
+    rs_lambda_type_t type = get_lambda_type_from_string(str_type.c_str());
     if (type == (rs_lambda_type_t) -1) {
         response.send(Http::Code::Bad_Request, "Unknown lambda type\n");
     }
@@ -51,7 +51,7 @@ void RiotsensorsHTTPProvider::handleList(const Rest::Request &request, Http::Res
     auto typeparam = request.query().get("type");
     rs_lambda_type_t type = 0;
     if (!typeparam.isEmpty()) {
-        type = get_lambda_type_from_string(typeparam.get());
+        type = get_lambda_type_from_string(typeparam.get().c_str());
         if (type == (rs_lambda_type_t) -1) {
             response.send(Http::Code::Bad_Request, "Unknown lambda type\n");
             return;
@@ -67,7 +67,7 @@ void RiotsensorsHTTPProvider::handleCache(const Rest::Request &request, Http::Re
     auto typeparam = request.query().get("type");
     rs_lambda_type_t type = 0;
     if (!typeparam.isEmpty()) {
-        type = get_lambda_type_from_string(typeparam.get());
+        type = get_lambda_type_from_string(typeparam.get().c_str());
         if (type == (rs_lambda_type_t) -1) {
             response.send(Http::Code::Bad_Request, "Unknown lambda type\n");
             return;
