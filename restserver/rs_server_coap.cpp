@@ -283,11 +283,11 @@ void *startCoAPServer(void *thread_ctx) {
     }
 
     /* Initialize the resources */
-    callbyid_resource = coap_resource_init((unsigned char *) "call/id", 7, 0);
-    callbyname_resource = coap_resource_init((unsigned char *) "call/name", 9, 0);
-    handlelist_resource = coap_resource_init((unsigned char *) "list", 4, 0);
-    handlecache_resource = coap_resource_init((unsigned char *) "cache", 5, 0);
-    kill_resource = coap_resource_init((unsigned char *) "kill", 4, 0);
+    callbyid_resource = coap_resource_init((unsigned char *) "v1/call/id", 7, 0);
+    callbyname_resource = coap_resource_init((unsigned char *) "v1/call/name", 9, 0);
+    handlelist_resource = coap_resource_init((unsigned char *) "v1/list", 4, 0);
+    handlecache_resource = coap_resource_init((unsigned char *) "v1/cache", 5, 0);
+    kill_resource = coap_resource_init((unsigned char *) "v1/kill", 4, 0);
 
     /* Register handler */
     coap_register_handler(callbyid_resource, COAP_REQUEST_GET, RiotsensorsCoAPProvider::handleCallById);

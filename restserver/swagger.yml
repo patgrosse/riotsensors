@@ -7,6 +7,7 @@ info:
     email: patrick.grosse@uni-muenster.de
   license:
     name: Proprietary
+basePath: /v1
 schemes:
 - http
 definitions:

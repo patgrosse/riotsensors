@@ -92,13 +92,13 @@ void *startHTTPServer(void *thread_ctx) {
     RiotsensorsHTTPProvider provider;
 
     Rest::Router router;
-    Rest::Routes::Get(router, "/call/id/:type/:id",
+    Rest::Routes::Get(router, "/v1/call/id/:type/:id",
                       Rest::Routes::bind(&RiotsensorsHTTPProvider::handleCallById, &provider));
-    Rest::Routes::Get(router, "/call/name/:type/:name",
+    Rest::Routes::Get(router, "/v1/call/name/:type/:name",
                       Rest::Routes::bind(&RiotsensorsHTTPProvider::handleCallByName, &provider));
-    Rest::Routes::Get(router, "/list", Rest::Routes::bind(&RiotsensorsHTTPProvider::handleList, &provider));
-    Rest::Routes::Get(router, "/showcache", Rest::Routes::bind(&RiotsensorsHTTPProvider::handleCache, &provider));
-    Rest::Routes::Get(router, "/kill", Rest::Routes::bind(&RiotsensorsHTTPProvider::handleKill, &provider));
+    Rest::Routes::Get(router, "/v1/list", Rest::Routes::bind(&RiotsensorsHTTPProvider::handleList, &provider));
+    Rest::Routes::Get(router, "/v1/showcache", Rest::Routes::bind(&RiotsensorsHTTPProvider::handleCache, &provider));
+    Rest::Routes::Get(router, "/v1/kill", Rest::Routes::bind(&RiotsensorsHTTPProvider::handleKill, &provider));
 
     Net::Address addr(Net::Ipv4::any(), Net::Port(9080));
     auto opts = Net::Http::Endpoint::options();
