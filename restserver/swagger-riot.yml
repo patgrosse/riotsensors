@@ -1,0 +1,172 @@
+swagger: '2.0'
+info:
+  description: REST API of the RIOT CoAP server from riotsensors
+  version: "1.0"
+  title: riotsensors RIOT CoAP REST API
+  contact:
+    email: patrick.grosse@uni-muenster.de
+  license:
+    name: Proprietary
+    url: Proprietary
+schemes:
+- coap
+definitions:
+  LambdaId: &lambdaId
+    description: ID of a registered lambda
+    type: integer
+    minimum: 0
+    maximum: 255
+  LambdaType: &lambdaType
+    description: Type of a registered lambda
+    type: integer
+    minimum: 1
+    maximum: 3
+  LambdaName: &lambdaName
+    description: Name of a registered lambda
+    type: string
+    minLength: 1
+    maxLength: 12
+paths:
+  /call/id:
+    get:
+      operationId: callLambdaById
+      summary: Call a lambda by it's ID
+      produces:
+      - application/json
+      parameters:
+      - in: query
+        name: type
+        required: true
+        <<: *lambdaType
+      - in: query
+        name: id
+        required: true
+        <<: *lambdaId
+      responses:
+        200:
+          description: "Success (success: `true`)"
+          schema:
+            $ref: '#/definitions/CallSuccess'
+        400:
+          description: Invalid type given
+          schema:
+            description: A string explaining a wrong type was given
+            type: string
+        500:
+          description: "Error occurred while calling lambda (success: `false`)"
+          schema:
+            $ref: '#/definitions/CallFailure'
+  /call/name:
+    get:
+      operationId: callLambdaByName
+      summary:  Call a lambda by it's name
+      produces:
+      - application/json
+      parameters:
+      - in: query
+        name: type
+        required: true
+        <<: *lambdaType
+      - in: query
+        name: name
+        required: true
+        <<: *lambdaName
+      responses:
+        200:
+          description: "Success (success: `true`)"
+          schema:
+            $ref: '#/definitions/CallSuccess'
+        400:
+          description: Invalid type given
+          schema:
+            description: A string explaining a wrong type was given
+            type: string
+        500:
+          description: "Error occurred while calling lambda (success: `false`)"
+          schema:
+            $ref: '#/definitions/CallFailure'
+  /list:
+    get:
+      operationId: listLambdas
+      summary: List all registered lambdas and their properties
+      produces:
+      - application/json
+      parameters:
+      - in: query
+        name: type
+        description: List only the lambdas of a specific type, type of the lambdas (see LambdaType)
+        required: false
+        <<: *lambdaType
+      responses:
+        200:
+          description: Success
+          schema:
+            type: object
+            properties:
+              lambdas:
+                description: All lambdas matched the query parameters
+                type: array
+                items:
+                  $ref: '#/definitions/LambdaData'
+              count:
+                description: Amount of lambdas matched the query parameters
+                type: integer
+        400:
+          description: Invalid type given
+          schema:
+            description: A string explaining a wrong type was given
+            type: string
+definitions:
+  CallSuccess:
+    type: object
+    properties:
+      success:
+        description: Set to true on success
+        type: boolean
+      lambda:
+        $ref: '#/definitions/LambdaData'
+      result:
+        $ref: '#/definitions/LambdaReturn'
+  CallFailure:
+    type: object
+    properties:
+      success:
+        description: Set to false on errors
+        type: boolean
+      lambda:
+        $ref: '#/definitions/LambdaData'
+      error:
+        description: Error code
+        type: integer
+  LambdaData:
+    description: A registered lambda and all it's properties
+    type: object
+    properties:
+      id:
+        $ref: '#/definitions/LambdaId'
+      name:
+        $ref: '#/definitions/LambdaName'
+      type:
+        $ref: '#/definitions/LambdaType'
+      cache:
+        description: Cache policy of the lambda
+        type: integer
+  LambdaId:
+    <<: *lambdaId
+  LambdaType:
+    <<: *lambdaType
+  LambdaName:
+    <<: *lambdaName
+  LambdaReturn:
+    description: Return value of a lambda, can be either an integer, a double or a string (determined by the lambda type) LambdaIntReturn, LambdaDoubleReturn, LambdaStringReturn
+    type: object
+    allOf:
+      - $ref: '#/definitions/LambdaIntReturn'
+      - $ref: '#/definitions/LambdaDoubleReturn'
+      - $ref: '#/definitions/LambdaStringReturn'
+  LambdaIntReturn:
+    type: integer
+  LambdaDoubleReturn:
+    type: number
+  LambdaStringReturn:
+    type: string

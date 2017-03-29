@@ -7,9 +7,11 @@ info:
     email: patrick.grosse@uni-muenster.de
   license:
     name: Proprietary
+    url: Proprietary
 basePath: /v1
 schemes:
 - http
+- coap
 definitions:
   LambdaId: &lambdaId
     description: ID of a registered lambda
