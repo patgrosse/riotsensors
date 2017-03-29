@@ -1,3 +1,11 @@
+```
+      _       _                                     
+     (_)     | |                                    
+ _ __ _  ___ | |_ ___  ___ _ __  ___  ___  _ __ ___ 
+| '__| |/ _ \| __/ __|/ _ \ '_ \/ __|/ _ \| '__/ __|
+| |  | | (_) | |_\__ \  __/ | | \__ \ (_) | |  \__ \
+|_|  |_|\___/ \__|___/\___|_| |_|___/\___/|_|  |___/
+```
 # riotsensors
 
 Module for [RIOT-OS](https://github.com/RIOT-OS/RIOT) to transfer sensor data from a board over a serial connection to
