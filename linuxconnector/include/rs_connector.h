@@ -18,22 +18,11 @@
 
 #include <spt.h>
 #include <rs_packets.h>
+#include <lambda_registry.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-/**
- * @brief Provides enough space to store every return type of a lambda
- */
-typedef union {
-    /** @brief Int return type */
-    rs_int_t ret_i;
-    /** @brief Double return type */
-    rs_double_t ret_d;
-    /** @brief String return type */
-    rs_string_t ret_s;
-} generic_lambda_return;
 
 /**
  * @brief Additional data to store with a lambda in the registry

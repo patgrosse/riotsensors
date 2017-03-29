@@ -6,9 +6,7 @@
 
 #include <rs_coap_utils.h>
 
-#include <stdlib.h>
 #include <memory.h>
-#include <sched.h>
 
 ssize_t index_of(const char *string, char search) {
     const char *moved_string = strchr(string, search);

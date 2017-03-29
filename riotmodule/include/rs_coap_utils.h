@@ -15,6 +15,8 @@
 
 #include <stdint.h>
 #include <stddef.h>
+#include <stdlib.h>
+#include <sched.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -57,6 +59,15 @@ void split_query(size_t len, const char *strquery, struct coap_queries *result);
  * @param queries Result to free
  */
 void free_coap_query(struct coap_queries *queries);
+
+/**
+ * @brief Get the index of the first matching char in a string
+ *
+ * @param string The string to search in
+ * @param search Character to search for
+ * @return Index if found, -1 otherwise
+ */
+ssize_t index_of(const char *string, char search);
 
 #ifdef __cplusplus
 }

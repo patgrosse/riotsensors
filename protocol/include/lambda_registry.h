@@ -25,6 +25,18 @@ extern "C" {
 #endif
 
 /**
+ * @brief Provides enough space to store every return type of a lambda
+ */
+typedef union {
+    /** @brief Int return type */
+    rs_int_t ret_i;
+    /** @brief Double return type */
+    rs_double_t ret_d;
+    /** @brief String return type */
+    rs_string_t ret_s;
+} generic_lambda_return;
+
+/**
  * @brief Generic function that can be stored within the lambda registry
  */
 typedef void *(*function)(void);

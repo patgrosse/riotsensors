@@ -39,3 +39,11 @@ TEST(rs_coap_utils, value_empty) {
     ASSERT_STREQ(result.first->next->value, "test2");
     free_coap_query(&result);
 }
+
+TEST(rs_coap_utils, index_of) {
+    ASSERT_EQ(index_of("key=value", '='), 3);
+    ASSERT_EQ(index_of("longkey=value", '='), 7);
+    ASSERT_EQ(index_of("=value", '='), 0);
+    ASSERT_EQ(index_of("value", '='), -1);
+    ASSERT_EQ(index_of("", '='), -1);
+}
