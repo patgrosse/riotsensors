@@ -113,7 +113,6 @@ integrationTest:
     - "ln -s ../lib/RIOT lib/RIOT"
     - "ln -s .. lib/riotsensors"
     - "ln -s ../lib/libspt lib/libspt"
-    - "./prebuild.sh"
     - "GITLAB_USE_SSH=1 BOARD=native make all flash"
     - "sudo ip tuntap add tap0 mode tap user ${USER}"
     - "sudo ip link set tap0 up"
