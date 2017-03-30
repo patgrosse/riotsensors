@@ -103,6 +103,17 @@ test:linuxconnector:
   script:
     - "cd build/linuxconnector/tests"
     - "./linux_tests"
+integrationTest:
+  stage: test
+  script:
+    - "git clone git@gitlab.com:patgrosse/riotsensors-example.git"
+    - "cd riotsensors-example"
+    - "GITLAB_USE_SSH=1 BOARD=native make all flash"
+    - "sudo ip tuntap add tap0 mode tap user ${USER}"
+    - "sudo ip link set tap0 up"
+    - "sleep 1"
+    - "BOARD=native make term &"
+    - "sleep 1"
 doxygenDocs:
   stage: docs
   dependencies: []
