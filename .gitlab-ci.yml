@@ -18,6 +18,8 @@ before_script:
   - 'ssh-add <(echo "$SSH_PRIVATE_KEY")'
   - 'mkdir -p ~/.ssh'
   - 'echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+  - 'git config --global user.email "riotsensors-build@ci.gitlab.com"'
+  - 'git config --global user.name "riotsensors-build"'
 getlibs:
   variables:
     GIT_STRATEGY: clone
