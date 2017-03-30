@@ -16,7 +16,7 @@ export RS_PROTOCOL_SRC_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_L
 
 export RS_PROTOCOL_OBJS_DIR ?= $(abspath $(RS_PROTOCOL_SRC_DIR)/build/rspacketslib)
 
-export RS_PROTOCOL_LIB_FILE ?= $(abspath $(RS_PROTOCOL_SRC_DIR)/build/rspacketslib/rspacketslib.a)
+export RS_PROTOCOL_LIB_FILE ?= $(abspath $(RS_PROTOCOL_OBJS_DIR)/rspacketslib.a)
 
 export RS_PROTOCOL_INCLUDES += -I$(RS_PROTOCOL_SRC_DIR)/include
 

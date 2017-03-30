@@ -1,8 +1,10 @@
 RS_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
+RS_APP_DIR := $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 
 # directories for library builds
-RS_BUILD_DIR ?= $(RS_DIR)/build
+RS_BUILD_DIR ?= $(RS_APP_DIR)/bin/riotsensors/$(BOARD)
 RS_PROTOCOL_DIR ?= $(RS_DIR)/../protocol
+RS_PROTOCOL_OBJS_DIR ?= $(RS_BUILD_DIR)/protocol
 LIBSPT_DIR ?= $(RS_BUILD_DIR)/libspt
 
 ifdef GITLAB_USE_SSH
