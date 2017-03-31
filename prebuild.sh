@@ -35,7 +35,7 @@ fi
 echo "======= RIOT OS"
 if [ ! -d "RIOT" ]; then
     echo "------- Using git clone"
-    git clone --depth=1 https://github.com/RIOT-OS/RIOT.git RIOT
+    git clone --depth=1 -b riotsensors https://github.com/patgrosse/RIOT.git RIOT
 else
     echo "------- Already exists"
 fi
