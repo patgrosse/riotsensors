@@ -81,19 +81,6 @@ static int handle_call_id(coap_rw_buffer_t *scratch,
 
 void print_ifconfig(void) {
     puts("Configured network interfaces:");
-    /*char *myargs[5];
-    myargs[0] = "ifconfig";
-    myargs[1] = "6";
-    myargs[2] = "set";
-    myargs[3] = "addr";
-    myargs[4] = "45";
-    _netif_config(5, myargs);
-    char *myargs2[4];
-    myargs2[0] = "ifconfig";
-    myargs2[1] = "6";
-    myargs2[2] = "add";
-    myargs2[3] = "2001:db8::1";
-    _netif_config(4, myargs2);*/
     _netif_config(0, NULL);
 }
 

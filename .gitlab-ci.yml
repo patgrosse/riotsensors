@@ -120,22 +120,6 @@ test:linuxconnector:
   script:
     - "cd build/linuxconnector/tests"
     - "./linux_tests"
-integrationTest:
-  stage: test
-  dependencies:
-  - getlibs
-  script:
-    - "git clone git@gitlab.com:patgrosse/riotsensors-example.git"
-    - "cd riotsensors-example"
-    - "ln -s `pwd`/../lib/RIOT lib/RIOT"
-    - "ln -s `pwd`/.. lib/riotsensors"
-    - "ln -s `pwd`/../lib/libspt lib/libspt"
-    - "GITLAB_USE_SSH=1 BOARD=native make all flash"
-    - "sudo ip tuntap add tap0 mode tap user ${USER}"
-    - "sudo ip link set tap0 up"
-    - "sleep 1"
-    - "BOARD=native make term &"
-    - "sleep 1"
 # =================
 # docs stage
 # =================
