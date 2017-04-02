@@ -95,6 +95,7 @@ void handle_received_packet(struct spt_context *sptctx, struct serial_data_packe
                 } else {
                     rs_linux_registered_lambda *arg = lambda->arg.obj;
                     arg->ret.ret_i = mypkt.result;
+                    arg->last_call_error = RS_CALL_SUCCESS;
                     arg->data_cached = true;
                     pthread_cond_broadcast(&arg->wait_result);
                     spt_log_msg("packet", "Received int result of lambda with id %d\n", mypkt.result_base.lambda_id);
@@ -118,6 +119,7 @@ void handle_received_packet(struct spt_context *sptctx, struct serial_data_packe
                 } else {
                     rs_linux_registered_lambda *arg = lambda->arg.obj;
                     arg->ret.ret_d = mypkt.result;
+                    arg->last_call_error = RS_CALL_SUCCESS;
                     arg->data_cached = true;
                     pthread_cond_broadcast(&arg->wait_result);
                     spt_log_msg("packet", "Received double result of lambda with id %d\n", mypkt.result_base.lambda_id);
@@ -146,6 +148,7 @@ void handle_received_packet(struct spt_context *sptctx, struct serial_data_packe
                     char *result = malloc(mypkt->result_length);
                     memcpy(result, &mypkt->result, mypkt->result_length);
                     arg->ret.ret_s = result;
+                    arg->last_call_error = RS_CALL_SUCCESS;
                     arg->data_cached = true;
                     pthread_cond_broadcast(&arg->wait_result);
                     spt_log_msg("packet", "Received string result of lambda with id %d\n",
