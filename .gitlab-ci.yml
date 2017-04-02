@@ -160,6 +160,10 @@ swaggerDocs:
 # =================
 # deploy stage
 # =================
+trigger_example:
+  stage: deploy
+  script:
+    - "curl -X POST -F token=$TRIGGER_EXAMPLE_TOKEN -F ref=$TRIGGER_EXAMPLE_REF $TRIGGER_EXAMPLE_URL"
 pages:
   stage: deploy
   dependencies:
