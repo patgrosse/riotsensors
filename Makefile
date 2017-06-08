@@ -1,7 +1,9 @@
-.PHONY: build
+.PHONY: prepare
 
-build:
+prepare:
 	./prebuild.sh
 	mkdir -p build
-	cmake ..
-	make
+	cd build && cmake ..
+
+build: prepare
+	cd build && make
