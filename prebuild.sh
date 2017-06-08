@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 cd lib
-GITLAB_PREFIX="https://gitlab.com/"
+GITLAB_PREFIX="${GITLAB_PREFIX:-https://gitlab.com/}"
 if [ ! -z ${GITLAB_USE_SSH+x} ]; then
     GITLAB_PREFIX="git@gitlab.com:"
 fi
