@@ -14,7 +14,7 @@ set(SOURCE_FILES ${C_FILES} ${H_FILES})
 set(CMAKE_C_FLAGS "-Werror -Wall -Wextra")
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS} -g -Wundef -Wshadow -Wcast-align -Wstrict-overflow=5 -Wno-write-strings \
 -Waggregate-return -Wcast-qual -Wswitch-default -Wswitch-enum -Wunreachable-code")
-set(CMAKE_C_STANDARD 99)
+use_c99()
 
 # targets
 add_library(riotsensors_protocol ${SOURCE_FILES})

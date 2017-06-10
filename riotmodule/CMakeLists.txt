@@ -33,7 +33,7 @@ else ()
     message("Using pre-installed arm-none-eabi-gcc")
     set(CMAKE_C_COMPILER ${arm-none-eabi-gcc})
 endif ()
-set(CMAKE_C_STANDARD 99)
+use_c99()
 
 # RIOT OS includes
 include_directories(${RIOT_DIR}/sys/posix/pthread/include)
