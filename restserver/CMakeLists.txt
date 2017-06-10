@@ -23,7 +23,7 @@ set(SOURCE_FILES ${C_FILES} ${H_FILES})
 # compiler flags etc
 use_cxx11()
 use_c99()
-set(CMAKE_CXX_FLAGS "-O0 -DWITH_POSIX")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -DWITH_POSIX")
 
 # targets
 add_executable(riotsensors_server ${SOURCE_FILES})
