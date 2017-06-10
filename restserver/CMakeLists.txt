@@ -21,7 +21,7 @@ file(GLOB H_FILES include/*.h)
 set(SOURCE_FILES ${C_FILES} ${H_FILES})
 
 # compiler flags etc
-set(CMAKE_CXX_STANDARD 11)
+use_cxx11()
 use_c99()
 set(CMAKE_CXX_FLAGS "-O0 -DWITH_POSIX")
 
