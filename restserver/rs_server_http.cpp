@@ -87,7 +87,7 @@ void RiotsensorsHTTPProvider::handleKill(const Rest::Request &request, Http::Res
 }
 
 void *startHTTPServer(void *thread_ctx) {
-    UNUSED(thread_ctx);
+    struct riotsensors_start_opts *arguments = (struct riotsensors_start_opts *) thread_ctx;
 
     RiotsensorsHTTPProvider provider;
 
@@ -100,7 +100,7 @@ void *startHTTPServer(void *thread_ctx) {
     Rest::Routes::Get(router, "/v1/showcache", Rest::Routes::bind(&RiotsensorsHTTPProvider::handleCache, &provider));
     Rest::Routes::Get(router, "/v1/kill", Rest::Routes::bind(&RiotsensorsHTTPProvider::handleKill, &provider));
 
-    Net::Address addr(Net::Ipv4::any(), Net::Port(9080));
+    Net::Address addr(Net::Ipv4::any(), Net::Port(arguments->http_port));
     auto opts = Net::Http::Endpoint::options();
     opts.threads(1);
     opts.flags(Tcp::Options::InstallSignalHandler);

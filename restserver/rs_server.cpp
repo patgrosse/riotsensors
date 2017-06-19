@@ -10,6 +10,7 @@
 #include <rs_server_coap.h>
 #include <rs_server_http.h>
 #include <spt_logger.h>
+#include <argp.h>
 
 static pthread_t http_thread;
 static pthread_t coap_thread;
@@ -72,21 +73,67 @@ rest_response_info RiotsensorsRESTHandler::handleCache(rs_lambda_type_t type) {
     }
 }
 
+/*
+ * ==============================
+ * ARGP options and main function
+ * ==============================
+ */
+
+const char *argp_program_version =
+        "riotsensors server 1.0";
+
+const char *argp_program_bug_address =
+        "<patrick.grosse@uni-muenster.de>";
+
+static struct argp_option options[] =
+        {
+                {"serial", 's', "kram", 0, "file descriptor of serial console device (default /dev/ttyUSB0)"},
+                {"http",   'h', "kram", 0, "port for the HTTP server (default 9080)"},
+                {"coap",   'c', "kram", 0, "port for the CoAP server (default 5683)"},
+                {0}
+        };
+
+static error_t
+parse_opt(int key, char *arg, struct argp_state *state) {
+    struct riotsensors_start_opts *arguments = (struct riotsensors_start_opts *) state->input;
+
+    switch (key) {
+        case 's':
+            arguments->serial = arg;
+            break;
+        case 'h':
+            arguments->http_port = (uint16_t) std::stoul(arg);
+            break;
+        case 'c':
+            arguments->coap_port = (uint16_t) std::stoul(arg);
+            break;
+        case ARGP_KEY_END:
+            break;
+        default:
+            return ARGP_ERR_UNKNOWN;
+    }
+    return 0;
+}
+
+static char doc[] = "riotsensors REST server - a HTTP and CoAP REST server for riotsensors";
+
+static struct argp argp = {options, parse_opt, "", doc};
 
 int main(int argc, char *argv[]) {
-    if (argc != 2) {
-        printf("Usage: %s SERIAL_CONSOLE_DESCRIPTOR\n", argv[0]);
+    struct riotsensors_start_opts arguments;
+    arguments.serial = (char *) "/dev/ttyUSB0";
+    arguments.http_port = 9080;
+    arguments.coap_port = 5683;
+    argp_parse(&argp, argc, argv, 0, 0, &arguments);
+
+    if (rs_linux_start(arguments.serial) != 0) {
+        fprintf(stderr, "Could not start riotsensors on serial port %s\n", arguments.serial);
         return 1;
     }
 
-    if (rs_linux_start(argv[1]) != 0) {
-        fprintf(stderr, "Could not start riotsensors on serial port %s\n", argv[1]);
-        return 1;
-    }
-
-    spt_log_msg("main", "Starting HTTP server...\n");
+    spt_log_msg("main", "Starting HTTP server on port %d...\n", arguments.http_port);
     pthread_create(&http_thread, NULL, startHTTPServer, NULL);
-    spt_log_msg("main", "Starting CoAP server...\n");
+    spt_log_msg("main", "Starting CoAP server on port %d...\n", arguments.coap_port);
     pthread_create(&coap_thread, NULL, startCoAPServer, NULL);
 
     pthread_join(http_thread, NULL);

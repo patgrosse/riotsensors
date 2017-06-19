@@ -70,6 +70,15 @@ class RiotsensorsRESTProvider {
 };
 
 /**
+ * @brief Program arguments for the server runnable
+ */
+struct riotsensors_start_opts {
+    char *serial;
+    uint16_t http_port;
+    uint16_t coap_port;
+};
+
+/**
  * @brief Main function of the REST server
  *
  * @param argc Argument count

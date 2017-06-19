@@ -262,7 +262,7 @@ void handle_read_event(int fd, short what, void *ctx) {
 }
 
 void *startCoAPServer(void *thread_ctx) {
-    UNUSED(thread_ctx);
+    struct riotsensors_start_opts *arguments = (struct riotsensors_start_opts *) thread_ctx;
 
     coap_context_t *ctx;
     coap_address_t serv_addr;
@@ -276,7 +276,7 @@ void *startCoAPServer(void *thread_ctx) {
     coap_address_init(&serv_addr);
     serv_addr.addr.sin.sin_family = AF_INET;
     serv_addr.addr.sin.sin_addr.s_addr = INADDR_ANY;
-    serv_addr.addr.sin.sin_port = htons(5683); //default port
+    serv_addr.addr.sin.sin_port = htons(arguments->coap_port); //default port
     ctx = coap_new_context(&serv_addr);
     if (!ctx) {
         exit(EXIT_FAILURE);
