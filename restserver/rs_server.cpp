@@ -120,24 +120,26 @@ static char doc[] = "riotsensors REST server - a HTTP and CoAP REST server for r
 static struct argp argp = {options, parse_opt, "", doc};
 
 int main(int argc, char *argv[]) {
-    struct riotsensors_start_opts arguments;
-    arguments.serial = (char *) "/dev/ttyUSB0";
-    arguments.http_port = 9080;
-    arguments.coap_port = 5683;
-    argp_parse(&argp, argc, argv, 0, 0, &arguments);
+    struct riotsensors_start_opts *arguments = new struct riotsensors_start_opts;
+    arguments->serial = (char *) "/dev/ttyUSB0";
+    arguments->http_port = 9080;
+    arguments->coap_port = 5683;
+    argp_parse(&argp, argc, argv, 0, 0, arguments);
 
-    if (rs_linux_start(arguments.serial) != 0) {
-        fprintf(stderr, "Could not start riotsensors on serial port %s\n", arguments.serial);
+    if (rs_linux_start(arguments->serial) != 0) {
+        fprintf(stderr, "Could not start riotsensors on serial port %s\n", arguments->serial);
         return 1;
     }
 
-    spt_log_msg("main", "Starting HTTP server on port %d...\n", arguments.http_port);
-    pthread_create(&http_thread, NULL, startHTTPServer, NULL);
-    spt_log_msg("main", "Starting CoAP server on port %d...\n", arguments.coap_port);
-    pthread_create(&coap_thread, NULL, startCoAPServer, NULL);
+    spt_log_msg("main", "Starting HTTP server on port %d...\n", arguments->http_port);
+    pthread_create(&http_thread, NULL, startHTTPServer, arguments);
+    spt_log_msg("main", "Starting CoAP server on port %d...\n", arguments->coap_port);
+    pthread_create(&coap_thread, NULL, startCoAPServer, arguments);
 
     pthread_join(http_thread, NULL);
     pthread_join(coap_thread, NULL);
 
     rs_linux_stop();
+
+    delete arguments;
 }
