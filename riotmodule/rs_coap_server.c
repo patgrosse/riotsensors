@@ -415,4 +415,6 @@ static int handle_call_id(coap_rw_buffer_t *scratch, const coap_packet_t *inpkt,
     }
 }
 
+#else
+typedef int make_iso_compilers_happy;
 #endif
