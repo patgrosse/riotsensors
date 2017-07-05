@@ -2,7 +2,7 @@ RS_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 RS_APP_DIR := $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 
 # directories for library builds
-RS_BUILD_DIR ?= $(RS_APP_DIR)/bin/riotsensors/$(BOARD)
+RS_BUILD_DIR ?= $(RS_APP_DIR)/bin/$(BOARD)/riotsensors
 RS_PROTOCOL_DIR ?= $(RS_DIR)/../protocol
 RS_PROTOCOL_OBJS_DIR ?= $(RS_BUILD_DIR)/protocol
 LIBSPT_DIR ?= $(RS_BUILD_DIR)/libspt
@@ -19,11 +19,13 @@ include $(LIBSPT_DIR)/Makefile.inc
 # get riotsensors protocol specific variables
 include $(RS_PROTOCOL_DIR)/Makefile.inc
 
+RS_COLLECTED_INCLUDES := -I$(RS_DIR)/include $(LIBSPT_INCLUDES) $(RS_PROTOCOL_INCLUDES)
+
 # RIOT specific variables
 APPDEPS += $(LIBSPT_LIB_FILE) $(RS_PROTOCOL_LIB_FILE)
 EXTERNAL_MODULE_DIRS += $(RS_DIR)
 USEMODULE += riotsensors_module
-INCLUDES += -I$(RS_DIR)/include -I$(LIBSPT_SRC_DIR)/include -I$(RS_PROTOCOL_DIR)/include
+INCLUDES += $(RS_COLLECTED_INCLUDES)
 ADDITIONAL_INCLUDES = $(addprefix -I, $(USEMODULE_INCLUDES)) $(INCLUDES)
 
 # variables passed to libspt
