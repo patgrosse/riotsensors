@@ -87,9 +87,9 @@ const char *argp_program_bug_address =
 
 static struct argp_option options[] =
         {
-                {"serial", 's', "kram", 0, "file descriptor of serial console device (default /dev/ttyUSB0)"},
-                {"http",   'h', "kram", 0, "port for the HTTP server (default 9080)"},
-                {"coap",   'c', "kram", 0, "port for the CoAP server (default 5683)"},
+                {"serial", 's', "FILE", 0, "file descriptor of serial console device (default /dev/ttyUSB0)"},
+                {"http",   'h', "PORT", 0, "port for the HTTP server (default 9080)"},
+                {"coap",   'c', "PORT", 0, "port for the CoAP server (default 5683)"},
                 {0}
         };
 
