@@ -32,7 +32,7 @@ void free_coap_query(struct coap_queries *queries) {
 void split_query(size_t len, const char *strquery, struct coap_queries *result) {
     result->num = 0;
     result->first = NULL;
-    char *working = (char *) malloc(len + 1);
+    char working[len+1];
     memcpy(working, strquery, len);
     working[len] = '\0';
     const char *delimiter = "&";

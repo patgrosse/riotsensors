@@ -7,7 +7,6 @@
 #include <rs.h>
 
 #include <memory.h>
-#include <malloc.h>
 #include <unistd.h>
 #include <stdio.h>
 
@@ -44,17 +43,16 @@ register_lambda(const char *name, lambda_generic_t lambda, const rs_lambda_type_
     }
 
     if (rs_spt_started) {
-        rs_packet_registered_t *pkt = malloc(sizeof(rs_packet_registered_t));
-        pkt->base.ptype = RS_PACKET_REGISTERED;
-        strcpy(pkt->name, name);
-        pkt->ltype = type;
-        pkt->cache = cache;
-        hton_rs_packet_registered_t(pkt);
+        rs_packet_registered_t pkt;
+        pkt.base.ptype = RS_PACKET_REGISTERED;
+        strcpy(pkt.name, name);
+        pkt.ltype = type;
+        pkt.cache = cache;
+        hton_rs_packet_registered_t(&pkt);
         struct serial_data_packet sdpkt;
-        sdpkt.data = (uint8_t *) pkt;
-        sdpkt.len = sizeof(*pkt);
+        sdpkt.data = (uint8_t *) &pkt;
+        sdpkt.len = sizeof(pkt);
         spt_send_packet(&rs_sptctx, &sdpkt);
-        free(pkt);
     }
     return res;
 }
@@ -148,16 +146,15 @@ int8_t send_result_lambda_int(const lambda_id_t id, rs_int_t result) {
         return RS_RESULT_WRONGTYPE;
     }
     if (rs_spt_started) {
-        rs_packet_lambda_result_int_t *pkt = malloc(sizeof(rs_packet_lambda_result_int_t));
-        pkt->result_base.base.ptype = RS_PACKET_RESULT_INT;
-        populate_resultbase_from_lambda(&pkt->result_base, reg_lambda);
-        pkt->result = result;
-        hton_rs_packet_lambda_result_int_t(pkt);
+        rs_packet_lambda_result_int_t pkt;
+        pkt.result_base.base.ptype = RS_PACKET_RESULT_INT;
+        populate_resultbase_from_lambda(&pkt.result_base, reg_lambda);
+        pkt.result = result;
+        hton_rs_packet_lambda_result_int_t(&pkt);
         struct serial_data_packet sdpkt;
-        sdpkt.data = (uint8_t *) pkt;
-        sdpkt.len = sizeof(*pkt);
+        sdpkt.data = (uint8_t *) &pkt;
+        sdpkt.len = sizeof(pkt);
         spt_send_packet(&rs_sptctx, &sdpkt);
-        free(pkt);
     }
     return RS_RESULT_SUCCESS;
 }
@@ -179,16 +176,15 @@ int8_t send_result_lambda_double(const lambda_id_t id, rs_double_t result) {
         return RS_RESULT_WRONGTYPE;
     }
     if (rs_spt_started) {
-        rs_packet_lambda_result_double_t *pkt = malloc(sizeof(rs_packet_lambda_result_double_t));
-        pkt->result_base.base.ptype = RS_PACKET_RESULT_DOUBLE;
-        populate_resultbase_from_lambda(&pkt->result_base, reg_lambda);
-        pkt->result = result;
-        hton_rs_packet_lambda_result_double_t(pkt);
+        rs_packet_lambda_result_double_t pkt;
+        pkt.result_base.base.ptype = RS_PACKET_RESULT_DOUBLE;
+        populate_resultbase_from_lambda(&pkt.result_base, reg_lambda);
+        pkt.result = result;
+        hton_rs_packet_lambda_result_double_t(&pkt);
         struct serial_data_packet sdpkt;
-        sdpkt.data = (uint8_t *) pkt;
-        sdpkt.len = sizeof(*pkt);
+        sdpkt.data = (uint8_t *) &pkt;
+        sdpkt.len = sizeof(pkt);
         spt_send_packet(&rs_sptctx, &sdpkt);
-        free(pkt);
     }
     return RS_RESULT_SUCCESS;
 }
@@ -213,17 +209,16 @@ int8_t send_result_lambda_string(const lambda_id_t id, rs_string_t result) {
         size_t res_len = strlen(result) + 1;
         size_t pkt_size =
                 sizeof(rs_packet_lambda_result_string_t) - sizeof(char) + res_len;
-        rs_packet_lambda_result_string_t *pkt = malloc(pkt_size);
-        pkt->result_base.base.ptype = RS_PACKET_RESULT_STRING;
-        populate_resultbase_from_lambda(&pkt->result_base, reg_lambda);
-        pkt->result_length = (uint16_t) res_len;
-        memcpy(&pkt->result, result, res_len);
-        hton_rs_packet_lambda_result_string_t(pkt);
+        rs_packet_lambda_result_string_t pkt;
+        pkt.result_base.base.ptype = RS_PACKET_RESULT_STRING;
+        populate_resultbase_from_lambda(&pkt.result_base, reg_lambda);
+        pkt.result_length = (uint16_t) res_len;
+        memcpy(&pkt.result, result, res_len);
+        hton_rs_packet_lambda_result_string_t(&pkt);
         struct serial_data_packet sdpkt;
-        sdpkt.data = (uint8_t *) pkt;
+        sdpkt.data = (uint8_t *) &pkt;
         sdpkt.len = (uint16_t) pkt_size;
         spt_send_packet(&rs_sptctx, &sdpkt);
-        free(pkt);
     }
     free(result);
     return RS_RESULT_SUCCESS;
@@ -245,16 +240,15 @@ int8_t unregister_lambda(const lambda_id_t id) {
     }
 
     if (rs_spt_started) {
-        rs_packet_unregistered_t *pkt = malloc(sizeof(rs_packet_unregistered_t));
-        pkt->base.ptype = RS_PACKET_REGISTERED;
-        pkt->lambda_id = id;
-        strcpy(pkt->name, reg_lambda->name);
-        hton_rs_packet_unregistered_t(pkt);
+        rs_packet_unregistered_t pkt;
+        pkt.base.ptype = RS_PACKET_REGISTERED;
+        pkt.lambda_id = id;
+        strcpy(pkt.name, reg_lambda->name);
+        hton_rs_packet_unregistered_t(&pkt);
         struct serial_data_packet sdpkt;
-        sdpkt.data = (uint8_t *) pkt;
-        sdpkt.len = sizeof(*pkt);
+        sdpkt.data = (uint8_t *) &pkt;
+        sdpkt.len = sizeof(pkt);
         spt_send_packet(&rs_sptctx, &sdpkt);
-        free(pkt);
     }
     lambda_registry_unregister(id);
     return RS_UNREGISTER_SUCCESS;
@@ -297,18 +291,17 @@ void handle_call_lambda(lambda_id_t id, rs_lambda_type_t expected_type) {
     }
     fprintf(stderr, "Error on lambda call with id %d and expected type %d: code %d\n", id, expected_type, call_res);
     if (rs_spt_started) {
-        rs_packet_lambda_result_error_t *pkt = malloc(sizeof(rs_packet_lambda_result_error_t));
-        pkt->result_base.base.ptype = RS_PACKET_RESULT_ERROR;
-        pkt->result_base.lambda_id = id;
+        rs_packet_lambda_result_error_t pkt;
+        pkt.result_base.base.ptype = RS_PACKET_RESULT_ERROR;
+        pkt.result_base.lambda_id = id;
         char *nfname = "unknown";
-        strcpy(pkt->result_base.name, nfname);
-        pkt->error_code = call_res;
-        hton_rs_packet_lambda_result_error_t(pkt);
+        strcpy(pkt.result_base.name, nfname);
+        pkt.error_code = call_res;
+        hton_rs_packet_lambda_result_error_t(&pkt);
         struct serial_data_packet sdpkt;
-        sdpkt.data = (uint8_t *) pkt;
-        sdpkt.len = sizeof(*pkt);
+        sdpkt.data = (uint8_t *) &pkt;
+        sdpkt.len = sizeof(pkt);
         spt_send_packet(&rs_sptctx, &sdpkt);
-        free(pkt);
     }
 }
 
