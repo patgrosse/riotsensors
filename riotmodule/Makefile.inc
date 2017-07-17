@@ -50,9 +50,8 @@ ifndef RS_NO_COAP
   USEMODULE += gnrc_icmpv6_echo
 
   USEMODULE += gnrc_sock_udp
+  USEMODULE += gcoap
 
-  USEPKG += microcoap
-  CFLAGS += -DMICROCOAP_DEBUG
 
   # include for printing IP addresses
   USEMODULE += shell_commands

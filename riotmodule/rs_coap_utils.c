@@ -8,7 +8,7 @@
 
 #include <memory.h>
 
-ssize_t index_of(const char *string, char search) {
+ssize_t str_index_of(const char *string, char search) {
     const char *moved_string = strchr(string, search);
     /* If not null, return the difference. */
     if (moved_string) {
@@ -18,7 +18,7 @@ ssize_t index_of(const char *string, char search) {
     return -1;
 }
 
-void free_coap_query(struct coap_queries *queries) {
+void free_coap_queries(struct coap_queries *queries) {
     struct coap_query *current = queries->first;
     while (current != NULL) {
         struct coap_query *next = current->next;
@@ -29,7 +29,7 @@ void free_coap_query(struct coap_queries *queries) {
     }
 }
 
-void split_query(size_t len, const char *strquery, struct coap_queries *result) {
+void split_coap_query(size_t len, const char *strquery, struct coap_queries *result) {
     result->num = 0;
     result->first = NULL;
     char working[len+1];
@@ -41,7 +41,7 @@ void split_query(size_t len, const char *strquery, struct coap_queries *result) 
     while (ptr != NULL) {
         result->num++;
         size_t lentotal = strlen(ptr);
-        ssize_t lenkey = index_of(ptr, '=');
+        ssize_t lenkey = str_index_of(ptr, '=');
         struct coap_query *current = (struct coap_query *) malloc(sizeof(struct coap_query));
         if (lenkey == -1) {
             current->key = (char *) malloc(lentotal + 1);

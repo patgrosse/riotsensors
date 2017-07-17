@@ -51,14 +51,14 @@ struct coap_queries {
  * @param strquery The query
  * @param result A pointer where to store the results (already allocated)
  */
-void split_query(size_t len, const char *strquery, struct coap_queries *result);
+void split_coap_query(size_t len, const char *strquery, struct coap_queries *result);
 
 /**
  * @brief Free the results of an URI query split
  *
  * @param queries Result to free
  */
-void free_coap_query(struct coap_queries *queries);
+void free_coap_queries(struct coap_queries *queries);
 
 /**
  * @brief Get the index of the first matching char in a string
@@ -67,7 +67,7 @@ void free_coap_query(struct coap_queries *queries);
  * @param search Character to search for
  * @return Index if found, -1 otherwise
  */
-ssize_t index_of(const char *string, char search);
+ssize_t str_index_of(const char *string, char search);
 
 #ifdef __cplusplus
 }

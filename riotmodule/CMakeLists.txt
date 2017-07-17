@@ -14,7 +14,7 @@ set(RIOT_DIR ${LIB_DIR}/RIOT)
 include_directories(${LIB_DIR}/libspt/src/include)
 include_directories(${CMAKE_CURRENT_LIST_DIR}/include)
 include_directories(${CMAKE_CURRENT_LIST_DIR}/../protocol/include)
-include_directories(${CMAKE_CURRENT_LIST_DIR}/../lib/microcoap)
+include_directories(${CMAKE_CURRENT_LIST_DIR}/../lib/sock/nanocoap)
 
 # source files
 file(GLOB C_FILES *.c)
@@ -36,12 +36,16 @@ endif ()
 use_c99()
 
 # RIOT OS includes
-include_directories(${RIOT_DIR}/sys/posix/pthread/include)
 include_directories(${RIOT_DIR}/core/include)
-include_directories(${RIOT_DIR}/sys/include)
 include_directories(${RIOT_DIR}/drivers/include)
-include_directories(${RIOT_DIR}/cpu/lpc2387/include)
+include_directories(${RIOT_DIR}/sys/include)
+include_directories(${RIOT_DIR}/sys/libc/include)
+include_directories(${RIOT_DIR}/sys/posix/include)
+include_directories(${RIOT_DIR}/sys/posix/pthread/include)
 include_directories(${RIOT_DIR}/sys/net/gnrc/sock/include)
+
+include_directories(${RIOT_DIR}/boards/native/include)
+include_directories(${RIOT_DIR}/cpu/native/include)
 
 # targets
 add_library(riotsensors_riot ${SOURCE_FILES})
