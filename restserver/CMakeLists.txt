@@ -27,7 +27,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -DWITH_POSIX")
 
 # targets
 add_executable(riotsensors_server ${SOURCE_FILES})
-target_link_libraries(riotsensors_server net_static)
+target_link_libraries(riotsensors_server pistache)
 target_link_libraries(riotsensors_server riotsensors_linux)
 target_link_libraries(riotsensors_server riotsensors_protocol)
 target_link_libraries(riotsensors_server libspt)

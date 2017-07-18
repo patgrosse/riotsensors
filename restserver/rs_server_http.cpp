@@ -11,7 +11,7 @@
 #include <spt_logger.h>
 #include <unused.h>
 
-using namespace Net;
+using namespace Pistache;
 
 void RiotsensorsHTTPProvider::setServer(Http::Endpoint *server) {
     this->server = server;
@@ -100,8 +100,8 @@ void *startHTTPServer(void *thread_ctx) {
     Rest::Routes::Get(router, "/v1/showcache", Rest::Routes::bind(&RiotsensorsHTTPProvider::handleCache, &provider));
     Rest::Routes::Get(router, "/v1/kill", Rest::Routes::bind(&RiotsensorsHTTPProvider::handleKill, &provider));
 
-    Net::Address addr(Net::Ipv4::any(), Net::Port(arguments->http_port));
-    auto opts = Net::Http::Endpoint::options();
+    Address addr(Ipv4::any(), Port(arguments->http_port));
+    auto opts = Http::Endpoint::options();
     opts.threads(1);
     opts.flags(Tcp::Options::InstallSignalHandler);
 

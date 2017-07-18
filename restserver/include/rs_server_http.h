@@ -13,11 +13,11 @@
 #ifndef RIOTSENSORS_RIOTSENSORS_SERVER_HTTP_H
 #define RIOTSENSORS_RIOTSENSORS_SERVER_HTTP_H
 
-#include <endpoint.h>
-#include <router.h>
+#include <pistache/endpoint.h>
+#include <pistache/router.h>
 #include <rs_server.h>
 
-using namespace Net;
+using namespace Pistache;
 
 /**
  * @brief Processes all received HTTP REST calls

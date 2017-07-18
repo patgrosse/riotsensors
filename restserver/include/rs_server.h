@@ -13,10 +13,10 @@
 #ifndef RIOTSENSORS_RS_SERVER_H
 #define RIOTSENSORS_RS_SERVER_H
 
-#include <endpoint.h>
+#include <pistache/endpoint.h>
 #include <rs_packets.h>
 
-using namespace Net;
+using namespace Pistache;
 
 /**
  * @brief Return type consisting of HTTP response code and response body for REST responses
