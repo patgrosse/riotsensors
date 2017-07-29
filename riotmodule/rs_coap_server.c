@@ -284,13 +284,13 @@ static int handle_list(coap_rw_buffer_t *scratch,
                     continue;
                 }
                 count++;
-                sprintf(buf, "%d: {\"id\": %d,\"name\":\"%s\",\"type\":%d,\"cache\":%d}", lambda->id, lambda->id,
+                sprintf(buf, "\"%" PRIu8 "\": {\"id\": %" PRIu8 ",\"name\":\"%s\",\"type\":%" PRIu8 ",\"cache\":%" PRIu8 "}", lambda->id, lambda->id,
                         lambda->name, lambda->type, lambda->cache);
                 strncat(rsp, buf, len);
                 len -= strlen(buf);
             }
         }
-        sprintf(buf, "},\"count\":%d}", count);
+        sprintf(buf, "},\"count\":%" PRIu8 "}", count);
         strncat(rsp, buf, len);
         len -= strlen(buf);
         (void) len;
@@ -308,7 +308,7 @@ static void perform_coap_lambda_call(rs_lambda_type_t type, rs_registered_lambda
             call_res = call_lambda_int(lambda->id, &result.ret_i);
             if (call_res >= 0) {
                 sprintf(buf,
-                        "{\"success\": true,\"lambda\":{\"id\":%d,\"name\":\"%s\",\"type\":%d,\"cache\":%d},\"result\":%d}",
+                        "{\"success\": true,\"lambda\":{\"id\":%" PRIu8 ",\"name\":\"%s\",\"type\":%" PRIu8 ",\"cache\":%" PRIu8 "},\"result\":%" PRId32 "}",
                         lambda->id, lambda->name, lambda->type, lambda->cache, (int) result.ret_i);
             }
             break;
@@ -316,7 +316,7 @@ static void perform_coap_lambda_call(rs_lambda_type_t type, rs_registered_lambda
             call_res = call_lambda_double(lambda->id, &result.ret_d);
             if (call_res >= 0) {
                 sprintf(buf,
-                        "{\"success\": true,\"lambda\":{\"id\":%d,\"name\":\"%s\",\"type\":%d,\"cache\":%d},\"result\":%f}",
+                        "{\"success\": true,\"lambda\":{\"id\":%" PRIu8 ",\"name\":\"%s\",\"type\":%" PRIu8 ",\"cache\":%" PRIu8 "},\"result\":%f}",
                         lambda->id, lambda->name, lambda->type, lambda->cache, result.ret_d);
             }
             break;
@@ -324,7 +324,7 @@ static void perform_coap_lambda_call(rs_lambda_type_t type, rs_registered_lambda
             call_res = call_lambda_string(lambda->id, &result.ret_s);
             if (call_res >= 0) {
                 sprintf(buf,
-                        "{\"success\": true,\"lambda\":{\"id\":%d,\"name\":\"%s\",\"type\":%d,\"cache\":%d},\"result\":\"%s\"}",
+                        "{\"success\": true,\"lambda\":{\"id\":%" PRIu8 ",\"name\":\"%s\",\"type\":%" PRIu8 ",\"cache\":%" PRIu8 "},\"result\":\"%s\"}",
                         lambda->id, lambda->name, lambda->type, lambda->cache, result.ret_s);
             }
             break;
@@ -333,7 +333,7 @@ static void perform_coap_lambda_call(rs_lambda_type_t type, rs_registered_lambda
     }
     if (call_res < 0) {
         sprintf(buf,
-                "{\"success\": false,\"lambda\":{\"id\":%d,\"name\":\"%s\",\"type\":%d,\"cache\":%d},\"error\":%d}",
+                "{\"success\": false,\"lambda\":{\"id\":%" PRIu8 ",\"name\":\"%s\",\"type\":%" PRIu8 ",\"cache\":%" PRIu8 "},\"error\":%" PRId8 "}",
                 lambda->id, lambda->name, lambda->type, lambda->cache, call_res);
     }
 }
