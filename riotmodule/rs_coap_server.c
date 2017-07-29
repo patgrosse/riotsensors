@@ -309,7 +309,7 @@ static void perform_coap_lambda_call(rs_lambda_type_t type, rs_registered_lambda
             if (call_res >= 0) {
                 sprintf(buf,
                         "{\"success\": true,\"lambda\":{\"id\":%" PRIu8 ",\"name\":\"%s\",\"type\":%" PRIu8 ",\"cache\":%" PRIu8 "},\"result\":%" PRId32 "}",
-                        lambda->id, lambda->name, lambda->type, lambda->cache, (int) result.ret_i);
+                        lambda->id, lambda->name, lambda->type, lambda->cache, result.ret_i);
             }
             break;
         case RS_LAMBDA_DOUBLE:
