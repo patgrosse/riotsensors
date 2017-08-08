@@ -6,10 +6,9 @@
 
 #include <rs_server_http.h>
 
-#include <signal.h>
+#include <csignal>
 #include <rs_rest.h>
 #include <spt_logger.h>
-#include <unused.h>
 
 using namespace Pistache;
 
@@ -23,11 +22,11 @@ void RiotsensorsHTTPProvider::handleCallById(const Rest::Request &request, Http:
     if (type == (rs_lambda_type_t) -1) {
         response.send(Http::Code::Bad_Request, "Unknown lambda type\n");
     }
-    int int_id = request.param(":id").as<int>();
+    auto int_id = request.param(":id").as<int>();
     if (int_id < 0) {
         response.send(Http::Code::Bad_Request, "Bad lambda id\n");
     }
-    lambda_id_t id = (lambda_id_t) int_id;
+    auto id = (lambda_id_t) int_id;
     auto m1 = MIME(Application, Json);
     response.setMime(m1);
     rest_response_info answer = RiotsensorsRESTHandler::handleCallById(type, id);
@@ -87,9 +86,9 @@ void RiotsensorsHTTPProvider::handleKill(const Rest::Request &request, Http::Res
 }
 
 void *startHTTPServer(void *thread_ctx) {
-    struct riotsensors_start_opts *arguments = (struct riotsensors_start_opts *) thread_ctx;
+    auto arguments = (struct riotsensors_start_opts *) thread_ctx;
 
-    RiotsensorsHTTPProvider provider;
+    RiotsensorsHTTPProvider provider{};
 
     Rest::Router router;
     Rest::Routes::Get(router, "/v1/call/id/:type/:id",

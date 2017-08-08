@@ -26,7 +26,7 @@
  * @param l The lambda to call
  */
 template<typename Callback>
-static bool match_coap_opt_and_execute(std::string name, coap_opt_t *q, Callback l) {
+static bool match_coap_opt_and_execute(const std::string &name, coap_opt_t *q, Callback l) {
     std::string opt_value((char *) coap_opt_value(q), coap_opt_length(q));
 
     std::string::size_type loc = opt_value.find('=');
@@ -41,13 +41,13 @@ static bool match_coap_opt_and_execute(std::string name, coap_opt_t *q, Callback
         std::string arg_str = opt_value.substr(name.length() + 1);
         l(arg_str);
         return true;
-    } else {
-        return false;
     }
+
+    return false;
 }
 
 static rs_lambda_type_t coap_parse_type(coap_pdu_t *request) {
-    coap_opt_iterator_t opt_iter;
+    coap_opt_iterator_t opt_iter{};
     coap_opt_filter_t f = {};
     coap_opt_t *q;
     coap_option_filter_clear(f);
@@ -86,7 +86,7 @@ void RiotsensorsCoAPProvider::handleCallById(coap_context_t *ctx, struct coap_re
     UNUSED(local_interface);
     UNUSED(peer);
     UNUSED(token);
-    coap_opt_iterator_t opt_iter;
+    coap_opt_iterator_t opt_iter{};
     coap_opt_filter_t f = {};
     coap_opt_t *q;
     coap_option_filter_clear(f);
@@ -105,7 +105,7 @@ void RiotsensorsCoAPProvider::handleCallById(coap_context_t *ctx, struct coap_re
         auto idlambda = [&id, &id_found](std::string value) -> void {
             try {
                 id = (lambda_id_t) std::stoi(value);
-            } catch (std::invalid_argument e) {
+            } catch (std::invalid_argument &e) {
                 id = (lambda_id_t) -1;
             }
             id_found = true;
@@ -152,7 +152,7 @@ void RiotsensorsCoAPProvider::handleCallByName(coap_context_t *ctx, struct coap_
     UNUSED(local_interface);
     UNUSED(peer);
     UNUSED(token);
-    coap_opt_iterator_t opt_iter;
+    coap_opt_iterator_t opt_iter{};
     coap_opt_filter_t f = {};
     coap_opt_t *q;
     coap_option_filter_clear(f);
@@ -262,10 +262,10 @@ void handle_read_event(int fd, short what, void *ctx) {
 }
 
 void *startCoAPServer(void *thread_ctx) {
-    struct riotsensors_start_opts *arguments = (struct riotsensors_start_opts *) thread_ctx;
+    auto arguments = (struct riotsensors_start_opts *) thread_ctx;
 
     coap_context_t *ctx;
-    coap_address_t serv_addr;
+    coap_address_t serv_addr{};
     coap_resource_t *callbyid_resource;
     coap_resource_t *callbyname_resource;
     coap_resource_t *handlelist_resource;
@@ -278,16 +278,16 @@ void *startCoAPServer(void *thread_ctx) {
     serv_addr.addr.sin.sin_addr.s_addr = INADDR_ANY;
     serv_addr.addr.sin.sin_port = htons(arguments->coap_port); //default port
     ctx = coap_new_context(&serv_addr);
-    if (!ctx) {
+    if (ctx == nullptr) {
         exit(EXIT_FAILURE);
     }
 
     /* Initialize the resources */
-    callbyid_resource = coap_resource_init((unsigned char *) "v1/call/id", 7, 0);
-    callbyname_resource = coap_resource_init((unsigned char *) "v1/call/name", 9, 0);
-    handlelist_resource = coap_resource_init((unsigned char *) "v1/list", 4, 0);
-    handlecache_resource = coap_resource_init((unsigned char *) "v1/cache", 5, 0);
-    kill_resource = coap_resource_init((unsigned char *) "v1/kill", 4, 0);
+    callbyid_resource = coap_resource_init((unsigned char *) "v1/call/id", 10, 0);
+    callbyname_resource = coap_resource_init((unsigned char *) "v1/call/name", 12, 0);
+    handlelist_resource = coap_resource_init((unsigned char *) "v1/list", 7, 0);
+    handlecache_resource = coap_resource_init((unsigned char *) "v1/showcache", 12, 0);
+    kill_resource = coap_resource_init((unsigned char *) "v1/kill", 7, 0);
 
     /* Register handler */
     coap_register_handler(callbyid_resource, COAP_REQUEST_GET, RiotsensorsCoAPProvider::handleCallById);
@@ -306,9 +306,9 @@ void *startCoAPServer(void *thread_ctx) {
     struct event_base *ev_base = event_base_new();
     struct event *ev_cmd = event_new(ev_base, ctx->sockfd, EV_READ | EV_PERSIST,
                                      handle_read_event, ctx);
-    event_add(ev_cmd, NULL);
+    event_add(ev_cmd, nullptr);
     event_base_dispatch(ev_base);
     event_base_free(ev_base);
     event_free(ev_cmd);
-    return NULL;
+    return nullptr;
 }

@@ -63,7 +63,7 @@ std::string assemble_list_rest();
  * @param type Type of the lambda
  * @return A JSON string
  */
-std::string assemble_list_rest_for_type(const rs_lambda_type_t type);
+std::string assemble_list_rest_for_type(rs_lambda_type_t type);
 
 /**
  * @brief Create a JSON string with a list of all registered lambdas and their cached results
@@ -78,6 +78,6 @@ std::string assemble_cache_rest();
  * @param type Type of the lambda
  * @return A JSON string
  */
-std::string assemble_cache_rest_for_type(const rs_lambda_type_t type);
+std::string assemble_cache_rest_for_type(rs_lambda_type_t type);
 
 #endif //RIOTSENSORS_RS_REST_H

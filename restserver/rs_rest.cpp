@@ -74,7 +74,7 @@ void print_lambda_type_n_cache_unknown(rapidjson::Writer<rapidjson::StringBuffer
 }
 
 void print_cache_content(rapidjson::Writer<rapidjson::StringBuffer> *writer, const rs_registered_lambda *lambda) {
-    rs_linux_registered_lambda *arg = (rs_linux_registered_lambda *) lambda->arg.obj;
+    auto arg = (rs_linux_registered_lambda *) lambda->arg.obj;
     writer->StartObject();
     writer->Key("cache_available");
     writer->Bool(arg->data_cached);
@@ -120,7 +120,7 @@ std::string assemble_call_error_rest_id(lambda_id_t id, const rs_registered_lamb
     writer.Bool(false);
     writer.Key("lambda");
     {
-        if (lambda != NULL) {
+        if (lambda != nullptr) {
             print_lambda_properties(&writer, lambda);
         } else {
             writer.StartObject();
@@ -153,7 +153,7 @@ std::string assemble_call_error_rest_name(std::string name, const rs_registered_
     writer.Bool(false);
     writer.Key("lambda");
     {
-        if (lambda != NULL) {
+        if (lambda != nullptr) {
             print_lambda_properties(&writer, lambda);
         } else {
             writer.StartObject();
@@ -188,7 +188,7 @@ std::string assemble_list_rest() {
         writer.StartObject();
         for (lambda_id_t i = 0; i < get_number_of_registered_lambdas(); i++) {
             rs_registered_lambda *lambda = get_registered_lambda_by_id(i);
-            if (lambda != NULL) {
+            if (lambda != nullptr) {
                 count++;
                 char idstr[10];
                 sprintf(idstr, "%d", lambda->id);
@@ -216,7 +216,7 @@ std::string assemble_list_rest_for_type(const rs_lambda_type_t type) {
         writer.StartObject();
         for (lambda_id_t i = 0; i < get_number_of_registered_lambdas(); i++) {
             rs_registered_lambda *lambda = get_registered_lambda_by_id(i);
-            if (lambda != NULL) {
+            if (lambda != nullptr) {
                 if (lambda->type != type) {
                     continue;
                 }
@@ -247,7 +247,7 @@ std::string assemble_cache_rest() {
         writer.StartObject();
         for (lambda_id_t i = 0; i < get_number_of_registered_lambdas(); i++) {
             rs_registered_lambda *lambda = get_registered_lambda_by_id(i);
-            if (lambda != NULL) {
+            if (lambda != nullptr) {
                 count++;
                 char idstr[10];
                 sprintf(idstr, "%d", lambda->id);
@@ -284,7 +284,7 @@ std::string assemble_cache_rest_for_type(const rs_lambda_type_t type) {
         writer.StartObject();
         for (lambda_id_t i = 0; i < get_number_of_registered_lambdas(); i++) {
             rs_registered_lambda *lambda = get_registered_lambda_by_id(i);
-            if (lambda != NULL) {
+            if (lambda != nullptr) {
                 if (lambda->type != type) {
                     continue;
                 }
