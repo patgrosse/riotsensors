@@ -8,7 +8,7 @@ fi
 echo "======= libspt"
 if [ ! -d "libspt" ]; then
     echo "------- Using git clone"
-    git clone --depth=1 ${GITLAB_PREFIX}patgrosse/libspt.git libspt
+    git clone --depth 1 ${GITLAB_PREFIX}patgrosse/libspt.git libspt
 else
     echo "------- Already exists"
 fi
@@ -35,18 +35,18 @@ fi
 echo "======= RIOT OS"
 if [ ! -d "RIOT" ]; then
     echo "------- Using git clone"
-    git clone --depth=1 -b riotsensors https://github.com/patgrosse/RIOT.git RIOT
+    git clone --depth 1 -b riotsensors https://github.com/patgrosse/RIOT.git RIOT
 else
     echo "------- Already exists"
 fi
 echo "======= Googletest"
 if [ ! -d "googletest" ]; then
     echo "------- Using git clone"
-    git clone --depth=1 https://github.com/google/googletest.git googletest
+    git clone --depth 1 https://github.com/google/googletest.git googletest
 else
     if [ ! -e "googletest/.git" ]; then
         echo "------- Using git submodule"
-        git submodule update --init -- googletest
+        git submodule update --init --depth 1 -- googletest
     else
         echo "------- Already exists"
     fi
@@ -54,11 +54,11 @@ fi
 echo "======= rapidjson"
 if [ ! -d "rapidjson" ]; then
     echo "------- Using git clone"
-    git clone --depth=1 https://github.com/miloyip/rapidjson.git rapidjson
+    git clone --depth 1 https://github.com/miloyip/rapidjson.git rapidjson
 else
     if [ ! -e "rapidjson/.git" ]; then
         echo "------- Using git submodule"
-        git submodule update --init -- rapidjson
+        git submodule update --init --depth 1 -- rapidjson
     else
         echo "------- Already exists"
     fi
@@ -66,11 +66,11 @@ fi
 echo "======= Pistache"
 if [ ! -d "pistache" ]; then
     echo "------- Using git clone"
-    git clone --depth=1 https://github.com/oktal/pistache.git pistache
+    git clone --depth 1 https://github.com/oktal/pistache.git pistache
 else
     if [ ! -e "pistache/.git" ]; then
         echo "------- Using git submodule"
-        git submodule update --init -- pistache
+        git submodule update --init --depth 1 -- pistache
     else
         echo "------- Already exists"
     fi
@@ -78,11 +78,11 @@ fi
 echo "======= microcoap"
 if [ ! -d "microcoap" ]; then
     echo "------- Using git clone"
-    git clone --depth=1 https://github.com/1248/microcoap.git microcoap
+    git clone --depth 1 https://github.com/1248/microcoap.git microcoap
 else
     if [ ! -e "microcoap/.git" ]; then
         echo "------- Using git submodule"
-        git submodule update --init -- microcoap
+        git submodule update --init --depth 1 -- microcoap
     else
         echo "------- Already exists"
     fi
