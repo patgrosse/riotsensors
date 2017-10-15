@@ -42,46 +42,40 @@ fi
 echo "======= Googletest"
 if [ ! -d "googletest" ]; then
     echo "------- Using GitHub release tarball"
-    wget https://github.com/google/googletest/archive/release-1.8.0.tar.gz
-    tar -xzf release-1.8.0.tar.gz
-    rm release-1.8.0.tar.gz
+    wget -O ".curlib.tar.gz" https://github.com/google/googletest/archive/release-1.8.0.tar.gz
+    tar -xf ".curlib.tar.gz"
+    rm ".curlib.tar.gz"
     mv googletest-release-1.8.0 googletest
 else
     echo "------- Already exists"
 fi
 echo "======= rapidjson"
 if [ ! -d "rapidjson" ]; then
-    echo "------- Using git clone"
-    git clone --depth=1 https://github.com/miloyip/rapidjson.git rapidjson
+    echo "------- Using GitHub release tarball"
+    wget -O ".curlib.tar.gz" https://github.com/Tencent/rapidjson/archive/f05edc9296507a9864d99931e203631c2ffd8d4a.tar.gz
+    tar -xf ".curlib.tar.gz"
+    rm ".curlib.tar.gz"
+    mv rapidjson-f05edc9296507a9864d99931e203631c2ffd8d4a rapidjson
 else
-    if [ ! -e "rapidjson/.git" ]; then
-        echo "------- Using git submodule"
-        git submodule update --init -- rapidjson
-    else
-        echo "------- Already exists"
-    fi
+    echo "------- Already exists"
 fi
 echo "======= Pistache"
 if [ ! -d "pistache" ]; then
-    echo "------- Using git clone"
-    git clone --depth=1 https://github.com/oktal/pistache.git pistache
+    echo "------- Using GitHub release tarball"
+    wget -O ".curlib.tar.gz" https://github.com/oktal/pistache/archive/b66415aaa0dc443b7874acbbb488058b34c2dc01.tar.gz
+    tar -xf ".curlib.tar.gz"
+    rm ".curlib.tar.gz"
+    mv pistache-b66415aaa0dc443b7874acbbb488058b34c2dc01 pistache
 else
-    if [ ! -e "pistache/.git" ]; then
-        echo "------- Using git submodule"
-        git submodule update --init -- pistache
-    else
-        echo "------- Already exists"
-    fi
+    echo "------- Already exists"
 fi
 echo "======= microcoap"
 if [ ! -d "microcoap" ]; then
-    echo "------- Using git clone"
-    git clone --depth=1 https://github.com/1248/microcoap.git microcoap
+    echo "------- Using GitHub release tarball"
+    wget -O ".curlib.tar.gz" https://github.com/1248/microcoap/archive/ef272895925f0d4c563725fe0102966f544a0fdc.tar.gz
+    tar -xf ".curlib.tar.gz"
+    rm ".curlib.tar.gz"
+    mv microcoap-ef272895925f0d4c563725fe0102966f544a0fdc microcoap
 else
-    if [ ! -e "microcoap/.git" ]; then
-        echo "------- Using git submodule"
-        git submodule update --init -- microcoap
-    else
-        echo "------- Already exists"
-    fi
+    echo "------- Already exists"
 fi
