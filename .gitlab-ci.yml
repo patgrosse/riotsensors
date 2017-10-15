@@ -12,14 +12,6 @@ stages:
 #  key: "$CI_BUILD_REF_NAME"
 #  paths:
 #    - lib/gcc-arm-none-eabi-6_2-2016q4-20161216-linux.tar.bz2
-before_script:
-  - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
-  - 'eval $(ssh-agent -s)'
-  - 'ssh-add <(echo "$SSH_PRIVATE_KEY")'
-  - 'mkdir -p ~/.ssh'
-  - 'echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
-  - 'git config --global user.email "riotsensors-build@ci.gitlab.com"'
-  - 'git config --global user.name "riotsensors-build"'
 # =================
 # prepare stage
 # =================
@@ -28,7 +20,7 @@ getlibs:
     GIT_STRATEGY: clone
   stage: prepare
   script:
-    - "GITLAB_USE_SSH=1 ./prebuild.sh"
+    - "./prebuild.sh"
   artifacts:
     paths:
     - lib/

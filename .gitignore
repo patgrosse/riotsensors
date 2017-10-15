@@ -6,3 +6,7 @@ protocol/build/**
 riotmodule/build/**
 lib/RIOT/**
 lib/libspt/**
+lib/googletest/**
+lib/microcoap/**
+lib/pistache/**
+lib/rapidjson/**
