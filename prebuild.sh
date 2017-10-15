@@ -41,15 +41,13 @@ else
 fi
 echo "======= Googletest"
 if [ ! -d "googletest" ]; then
-    echo "------- Using git clone"
-    git clone --depth=1 https://github.com/google/googletest.git googletest
+    echo "------- Using GitHub release tarball"
+    wget https://github.com/google/googletest/archive/release-1.8.0.tar.gz
+    tar -xzf release-1.8.0.tar.gz
+    rm release-1.8.0.tar.gz
+    mv googletest-release-1.8.0 googletest
 else
-    if [ ! -e "googletest/.git" ]; then
-        echo "------- Using git submodule"
-        git submodule update --init -- googletest
-    else
-        echo "------- Already exists"
-    fi
+    echo "------- Already exists"
 fi
 echo "======= rapidjson"
 if [ ! -d "rapidjson" ]; then
